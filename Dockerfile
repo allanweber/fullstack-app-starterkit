@@ -36,7 +36,6 @@ ENV NODE_ENV production
 USER node
 
 ARG HOSTNAME
-EXPOSE 3001
 
 # Start the application
 CMD ["node", "dist/server.js"]
