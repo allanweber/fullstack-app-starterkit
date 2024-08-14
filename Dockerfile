@@ -15,10 +15,14 @@ FROM node:18 AS backend-builder
 
 WORKDIR /app/backend
 
+ARG DATABASE_URL
+ARG DATABASE_AUTH_TOKEN
+
 COPY backend/package.json backend/package-lock.json ./
 RUN npm install
 COPY backend/ ./
 RUN npm run build
+RUN npm run db:migrate
 
 # Stage 3: Production image with Node.js
 FROM node:18

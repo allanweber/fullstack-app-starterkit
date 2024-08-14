@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Newsletter } from './pages/Newsletter';
 
 function App() {
   const [message, setMessage] = useState<string>('');
@@ -10,9 +11,12 @@ function App() {
   }, []);
 
   return (
-    <div>
-      <h1>{message}</h1>
-    </div>
+    <>
+      <div>
+        <h1>{message}</h1>
+      </div>
+      <Newsletter />
+    </>
   );
 }
 
