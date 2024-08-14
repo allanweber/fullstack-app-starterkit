@@ -32,6 +32,10 @@ COPY --from=frontend-builder /app/frontend/dist ./public
 COPY backend/package.json ./
 
 # Expose the port the app runs on
+ENV NODE_ENV production
+USER node
+
+ARG HOSTNAME
 EXPOSE 3001
 
 # Start the application
