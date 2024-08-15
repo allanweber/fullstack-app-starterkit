@@ -1,7 +1,9 @@
 import { sql } from 'drizzle-orm';
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { createInsertSchema } from 'drizzle-zod';
+import { z } from 'zod';
 
-const newsletter = sqliteTable('newsletter', {
+export const newsletter = sqliteTable('newsletter', {
   id: integer('id').primaryKey(),
   email: text('email').notNull(),
   createdAt: text('created_at')
@@ -9,4 +11,6 @@ const newsletter = sqliteTable('newsletter', {
     .default(sql`CURRENT_TIMESTAMP`),
 });
 
-export default newsletter;
+export const insertNewsletterSchema = createInsertSchema(newsletter, {
+  email: z.string().email(),
+});

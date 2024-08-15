@@ -1,2 +1,2 @@
-export { default as newsletter } from './newsletter';
-export { default as organization } from './organization';
+export { newsletter } from './newsletter';
+export { organization } from './organization';

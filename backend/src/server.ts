@@ -1,29 +1,23 @@
-import cors from 'cors';
 import express from 'express';
-import path from 'path';
-import db from './db';
-import { newsletter } from './db/schema';
+import env from './env';
+import expressStarter from './express';
+import logger from './logger';
 
-const app = express();
-const port = process.env.PORT || 3001;
+async function startServer() {
+  const app = express();
+  await expressStarter(app);
 
-app.use(cors());
-app.use(express.static(path.join(__dirname, '../public')));
-
-app.get('/', (req, res) => {
-  res.setHeader('Content-Type', 'text/html');
-  res.sendFile(path.join(__dirname, '../public/index.html'));
-});
-
-app.get('/api', (req, res) => {
-  res.send('Hello from the backend!');
-});
-
-app.get('/api/newsletter', async (req, res) => {
-  const news = await db.select().from(newsletter);
-  res.json(news);
-});
-
-app.listen(Number(port), '0.0.0.0', () => {
-  console.log(`Server is running at http://localhost:${port}`);
-});
+  app
+    .listen(Number(env.PORT), '0.0.0.0', () => {
+      logger.info(`
+    ################################################
+    🛡️  Server listening on port: ${env.PORT} 🛡️
+    ################################################
+  `);
+    })
+    .on('error', (err) => {
+      logger.error(err);
+      process.exit(1);
+    });
+}
+startServer();
