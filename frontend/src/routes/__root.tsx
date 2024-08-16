@@ -43,9 +43,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <Link to="/" className="[&.active]:font-bold">
           Home
         </Link>{' '}
-        <Link to="/about" className="[&.active]:font-bold">
-          About
-        </Link>{' '}
         <Link to="/login" className="[&.active]:font-bold">
           Login
         </Link>{' '}
@@ -55,14 +52,6 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <Link to="/invoices" className="[&.active]:font-bold">
           Invoices
         </Link>{' '}
-        <Link
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-expect-error
-          to="/invalid"
-          className="[&.active]:font-bold"
-        >
-          Invalid
-        </Link>
       </div>
       <hr />
       {children}

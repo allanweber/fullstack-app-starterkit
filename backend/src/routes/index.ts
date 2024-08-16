@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { NewsletterRoutes } from '../newsletter/newsletter.routes';
+import { NewsletterRoutes } from '../app/newsletter/newsletter.routes';
 
 export default () => {
   const app = Router();

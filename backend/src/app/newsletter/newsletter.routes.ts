@@ -1,8 +1,8 @@
 import { Request, Response, Router } from 'express';
-import db from '../db';
-import { newsletter } from '../db/schema';
-import { insertNewsletterSchema } from '../db/schema/newsletter';
-import { Route } from '../routes/route';
+import db from '../../db';
+import { newsletter } from '../../db/schema';
+import { insertNewsletterSchema } from '../../db/schema/newsletter';
+import { Route } from '../../routes/route';
 
 export class NewsletterRoutes extends Route {
   constructor(app: Router) {
