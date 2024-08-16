@@ -13,7 +13,12 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as LoginImport } from './routes/login'
+import { Route as AuthImport } from './routes/_auth'
 import { Route as IndexImport } from './routes/index'
+import { Route as AuthDashboardImport } from './routes/_auth/dashboard'
+import { Route as AuthInvoicesIndexImport } from './routes/_auth/invoices/index'
+import { Route as AuthInvoicesInvoiceIdImport } from './routes/_auth/invoices/$invoiceId'
 
 // Create Virtual Routes
 
@@ -26,9 +31,34 @@ const AboutLazyRoute = AboutLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/about.lazy').then((d) => d.Route))
 
+const LoginRoute = LoginImport.update({
+  path: '/login',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const AuthRoute = AuthImport.update({
+  id: '/_auth',
+  getParentRoute: () => rootRoute,
+} as any)
+
 const IndexRoute = IndexImport.update({
   path: '/',
   getParentRoute: () => rootRoute,
+} as any)
+
+const AuthDashboardRoute = AuthDashboardImport.update({
+  path: '/dashboard',
+  getParentRoute: () => AuthRoute,
+} as any)
+
+const AuthInvoicesIndexRoute = AuthInvoicesIndexImport.update({
+  path: '/invoices/',
+  getParentRoute: () => AuthRoute,
+} as any)
+
+const AuthInvoicesInvoiceIdRoute = AuthInvoicesInvoiceIdImport.update({
+  path: '/invoices/$invoiceId',
+  getParentRoute: () => AuthRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -42,6 +72,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexImport
       parentRoute: typeof rootRoute
     }
+    '/_auth': {
+      id: '/_auth'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthImport
+      parentRoute: typeof rootRoute
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginImport
+      parentRoute: typeof rootRoute
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -49,12 +93,42 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutLazyImport
       parentRoute: typeof rootRoute
     }
+    '/_auth/dashboard': {
+      id: '/_auth/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthDashboardImport
+      parentRoute: typeof AuthImport
+    }
+    '/_auth/invoices/$invoiceId': {
+      id: '/_auth/invoices/$invoiceId'
+      path: '/invoices/$invoiceId'
+      fullPath: '/invoices/$invoiceId'
+      preLoaderRoute: typeof AuthInvoicesInvoiceIdImport
+      parentRoute: typeof AuthImport
+    }
+    '/_auth/invoices/': {
+      id: '/_auth/invoices/'
+      path: '/invoices'
+      fullPath: '/invoices'
+      preLoaderRoute: typeof AuthInvoicesIndexImport
+      parentRoute: typeof AuthImport
+    }
   }
 }
 
 // Create and export the route tree
 
-export const routeTree = rootRoute.addChildren({ IndexRoute, AboutLazyRoute })
+export const routeTree = rootRoute.addChildren({
+  IndexRoute,
+  AuthRoute: AuthRoute.addChildren({
+    AuthDashboardRoute,
+    AuthInvoicesInvoiceIdRoute,
+    AuthInvoicesIndexRoute,
+  }),
+  LoginRoute,
+  AboutLazyRoute,
+})
 
 /* prettier-ignore-end */
 
@@ -65,14 +139,39 @@ export const routeTree = rootRoute.addChildren({ IndexRoute, AboutLazyRoute })
       "filePath": "__root.tsx",
       "children": [
         "/",
+        "/_auth",
+        "/login",
         "/about"
       ]
     },
     "/": {
       "filePath": "index.tsx"
     },
+    "/_auth": {
+      "filePath": "_auth.tsx",
+      "children": [
+        "/_auth/dashboard",
+        "/_auth/invoices/$invoiceId",
+        "/_auth/invoices/"
+      ]
+    },
+    "/login": {
+      "filePath": "login.tsx"
+    },
     "/about": {
       "filePath": "about.lazy.tsx"
+    },
+    "/_auth/dashboard": {
+      "filePath": "_auth/dashboard.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/invoices/$invoiceId": {
+      "filePath": "_auth/invoices/$invoiceId.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/invoices/": {
+      "filePath": "_auth/invoices/index.tsx",
+      "parent": "/_auth"
     }
   }
 }

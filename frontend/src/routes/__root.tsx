@@ -9,10 +9,14 @@ import { TanStackRouterDevtools } from '@tanstack/router-devtools';
 import React from 'react';
 import { DefaultCatchBoundary } from '../components/DefaultCatchBoundary';
 import { NotFound } from '../components/NotFound';
+import { AuthContext } from '../context/auth';
 
-export const Route = createRootRouteWithContext<{
+interface RootContext {
   queryClient: QueryClient;
-}>()({
+  auth: AuthContext;
+}
+
+export const Route = createRootRouteWithContext<RootContext>()({
   component: RootComponent,
   errorComponent: (props) => {
     return (
@@ -42,6 +46,15 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <Link to="/about" className="[&.active]:font-bold">
           About
         </Link>{' '}
+        <Link to="/login" className="[&.active]:font-bold">
+          Login
+        </Link>{' '}
+        <Link to="/dashboard" className="[&.active]:font-bold">
+          Dashboard
+        </Link>{' '}
+        <Link to="/invoices" className="[&.active]:font-bold">
+          Invoices
+        </Link>{' '}
         <Link
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
           // @ts-expect-error
@@ -53,8 +66,12 @@ function RootDocument({ children }: { children: React.ReactNode }) {
       </div>
       <hr />
       {children}
-      <TanStackRouterDevtools position="bottom-right" />
-      <ReactQueryDevtools buttonPosition="bottom-left" />
+      {process.env.NODE_ENV === 'development' && (
+        <>
+          <TanStackRouterDevtools position="bottom-right" />
+          <ReactQueryDevtools buttonPosition="bottom-left" />
+        </>
+      )}
     </>
   );
 }
