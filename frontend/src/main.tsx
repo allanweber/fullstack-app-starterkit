@@ -3,13 +3,13 @@ import {
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query';
-import { RouterProvider } from '@tanstack/react-router';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
+import { RouterProvider } from 'react-router-dom';
 import { AuthProvider } from './context/auth';
-import { useAuth } from './hooks/useAuth';
 import './index.css';
-import { createRouter } from './router';
+import { router } from './pages/Routes';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,19 +28,13 @@ const queryClient = new QueryClient({
   }),
 });
 
-const router = createRouter(queryClient);
-
-function InnerApp() {
-  const auth = useAuth();
-  return <RouterProvider router={router} context={{ auth }} />;
-}
-
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <InnerApp />
+        <RouterProvider router={router} />
       </AuthProvider>
+      <ReactQueryDevtools buttonPosition="bottom-left" />
     </QueryClientProvider>
   );
 }

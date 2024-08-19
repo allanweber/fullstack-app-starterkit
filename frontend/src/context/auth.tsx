@@ -1,13 +1,12 @@
 import { createContext, useCallback, useEffect, useState } from 'react';
-import { useSignIn } from '../services/authentication';
-import { Login } from '../types/Auth';
+import { AuthResponse } from '../types/Auth';
 
 const key = 'tanstack.auth.user';
 
 export interface AuthContext {
   isAuthenticated: boolean;
-  login: (login: Login) => Promise<void>;
-  logout: () => Promise<void>;
+  login: (login: AuthResponse) => void;
+  logout: () => void;
   user: string | null;
 }
 
@@ -27,30 +26,19 @@ function setStoredUser(user: string | null) {
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<string | null>(getStoredUser());
-  const isAuthenticated = !!user;
-  const loginMutation = useSignIn();
+  const [isAuthenticated, setIsAuthenticated] = useState(!!user);
 
-  const logout = useCallback(async () => {
+  const logout = useCallback(() => {
     setStoredUser(null);
     setUser(null);
+    setIsAuthenticated(false);
   }, []);
 
-  const login = useCallback(
-    async (login: Login) => {
-      loginMutation.mutate(login, {
-        onSuccess: (data) => {
-          setStoredUser(data.user);
-          setUser(data.user);
-        },
-        onError: (error) => {
-          console.error('Error logging in: ', error);
-          logout();
-        },
-      });
-    },
-
-    [loginMutation, logout]
-  );
+  const login = useCallback((data: AuthResponse) => {
+    setStoredUser(data.user);
+    setUser(data.user);
+    setIsAuthenticated(true);
+  }, []);
 
   useEffect(() => {
     setUser(getStoredUser());

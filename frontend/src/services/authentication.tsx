@@ -1,5 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import { AuthResponse, Login, Register } from '../types/Auth';
+import { responseOrError } from './response';
 
 export const useSignIn = () => {
   return useMutation({
@@ -10,7 +11,7 @@ export const useSignIn = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(login),
-      }).then((res) => res.json());
+      }).then(responseOrError);
     },
   });
 };
@@ -24,7 +25,7 @@ export const useSignUp = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(register),
-      }).then((res) => res.json());
+      }).then(responseOrError);
     },
   });
 };
@@ -34,7 +35,7 @@ export const useSignOut = () => {
     mutationFn: async () => {
       return fetch('/api/v1/auth/logout', {
         method: 'POST',
-      }).then((res) => res.json());
+      }).then(responseOrError);
     },
   });
 };

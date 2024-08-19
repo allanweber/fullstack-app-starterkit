@@ -1,4 +1,4 @@
-import { Link, Outlet, createFileRoute } from '@tanstack/react-router';
+import { Link, Outlet } from 'react-router-dom';
 
 type Invoice = {
   id: number;
@@ -6,19 +6,12 @@ type Invoice = {
   body: string;
 };
 
-export const Route = createFileRoute('/_auth/invoices/')({
-  loader: async () => ({
-    invoices: [
-      { id: 1, title: 'Invoice 1', body: 'This is the first invoice.' },
-      { id: 2, title: 'Invoice 2', body: 'This is the second invoice.' },
-      { id: 3, title: 'Invoice 3', body: 'This is the third invoice.' },
-    ] as Invoice[],
-  }),
-  component: InvoicesRoute,
-});
-
-function InvoicesRoute() {
-  const { invoices } = Route.useLoaderData();
+export function Invoices() {
+  const invoices = [
+    { id: 1, title: 'Invoice 1', body: 'This is the first invoice.' },
+    { id: 2, title: 'Invoice 2', body: 'This is the second invoice.' },
+    { id: 3, title: 'Invoice 3', body: 'This is the third invoice.' },
+  ] as Invoice[];
 
   return (
     <div className="grid grid-cols-3 md:grid-cols-5 min-h-[500px]">
@@ -28,10 +21,8 @@ function InvoicesRoute() {
           {invoices.map((invoice) => (
             <li key={invoice.id}>
               <Link
-                to="/invoices/$invoiceId"
-                params={{ invoiceId: invoice.id.toString() }}
+                to={`${invoice.id}`}
                 className="text-blue-600 hover:opacity-75"
-                activeProps={{ className: 'font-bold underline' }}
               >
                 <span className="tabular-nums">
                   #{invoice.id.toString().padStart(2, '0')}

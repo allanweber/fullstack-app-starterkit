@@ -1,14 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router';
-
-export const Route = createFileRoute('/_auth/dashboard')({
-  // loader: async ({ context }) => {
-  //   const messages = context.queryClient.ensureQueryData(queryNewsletters());
-  //   return { messages };
-  // },
-  component: Dashboard,
-});
-
-function Dashboard() {
+export function Dashboard() {
   // const { messages } = Route.useLoaderData();
   return (
     <div>

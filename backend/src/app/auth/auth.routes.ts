@@ -46,7 +46,7 @@ export class AuthRoutes extends Route {
     }
 
     if (userAccount.accountType === 'email') {
-      const validPassword = verify(
+      const validPassword = await verify(
         userAccount.passwordHash!,
         login.data.password,
         {

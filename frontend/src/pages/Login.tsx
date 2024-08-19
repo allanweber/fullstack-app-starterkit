@@ -1,76 +1,58 @@
-import {
-  createFileRoute,
-  redirect,
-  useRouter,
-  useRouterState,
-} from '@tanstack/react-router';
 import { useState } from 'react';
-import { z } from 'zod';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
+import { useSignIn } from '../services/authentication';
 
 const fallback = '/dashboard' as const;
 
-export const Route = createFileRoute('/login')({
-  validateSearch: z.object({
-    redirect: z.string().optional().catch(''),
-  }),
-  beforeLoad: ({ context, search }) => {
-    if (context.auth.isAuthenticated) {
-      throw redirect({ to: search.redirect || fallback });
-    }
-  },
-  component: LoginComponent,
-});
-
-function LoginComponent() {
+export function Login() {
   const auth = useAuth();
-  const router = useRouter();
-  const isLoading = useRouterState({ select: (s) => s.isLoading });
-  const navigate = Route.useNavigate();
+
+  const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [search] = useSearchParams();
+  const redirect = search.get('redirect') || fallback;
+  const loginMutation = useSignIn();
 
-  const search = Route.useSearch();
-
-  const onFormSubmit = async (evt: React.FormEvent<HTMLFormElement>) => {
+  const onFormSubmit = (evt: React.FormEvent<HTMLFormElement>) => {
     setIsSubmitting(true);
-    try {
-      evt.preventDefault();
-      const data = new FormData(evt.currentTarget);
-      const email = data.get('email');
-      const password = data.get('password');
 
-      if (!email || !password) return;
+    evt.preventDefault();
+    const data = new FormData(evt.currentTarget);
+    const email = data.get('email');
+    const password = data.get('password');
 
-      await auth.login({
+    if (!email || !password) return;
+
+    loginMutation.mutate(
+      {
         email: email as string,
         password: password as string,
-      });
-
-      await router.invalidate();
-
-      console.log('Redirecting to: ', search.redirect || fallback);
-      console.log('auth.isAuthenticated: ', auth.isAuthenticated);
-
-      await navigate({ to: search.redirect || fallback });
-    } catch (error) {
-      console.error('Error logging in: ', error);
-    } finally {
-      setIsSubmitting(false);
-    }
+      },
+      {
+        onSuccess: (data) => {
+          auth.login(data);
+          navigate(redirect);
+        },
+        onError: (error) => {
+          auth.logout();
+          alert('Error logging in: ' + error.message);
+        },
+      }
+    );
+    setIsSubmitting(false);
   };
-
-  const isLoggingIn = isLoading || isSubmitting;
 
   return (
     <div className="p-2 grid gap-2 place-items-center">
       <h3 className="text-xl">Login page</h3>
-      {search.redirect ? (
+      {redirect ? (
         <p className="text-red-500">You need to login to access this page.</p>
       ) : (
         <p>Login to see all the cool content in here.</p>
       )}
       <form className="mt-4 max-w-lg" onSubmit={onFormSubmit}>
-        <fieldset disabled={isLoggingIn} className="w-full grid gap-2">
+        <fieldset disabled={isSubmitting} className="w-full grid gap-2">
           <div className="grid gap-2 items-center min-w-[300px]">
             <label htmlFor="username-input" className="text-sm font-medium">
               Email
@@ -101,7 +83,7 @@ function LoginComponent() {
             type="submit"
             className="bg-blue-500 text-white py-2 px-4 rounded-md w-full disabled:bg-gray-300 disabled:text-gray-500"
           >
-            {isLoggingIn ? 'Loading...' : 'Login'}
+            {isSubmitting ? 'Loading...' : 'Login'}
           </button>
         </fieldset>
       </form>
