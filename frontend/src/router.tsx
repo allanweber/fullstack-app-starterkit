@@ -6,9 +6,7 @@ import { DefaultCatchBoundary } from './components/DefaultCatchBoundary';
 import { NotFound } from './components/NotFound';
 import { routeTree } from './routeTree.gen';
 
-export function createRouter() {
-  const queryClient = new QueryClient();
-
+export function createRouter(queryClient: QueryClient) {
   return routerWithQueryClient(
     createTanStackRouter({
       routeTree,

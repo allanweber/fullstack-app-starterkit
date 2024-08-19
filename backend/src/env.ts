@@ -5,6 +5,7 @@ import { ZodError, z } from 'zod';
 const EnvSchema = z.object({
   NODE_ENV: z.string().default('development'),
   PORT: z.string().default('3001'),
+  HOST: z.string().default('http://localhost:5173'),
   DATABASE_URL: z.string(),
   DATABASE_AUTH_TOKEN: z.string(),
   LOG_LEVEL: z.string().default('info'),

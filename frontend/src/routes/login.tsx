@@ -6,7 +6,6 @@ import {
 } from '@tanstack/react-router';
 import { useState } from 'react';
 import { z } from 'zod';
-import { sleep } from '../context/auth';
 import { useAuth } from '../hooks/useAuth';
 
 const fallback = '/dashboard' as const;
@@ -37,15 +36,20 @@ function LoginComponent() {
     try {
       evt.preventDefault();
       const data = new FormData(evt.currentTarget);
-      const fieldValue = data.get('username');
+      const email = data.get('email');
+      const password = data.get('password');
 
-      if (!fieldValue) return;
-      const username = fieldValue.toString();
-      await auth.login(username);
+      if (!email || !password) return;
+
+      await auth.login({
+        email: email as string,
+        password: password as string,
+      });
 
       await router.invalidate();
 
-      await sleep(1);
+      console.log('Redirecting to: ', search.redirect || fallback);
+      console.log('auth.isAuthenticated: ', auth.isAuthenticated);
 
       await navigate({ to: search.redirect || fallback });
     } catch (error) {
@@ -69,13 +73,26 @@ function LoginComponent() {
         <fieldset disabled={isLoggingIn} className="w-full grid gap-2">
           <div className="grid gap-2 items-center min-w-[300px]">
             <label htmlFor="username-input" className="text-sm font-medium">
-              Username
+              Email
             </label>
             <input
               id="username-input"
-              name="username"
-              placeholder="Enter your name"
-              type="text"
+              name="email"
+              placeholder="Enter your email"
+              type="email"
+              className="border rounded-md p-2 w-full"
+              required
+            />
+          </div>
+          <div>
+            <label htmlFor="password-input" className="text-sm font-medium">
+              Password
+            </label>
+            <input
+              id="password-input"
+              name="password"
+              placeholder="Enter your password"
+              type="password"
               className="border rounded-md p-2 w-full"
               required
             />

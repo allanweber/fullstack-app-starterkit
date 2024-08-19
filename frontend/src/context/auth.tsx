@@ -1,15 +1,12 @@
 import { createContext, useCallback, useEffect, useState } from 'react';
+import { useSignIn } from '../services/authentication';
+import { Login } from '../types/Auth';
 
 const key = 'tanstack.auth.user';
 
-//TODO: remove it
-export async function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
 export interface AuthContext {
   isAuthenticated: boolean;
-  login: (username: string) => Promise<void>;
+  login: (login: Login) => Promise<void>;
   logout: () => Promise<void>;
   user: string | null;
 }
@@ -31,20 +28,29 @@ function setStoredUser(user: string | null) {
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<string | null>(getStoredUser());
   const isAuthenticated = !!user;
+  const loginMutation = useSignIn();
 
   const logout = useCallback(async () => {
-    await sleep(250);
-
     setStoredUser(null);
     setUser(null);
   }, []);
 
-  const login = useCallback(async (username: string) => {
-    await sleep(500);
+  const login = useCallback(
+    async (login: Login) => {
+      loginMutation.mutate(login, {
+        onSuccess: (data) => {
+          setStoredUser(data.user);
+          setUser(data.user);
+        },
+        onError: (error) => {
+          console.error('Error logging in: ', error);
+          logout();
+        },
+      });
+    },
 
-    setStoredUser(username);
-    setUser(username);
-  }, []);
+    [loginMutation, logout]
+  );
 
   useEffect(() => {
     setUser(getStoredUser());

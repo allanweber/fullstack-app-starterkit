@@ -3,6 +3,7 @@ import express from 'express';
 import morgan from 'morgan';
 import path from 'path';
 import routes from './routes';
+import middleware from './routes/middleware';
 
 export default (app: express.Application) => {
   app.get('/api/health', (req, res) => {
@@ -12,9 +13,11 @@ export default (app: express.Application) => {
     res.status(200).end();
   });
 
+  app.use(express.urlencoded());
   app.use(cors());
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json());
+  middleware(app);
 
   app.use(
     morgan(

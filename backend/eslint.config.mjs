@@ -34,7 +34,9 @@ export default [
       sourceType: 'module',
     },
 
-    rules: {},
+    rules: {
+      '@typescript-eslint/no-namespace': 'off',
+    },
   },
   {
     files: ['**/.eslintrc.{js,cjs}'],

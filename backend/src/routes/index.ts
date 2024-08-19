@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { AuthRoutes } from '../app/auth/auth.routes';
 import { NewsletterRoutes } from '../app/newsletter/newsletter.routes';
 
 export default () => {
@@ -9,6 +10,7 @@ export default () => {
   });
 
   new NewsletterRoutes(app);
+  new AuthRoutes(app);
 
   return app;
 };
