@@ -6,7 +6,7 @@ export const accountTypeEnum = ['email', 'google'] as const;
 
 export const userAccounts = sqliteTable('user_accounts', {
   id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
-  userId: text('user_id')
+  userId: integer('user_id')
     .notNull()
     .unique()
     .references(() => user.id, { onDelete: 'cascade' }),

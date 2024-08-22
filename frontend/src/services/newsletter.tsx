@@ -1,7 +1,18 @@
-import { queryOptions } from '@tanstack/react-query';
+import { useQuery } from "@tanstack/react-query";
+import { useAuth } from "../hooks/useAuth";
+import { responseOrError } from "./response";
 
-export const queryNewsletters = () =>
-  queryOptions({
-    queryKey: ['newsletters'],
-    queryFn: () => fetch('/api/v1/newsletter').then((res) => res.json()),
+export const useQueryNewsletters = () => {
+  const { getToken } = useAuth();
+  const token = getToken();
+  return useQuery({
+    queryKey: ["newsletter"],
+    queryFn: async () => {
+      return fetch("/api/v1/newsletter", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }).then(responseOrError);
+    },
   });
+};

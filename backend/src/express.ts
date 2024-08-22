@@ -3,7 +3,7 @@ import express from 'express';
 import morgan from 'morgan';
 import path from 'path';
 import routes from './routes';
-import middleware from './routes/middleware';
+import { handleErrors } from './routes/middleware';
 
 export default (app: express.Application) => {
   app.get('/api/health', (req, res) => {
@@ -17,7 +17,6 @@ export default (app: express.Application) => {
   app.use(cors());
   app.use(express.urlencoded({ extended: true }));
   app.use(express.json());
-  middleware(app);
 
   app.use(
     morgan(
@@ -45,4 +44,7 @@ export default (app: express.Application) => {
   app.get('**', (req, res) => {
     res.status(404).json({ message: 'Not found' });
   });
+
+  //Error handler must be the last middleware
+  app.use(handleErrors);
 };

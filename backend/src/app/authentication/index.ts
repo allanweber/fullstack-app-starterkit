@@ -1,11 +1,10 @@
 import { hash, verify } from '@node-rs/argon2';
 import { eq } from 'drizzle-orm';
-import { Request, Response, Router } from 'express';
-import { generateIdFromEntropySize } from 'lucia';
+import { NextFunction, Request, Response } from 'express';
+import jwt from 'jsonwebtoken';
 import db from '../../db';
-import { organization, user, userAccounts } from '../../db/schema';
-import { lucia } from '../../lib/auth';
-import { Route } from '../../routes/route';
+import { organization, user, userAccounts, userProfile } from '../../db/schema';
+import env from '../../env';
 import { loginSchema, signupSchema } from './auth.schemas';
 
 const passwordConfig = {
@@ -15,15 +14,30 @@ const passwordConfig = {
   parallelism: 1,
 };
 
-export class AuthRoutes extends Route {
-  constructor(app: Router) {
-    super(app, 'auth');
-    this.route.post('/signin', this.signin);
-    this.route.post('/signup', this.signup);
-    this.route.post('/logout', this.logout);
-  }
+export type Payload = {
+  email: string;
+  role: string;
+};
 
-  private signin = async (req: Request, res: Response) => {
+declare global {
+  namespace Express {
+    interface Request {
+      user: Payload | null;
+    }
+  }
+}
+
+const issueToken = (payload: Payload) => {
+  const tokenTTL = process.env.TOKEN_TTL ? process.env.TOKEN_TTL : '2h';
+  return jwt.sign(payload, env.JWT_SECRET, { expiresIn: tokenTTL });
+};
+
+export const signin = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
     const login = loginSchema.safeParse(req.body);
     if (!login.success) {
       return res.status(400).json(login.error.issues);
@@ -61,15 +75,29 @@ export class AuthRoutes extends Route {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    const session = await lucia.createSession(registeredUser.id, {});
-    const sessionCookie = lucia.createSessionCookie(session.id);
-    return res
-      .appendHeader('Set-Cookie', sessionCookie.serialize())
-      .appendHeader('Location', '/')
-      .json({ user: registeredUser.email, expires: session.expiresAt });
-  };
+    const profile = await db.query.userProfile.findFirst({
+      where: eq(userProfile.userId, registeredUser.id),
+    });
 
-  private signup = async (req: Request, res: Response) => {
+    const token = issueToken({ email: registeredUser.email, role: 'user' });
+
+    return res.status(200).json({
+      user: { name: profile?.displayName, image: profile?.image },
+      token: token,
+    });
+  } catch (error: any) {
+    error.status = 500;
+    error.message = error.message || 'Internal Server Error';
+    next(error);
+  }
+};
+
+export const signup = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
     const register = signupSchema.safeParse(req.body);
     if (!register.success) {
       return res.status(400).json(register.error.issues);
@@ -84,7 +112,7 @@ export class AuthRoutes extends Route {
     }
 
     const { email, password } = register.data;
-    const saltPassword = generateIdFromEntropySize(16);
+    const saltPassword = password;
 
     const passwordHash = await hash(password, {
       salt: Buffer.from(saltPassword, 'hex'),
@@ -99,11 +127,9 @@ export class AuthRoutes extends Route {
         })
         .returning();
 
-      const userId = generateIdFromEntropySize(16);
       const [newUser] = await tx
         .insert(user)
         .values({
-          id: userId,
           email,
           organizationId: org.id,
           email_verified: false,
@@ -113,30 +139,40 @@ export class AuthRoutes extends Route {
       await tx
         .insert(userAccounts)
         .values({
-          userId,
+          userId: newUser.id,
           accountType: 'email',
           passwordHash,
           salt: saltPassword,
         })
         .returning();
 
-      return newUser;
+      await tx
+        .insert(userProfile)
+        .values({
+          userId: newUser.id,
+          displayName: email,
+          theme: 'light',
+          locale: 'en',
+        })
+        .returning();
+
+      return {
+        id: newUser.id,
+        email: newUser.email,
+        organizationId: org.id,
+        displayName: email,
+      };
     });
 
-    const session = await lucia.createSession(registeredUser.id, {});
-    const sessionCookie = lucia.createSessionCookie(session.id);
-    return res
-      .appendHeader('Set-Cookie', sessionCookie.serialize())
-      .appendHeader('Location', '/')
-      .json({ user: registeredUser.email, expires: session.expiresAt });
-  };
+    const token = issueToken({ email: registeredUser.email, role: 'user' });
 
-  private logout = async (req: Request, res: Response) => {
-    if (res.locals.session) {
-      await lucia.invalidateSession(res.locals.session.id);
-    }
-    return res
-      .setHeader('Set-Cookie', lucia.createBlankSessionCookie().serialize())
-      .json({ message: 'Logged out' });
-  };
-}
+    return res.status(200).json({
+      success: true,
+      data: { user: { name: registeredUser.displayName }, token: token },
+    });
+  } catch (error: any) {
+    error.status = 500;
+    error.message = error.message || 'Internal Server Error';
+    next(error);
+  }
+};

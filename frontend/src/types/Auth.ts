@@ -9,6 +9,11 @@ export type Register = {
 };
 
 export type AuthResponse = {
-  user: string;
-  expires: Date;
+  user: UserResponse;
+  token: string;
+};
+
+export type UserResponse = {
+  name: string;
+  image: string;
 };

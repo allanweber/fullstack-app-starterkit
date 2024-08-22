@@ -8,6 +8,8 @@ const EnvSchema = z.object({
   HOST: z.string().default('http://localhost:5173'),
   DATABASE_URL: z.string(),
   DATABASE_AUTH_TOKEN: z.string(),
+  TOKEN_TTL: z.string().default('1h'),
+  JWT_SECRET: z.string(),
   LOG_LEVEL: z.string().default('info'),
 });
 

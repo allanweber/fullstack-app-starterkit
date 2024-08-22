@@ -17,13 +17,13 @@
   "license": "ISC",
   "dependencies": {
     "@libsql/client": "^0.9.0",
-    "@lucia-auth/adapter-drizzle": "^1.1.0",
     "@node-rs/argon2": "^1.8.3",
+    "@types/jsonwebtoken": "^9.0.6",
     "cors": "^2.8.5",
     "drizzle-orm": "^0.33.0",
     "drizzle-zod": "^0.5.1",
     "express": "^4.19.2",
-    "lucia": "^3.2.0",
+    "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
     "winston": "^3.14.2",
     "zod": "^3.23.8"

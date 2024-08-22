@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "6",
-      "when": 1723632142507,
-      "tag": "0000_futuristic_luminals",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "6",
-      "when": 1723638718063,
-      "tag": "0001_tan_boomerang",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "6",
-      "when": 1723819811115,
-      "tag": "0002_soft_garia",
+      "when": 1724177771288,
+      "tag": "0000_flippant_grandmaster",
       "breakpoints": true
     }
   ]

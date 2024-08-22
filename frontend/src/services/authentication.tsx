@@ -29,13 +29,3 @@ export const useSignUp = () => {
     },
   });
 };
-
-export const useSignOut = () => {
-  return useMutation({
-    mutationFn: async () => {
-      return fetch('/api/v1/auth/logout', {
-        method: 'POST',
-      }).then(responseOrError);
-    },
-  });
-};

@@ -1,16 +1,20 @@
+import { useQueryNewsletters } from "../../services/newsletter";
+import { Newsletter } from "../../types/Newsletter";
+
 export function Dashboard() {
-  // const { messages } = Route.useLoaderData();
+  const { data, isSuccess } = useQueryNewsletters();
+
   return (
     <div>
       <h3>Dashboard</h3>
       <p>Protected route</p>
-      {/* <Suspense fallback={<div>Loading...</div>}>
-        <Await promise={messages}>
-          {(data) => {
-            return <div>{data}</div>;
-          }}
-        </Await>
-      </Suspense> */}
+      {isSuccess && (
+        <ul>
+          {data.map((newsletter: Newsletter) => (
+            <li key={newsletter.id}>{newsletter.email}</li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }

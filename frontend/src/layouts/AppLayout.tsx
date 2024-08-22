@@ -6,12 +6,10 @@ import {
   useNavigate,
 } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { useSignOut } from '../services/authentication';
 
 export const AppLayout = () => {
   const auth = useAuth();
   const navigate = useNavigate();
-  const logoutMutation = useSignOut();
   const location = useLocation();
 
   if (!auth.isAuthenticated) {
@@ -26,22 +24,15 @@ export const AppLayout = () => {
 
   const handleLogout = () => {
     if (window.confirm('Are you sure you want to logout?')) {
-      logoutMutation.mutate(undefined, {
-        onSuccess: () => {
-          auth.logout();
-          navigate('/');
-        },
-        onError: (error) => {
-          console.error('Error logging out: ', error);
-        },
-      });
+      auth.logout();
+      navigate('/');
     }
   };
 
   return (
     <div className="root-layout" style={{ margin: '10px 10px 10px 10px' }}>
       <header>
-        <p>{auth.user}</p>
+        <p>{auth.user?.name}</p>
         <p>
           <NavLink
             className="underline underline-offset-4 hover:text-primary"

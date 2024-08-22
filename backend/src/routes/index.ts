@@ -1,6 +1,7 @@
 import { Router } from 'express';
-import { AuthRoutes } from '../app/auth/auth.routes';
-import { NewsletterRoutes } from '../app/newsletter/newsletter.routes';
+import { signin, signup } from '../app/authentication';
+import { getNewsletter, postNewsletter } from '../app/newsletter';
+import { protectRoute } from './protected';
 
 export default () => {
   const app = Router();
@@ -9,8 +10,11 @@ export default () => {
     res.send('Hello from the backend!');
   });
 
-  new NewsletterRoutes(app);
-  new AuthRoutes(app);
+  app.post('/v1/auth/signin', signin);
+  app.post('/v1/auth/signup', signup);
+
+  app.get('/v1/newsletter', [protectRoute], getNewsletter);
+  app.post('/v1/newsletter', [protectRoute], postNewsletter);
 
   return app;
 };

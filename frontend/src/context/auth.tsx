@@ -1,31 +1,36 @@
-import { createContext, useCallback, useEffect, useState } from 'react';
-import { AuthResponse } from '../types/Auth';
+import { createContext, useCallback, useEffect, useState } from "react";
+import { AuthResponse, UserResponse } from "../types/Auth";
 
-const key = 'tanstack.auth.user';
+const key = "auth.user";
 
 export interface AuthContext {
   isAuthenticated: boolean;
   login: (login: AuthResponse) => void;
   logout: () => void;
-  user: string | null;
+  getToken: () => string;
+  user: UserResponse | null;
 }
 
 export const AuthContext = createContext<AuthContext | null>(null);
 
 function getStoredUser() {
-  return localStorage.getItem(key);
+  const stored = localStorage.getItem(key);
+  if (stored) {
+    return JSON.parse(stored) as AuthResponse;
+  }
+  return null;
 }
 
-function setStoredUser(user: string | null) {
-  if (user) {
-    localStorage.setItem(key, user);
+function setStoredUser(data: AuthResponse | null) {
+  if (data) {
+    localStorage.setItem(key, JSON.stringify(data));
   } else {
     localStorage.removeItem(key);
   }
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<string | null>(getStoredUser());
+  const [user, setUser] = useState<UserResponse | null>(getStoredUser()?.user || null);
   const [isAuthenticated, setIsAuthenticated] = useState(!!user);
 
   const logout = useCallback(() => {
@@ -35,17 +40,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = useCallback((data: AuthResponse) => {
-    setStoredUser(data.user);
+    setStoredUser(data);
     setUser(data.user);
     setIsAuthenticated(true);
   }, []);
 
+  const getToken = useCallback(() => {
+    const stored = getStoredUser();
+    if (stored) {
+      return stored.token;
+    } else {
+      logout();
+      return "";
+    }
+  }, [logout]);
+
   useEffect(() => {
-    setUser(getStoredUser());
+    setUser(getStoredUser()?.user || null);
   }, []);
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, login, logout, getToken }}>
       {children}
     </AuthContext.Provider>
   );
