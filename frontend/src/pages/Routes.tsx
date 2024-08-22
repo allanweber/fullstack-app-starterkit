@@ -4,12 +4,13 @@ import { RootLayout } from "../layouts/RootLayout";
 import { About } from "./About";
 import { Dashboard } from "./app/dashboard";
 
+import { ProtectedRoute } from "../components/ProtectedRoute";
 import { InvoiceId } from "./app/InvoiceId";
 import { Invoices } from "./app/Invoices";
 import { Index } from "./Index";
-import { Login } from "./Login";
+import { LoginPage } from "./Login";
 import { NotFound } from "./NotFound";
-import { ProtectedRoute } from "./ProtectedRoute";
+import { RegisterPage } from "./Register";
 
 export const router = createBrowserRouter(
   createRoutesFromElements(
@@ -17,7 +18,8 @@ export const router = createBrowserRouter(
       <Route path="/" element={<RootLayout />}>
         <Route index element={<Index />} />
         <Route path="about" element={<About />} />
-        <Route path="login" element={<Login />} />
+        <Route path="login" element={<LoginPage />} />
+        <Route path="register" element={<RegisterPage />} />
         <Route path="*" element={<NotFound />} />
       </Route>
       <Route path="app" element={<ProtectedRoute Component={AppLayout} />}>

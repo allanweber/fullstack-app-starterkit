@@ -157,18 +157,31 @@ export const signup = async (
         .returning();
 
       return {
-        id: newUser.id,
-        email: newUser.email,
+        user: newUser,
         organizationId: org.id,
         displayName: email,
       };
     });
 
-    const token = issueToken({ email: registeredUser.email, role: 'user' });
+    if (registeredUser.user.email_verified) {
+      const profile = await db.query.userProfile.findFirst({
+        where: eq(userProfile.userId, registeredUser.user.id),
+      });
+
+      const token = issueToken({
+        email: registeredUser.user.email,
+        role: 'user',
+      });
+      return res.status(200).json({
+        enabled: true,
+        user: { name: profile?.displayName, image: profile?.image },
+        token: token,
+      });
+    }
 
     return res.status(200).json({
-      success: true,
-      data: { user: { name: registeredUser.displayName }, token: token },
+      enabled: false,
+      message: 'User created successfully. Please verify your email to login',
     });
   } catch (error: any) {
     error.status = 500;

@@ -1,15 +1,12 @@
-import {
-  QueryCache,
-  QueryClient,
-  QueryClientProvider,
-} from '@tanstack/react-query';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import { StrictMode } from 'react';
-import ReactDOM from 'react-dom/client';
-import { RouterProvider } from 'react-router-dom';
-import { AuthProvider } from './context/auth';
-import './index.css';
-import { router } from './pages/Routes';
+import { QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { StrictMode } from "react";
+import ReactDOM from "react-dom/client";
+import { RouterProvider } from "react-router-dom";
+import { AuthProvider } from "./components/auth-provider";
+import { ThemeProvider } from "./components/theme-provider";
+import "./index.css";
+import { router } from "./pages/Routes";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -21,8 +18,8 @@ const queryClient = new QueryClient({
   },
   queryCache: new QueryCache({
     onError: (error) => {
-      if (error.message === '401') {
-        window.location.href = '/login';
+      if (error.message === "401") {
+        window.location.href = "/login";
       }
     },
   }),
@@ -30,16 +27,18 @@ const queryClient = new QueryClient({
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <RouterProvider router={router} />
-      </AuthProvider>
-      <ReactQueryDevtools buttonPosition="bottom-left" />
-    </QueryClientProvider>
+    <ThemeProvider defaultTheme="system" storageKey="expenses-ui-theme">
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <RouterProvider router={router} />
+        </AuthProvider>
+        <ReactQueryDevtools buttonPosition="bottom-left" />
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }
 
-const rootElement = document.getElementById('root')!;
+const rootElement = document.getElementById("root")!;
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(

@@ -1,7 +1,7 @@
 import { createContext, useCallback, useEffect, useState } from "react";
 import { AuthResponse, UserResponse } from "../types/Auth";
 
-const key = "auth.user";
+const key = "expenses-user";
 
 export interface AuthContext {
   isAuthenticated: boolean;
