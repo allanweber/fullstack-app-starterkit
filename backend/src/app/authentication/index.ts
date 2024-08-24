@@ -160,7 +160,7 @@ export const signup = async (
     }
 
     const { email, password } = register.data;
-    const saltPassword = password;
+    const saltPassword = generateId();
 
     const passwordHash = await hash(password, {
       salt: Buffer.from(saltPassword, 'hex'),
