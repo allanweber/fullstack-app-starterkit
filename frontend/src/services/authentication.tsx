@@ -29,3 +29,31 @@ export const useSignUp = () => {
     },
   });
 };
+
+export const useVerifyRegistration = () => {
+  return useMutation({
+    mutationFn: async ({ code }: { code: string }): Promise<any> => {
+      return fetch("/api/v1/auth/verify-registration", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ code }),
+      }).then(responseOrError);
+    },
+  });
+};
+
+export const useNewRegistrationCode = () => {
+  return useMutation({
+    mutationFn: async ({ email }: { email: string }): Promise<any> => {
+      return fetch("/api/v1/auth/registration-new-code", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      }).then(responseOrError);
+    },
+  });
+};

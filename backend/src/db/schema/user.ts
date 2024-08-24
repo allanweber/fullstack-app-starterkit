@@ -1,22 +1,25 @@
-import { relations } from 'drizzle-orm';
+import { relations, sql } from 'drizzle-orm';
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
-import { organization } from './organization';
+import { tenancy } from './tenancy';
 
 export const user = sqliteTable('user', {
-  id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
+  id: text('id').notNull().primaryKey(),
   email: text('email').notNull().unique(),
   email_verified: integer('email_verified', { mode: 'boolean' })
     .notNull()
     .default(false),
-  organizationId: integer('organization_id')
+  tenancyId: text('tenancy_id')
     .notNull()
     .unique()
-    .references(() => organization.id, { onDelete: 'cascade' }),
+    .references(() => tenancy.id, { onDelete: 'cascade' }),
+  created_at: integer('created_at', { mode: 'timestamp' })
+    .notNull()
+    .default(sql`(CURRENT_TIMESTAMP)`),
 });
 
 export const userRelations = relations(user, ({ one }) => ({
-  user: one(organization, {
+  user: one(tenancy, {
     fields: [user.id],
-    references: [organization.id],
+    references: [tenancy.id],
   }),
 }));

@@ -3,9 +3,30 @@ import { eq } from 'drizzle-orm';
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import db from '../../db';
-import { organization, user, userAccounts, userProfile } from '../../db/schema';
+import {
+  emailVerification,
+  tenancyPlan,
+  userAccounts,
+  userProfile,
+} from '../../db/schema';
 import env from '../../env';
-import { loginSchema, signupSchema } from './auth.schemas';
+import { messages } from '../../utils/messages';
+import {
+  createDate,
+  generateId,
+  generateOTP,
+  isWithinExpirationDate,
+  TimeSpan,
+} from '../../utils/randoms';
+import { tenancy } from './../../db/schema/tenancy';
+import { user } from './../../db/schema/user';
+import { userRoles } from './../../db/schema/user-roles';
+import {
+  loginSchema,
+  registrationNewCodeSchema,
+  signupSchema,
+  verifyRegistrationSchema,
+} from './auth.schemas';
 
 const passwordConfig = {
   memoryCost: 19456,
@@ -16,7 +37,9 @@ const passwordConfig = {
 
 export type Payload = {
   email: string;
-  role: string;
+  roles: string[];
+  userId: string;
+  tenancyId: string;
 };
 
 declare global {
@@ -47,8 +70,15 @@ export const signin = async (
       where: eq(user.email, login.data.email),
     });
 
+    const error401 = {
+      status: 401,
+      code: messages.INVALID_CREDENTIALS_CODE,
+      message: messages.INVALID_CREDENTIALS,
+    };
+
     if (!registeredUser || !registeredUser.email_verified) {
-      return res.status(401).json({ message: 'Invalid email or password' });
+      next(error401);
+      return;
     }
 
     const userAccount = await db.query.userAccounts.findFirst({
@@ -69,17 +99,28 @@ export const signin = async (
         }
       );
       if (!validPassword) {
-        return res.status(401).json({ message: 'Invalid email or password' });
+        next(error401);
+        return;
       }
     } else {
-      return res.status(401).json({ message: 'Invalid email or password' });
+      next(error401);
+      return;
     }
 
     const profile = await db.query.userProfile.findFirst({
       where: eq(userProfile.userId, registeredUser.id),
     });
 
-    const token = issueToken({ email: registeredUser.email, role: 'user' });
+    const userRole = await db.query.userRoles.findMany({
+      where: eq(userRoles.userId, registeredUser.id),
+    });
+
+    const token = issueToken({
+      email: registeredUser.email,
+      roles: userRole.map((role) => role.role),
+      userId: registeredUser.id,
+      tenancyId: registeredUser.tenancyId,
+    });
 
     return res.status(200).json({
       user: { name: profile?.displayName, image: profile?.image },
@@ -87,7 +128,8 @@ export const signin = async (
     });
   } catch (error: any) {
     error.status = 500;
-    error.message = error.message || 'Internal Server Error';
+    error.message = error.message || messages.INTERNAL_SERVER_ERROR;
+    error.code = error.code || messages.INTERNAL_SERVER_ERROR_CODE;
     next(error);
   }
 };
@@ -108,7 +150,13 @@ export const signup = async (
     });
 
     if (existingUser) {
-      return res.status(409).json({ message: 'User already exists' });
+      const error = {
+        status: 409,
+        code: messages.USER_ALREADY_EXISTS_CODE,
+        message: messages.USER_ALREADY_EXISTS,
+      };
+      next(error);
+      return;
     }
 
     const { email, password } = register.data;
@@ -119,47 +167,64 @@ export const signup = async (
       ...passwordConfig,
     });
 
+    const registrationCode = generateOTP();
+    const tenancyId = generateId();
+    const userId = generateId();
     const registeredUser = await db.transaction(async (tx) => {
-      const [org] = await tx
-        .insert(organization)
-        .values({
-          name: email,
-        })
-        .returning();
+      await tx.insert(tenancy).values({
+        id: tenancyId,
+        name: email,
+      });
+
+      await tx.insert(tenancyPlan).values({
+        tenancyId,
+        isFree: true,
+        startsAt: new Date(),
+        expiresAt: createDate(new TimeSpan(1, 'y')),
+      });
 
       const [newUser] = await tx
         .insert(user)
         .values({
+          id: userId,
           email,
-          organizationId: org.id,
+          tenancyId,
           email_verified: false,
         })
         .returning();
 
-      await tx
-        .insert(userAccounts)
-        .values({
-          userId: newUser.id,
-          accountType: 'email',
-          passwordHash,
-          salt: saltPassword,
-        })
-        .returning();
+      await tx.insert(userAccounts).values({
+        userId,
+        accountType: 'email',
+        passwordHash,
+        salt: saltPassword,
+      });
 
-      await tx
-        .insert(userProfile)
-        .values({
-          userId: newUser.id,
-          displayName: email,
-          theme: 'light',
-          locale: 'en',
-        })
-        .returning();
+      await tx.insert(userProfile).values({
+        userId,
+        displayName: email,
+        theme: 'light',
+        locale: 'en',
+      });
+
+      await tx.insert(emailVerification).values({
+        code: registrationCode,
+        userId,
+        verificationType: 'registration',
+        email: email,
+        expires_at: createDate(new TimeSpan(15, 'm')),
+      });
+
+      await tx.insert(userRoles).values({
+        userId,
+        role: 'super-user',
+      });
 
       return {
         user: newUser,
-        organizationId: org.id,
+        tenancyId,
         displayName: email,
+        role: 'super-user',
       };
     });
 
@@ -170,7 +235,9 @@ export const signup = async (
 
       const token = issueToken({
         email: registeredUser.user.email,
-        role: 'user',
+        userId: registeredUser.user.id,
+        roles: [registeredUser.role],
+        tenancyId: registeredUser.tenancyId,
       });
       return res.status(200).json({
         enabled: true,
@@ -181,11 +248,123 @@ export const signup = async (
 
     return res.status(200).json({
       enabled: false,
-      message: 'User created successfully. Please verify your email to login',
+      code: messages.SIGNUP_SUCCESS_CODE,
+      message: messages.SIGNUP_SUCCESS,
     });
   } catch (error: any) {
     error.status = 500;
-    error.message = error.message || 'Internal Server Error';
+    error.message = error.message || messages.INTERNAL_SERVER_ERROR;
+    error.code = error.code || messages.INTERNAL_SERVER_ERROR_CODE;
+    next(error);
+  }
+};
+
+export const verifyRegistration = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const register = verifyRegistrationSchema.safeParse(req.body);
+    if (!register.success) {
+      return res.status(400).json(register.error.issues);
+    }
+
+    const verification = await db.query.emailVerification.findFirst({
+      where: eq(emailVerification.code, register.data.code),
+    });
+
+    if (!verification) {
+      const error = {
+        status: 400,
+        code: messages.VERIFICATION_NOT_FOUND_CODE,
+        message: messages.VERIFICATION_NOT_FOUND,
+      };
+      next(error);
+      return;
+    }
+
+    if (!isWithinExpirationDate(verification.expires_at)) {
+      const error = {
+        status: 400,
+        code: messages.VERIFICATION_EXPIRED_CODE,
+        message: messages.VERIFICATION_EXPIRED,
+      };
+      next(error);
+      return;
+    }
+
+    await db.transaction(async (tx) => {
+      await tx
+        .update(user)
+        .set({
+          email_verified: true,
+        })
+        .where(eq(user.id, verification.userId));
+
+      await tx
+        .delete(emailVerification)
+        .where(eq(emailVerification.id, verification.id));
+    });
+
+    return res.status(200).json({
+      code: messages.VERIFICATION_SUCCESS_CODE,
+      message: messages.VERIFICATION_SUCCESS,
+    });
+  } catch (error: any) {
+    error.status = 500;
+    error.message = error.message || messages.INTERNAL_SERVER_ERROR;
+    error.code = error.code || messages.INTERNAL_SERVER_ERROR_CODE;
+    next(error);
+  }
+};
+
+export const registrationNewCode = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const newCode = registrationNewCodeSchema.safeParse(req.body);
+    if (!newCode.success) {
+      return res.status(400).json(newCode.error.issues);
+    }
+
+    const existingUser = await db.query.user.findFirst({
+      where: eq(user.email, newCode.data.email),
+    });
+
+    if (!existingUser) {
+      const error = {
+        status: 404,
+        code: messages.USER_NOT_FOUND_CODE,
+        message: messages.USER_NOT_FOUND,
+      };
+      next(error);
+      return;
+    }
+
+    await db
+      .delete(emailVerification)
+      .where(eq(emailVerification.userId, existingUser.id));
+
+    const registrationCode = generateOTP();
+    await db.insert(emailVerification).values({
+      code: registrationCode,
+      userId: existingUser.id,
+      verificationType: 'registration',
+      email: existingUser.email,
+      expires_at: createDate(new TimeSpan(15, 'm')),
+    });
+
+    return res.status(200).json({
+      code: messages.NEW_CODE_SENT_CODE,
+      message: messages.NEW_CODE_SENT,
+    });
+  } catch (error: any) {
+    error.status = 500;
+    error.message = error.message || messages.INTERNAL_SERVER_ERROR;
+    error.code = error.code || messages.INTERNAL_SERVER_ERROR_CODE;
     next(error);
   }
 };

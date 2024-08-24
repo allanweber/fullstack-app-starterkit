@@ -3,7 +3,7 @@ import { NavLink, Outlet } from "react-router-dom";
 
 export const RootLayout = () => {
   return (
-    <div className="root-layout" style={{ margin: "10px 10px 10px 10px" }}>
+    <div>
       <header>
         <nav>
           <p>

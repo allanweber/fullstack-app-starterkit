@@ -30,7 +30,9 @@ function App() {
     <ThemeProvider defaultTheme="system" storageKey="expenses-ui-theme">
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <RouterProvider router={router} />
+          <div className="bg-muted/40 min-h-screen w-full">
+            <RouterProvider router={router} />
+          </div>
         </AuthProvider>
         <ReactQueryDevtools buttonPosition="bottom-left" />
       </QueryClientProvider>

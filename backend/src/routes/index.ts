@@ -1,7 +1,10 @@
 import { Router } from 'express';
-import { signin, signup } from '../app/authentication';
-import { getNewsletter, postNewsletter } from '../app/newsletter';
-import { protectRoute } from './protected';
+import {
+  registrationNewCode,
+  signin,
+  signup,
+  verifyRegistration,
+} from '../app/authentication';
 
 export default () => {
   const app = Router();
@@ -12,9 +15,8 @@ export default () => {
 
   app.post('/v1/auth/signin', signin);
   app.post('/v1/auth/signup', signup);
-
-  app.get('/v1/newsletter', [protectRoute], getNewsletter);
-  app.post('/v1/newsletter', [protectRoute], postNewsletter);
+  app.post('/v1/auth/verify-registration', verifyRegistration);
+  app.post('/v1/auth/registration-new-code', registrationNewCode);
 
   return app;
 };

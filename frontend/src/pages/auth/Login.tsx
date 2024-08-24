@@ -1,28 +1,28 @@
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
-import { useSignUp } from "../services/authentication";
+import { useAuth } from "../../hooks/useAuth";
+import { useSignIn } from "../../services/authentication";
 
 import { MessageDisplay } from "@/components/MessageDisplay";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Register, registerSchema } from "@/types/Auth";
+import { Login, loginSchema } from "@/types/Auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
 const fallback = "/app" as const;
 
-export function RegisterPage() {
+export function LoginPage() {
   const auth = useAuth();
 
   const [search] = useSearchParams();
   const navigate = useNavigate();
   const redirect = search.get("redirect") || fallback;
-  const mutation = useSignUp();
+  const mutation = useSignIn();
 
-  const form = useForm<Register>({
-    resolver: zodResolver(registerSchema),
+  const form = useForm<Login>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -30,23 +30,19 @@ export function RegisterPage() {
     mode: "all",
   });
 
-  function onSubmit(data: Register) {
+  function onSubmit(data: Login) {
     mutation.mutate(data, {
       onSuccess: (data) => {
-        if (data.enabled) {
-          auth.login(data);
-          navigate(redirect, { replace: true });
-        } else {
-          navigate("/verify-email", { replace: true });
-        }
+        auth.login(data);
+        navigate(redirect);
       },
     });
   }
   return (
-    <Card className="mx-auto max-w-sm">
+    <Card className="max-w-sm">
       <CardHeader>
-        <CardTitle className="text-2xl">Sign Up</CardTitle>
-        <CardDescription>Enter your information to create an account</CardDescription>
+        <CardTitle className="text-2xl">Login</CardTitle>
+        <CardDescription>Enter your email below to login to your account</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -68,7 +64,12 @@ export function RegisterPage() {
               name="password"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Password</FormLabel>
+                  <div className="flex items-center">
+                    <FormLabel>Password</FormLabel>
+                    <Link to="/forget-password" className="ml-auto inline-block text-sm underline">
+                      Forgot your password?
+                    </Link>
+                  </div>
                   <Input placeholder="password" type="password" {...field} />
                   <FormMessage />
                 </FormItem>
@@ -80,20 +81,20 @@ export function RegisterPage() {
               className="w-full"
               disabled={mutation.isPending || !form.formState.isValid}
             >
-              Create and Account
+              Login
             </Button>
             <MessageDisplay message={mutation.error} variant="destructive" />
           </form>
         </Form>
         <div className="mt-4">
           <Button variant="outline" className="w-full">
-            Sign Up with Google
+            Login with Google
           </Button>
         </div>
         <div className="mt-4 text-center text-sm">
-          Already have an account?{" "}
-          <Link to="/login" className="underline">
-            Sign in
+          Don&apos;t have an account?{" "}
+          <Link to="/register" className="underline">
+            Sign up
           </Link>
         </div>
       </CardContent>

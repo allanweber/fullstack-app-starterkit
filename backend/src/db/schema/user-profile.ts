@@ -3,8 +3,7 @@ import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { user } from './user';
 
 export const userProfile = sqliteTable('user_profile', {
-  id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
-  userId: integer('user_id')
+  userId: text('user_id')
     .notNull()
     .unique()
     .references(() => user.id, { onDelete: 'cascade' }),

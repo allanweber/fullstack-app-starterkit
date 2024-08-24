@@ -33,8 +33,8 @@ export const protectRoute = async (
   return jwt.verify(parsedToken, env.JWT_SECRET, (err, decoded) => {
     if (err) {
       error.status = 401;
-      error.message = err.message || 'Internal Server Error';
-      error.code = err.name || 'INTERNAL_SERVER_ERROR';
+      error.message = error.message || messages.INTERNAL_SERVER_ERROR;
+      error.code = error.code || messages.INTERNAL_SERVER_ERROR_CODE;
       next(error);
     }
     req.user = decoded as Payload;
