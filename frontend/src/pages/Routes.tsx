@@ -8,6 +8,7 @@ import { AuthLayout } from "@/layouts/AuthLayout";
 import { ProtectedRoute } from "../components/ProtectedRoute";
 import { InvoiceId } from "./app/InvoiceId";
 import { Invoices } from "./app/Invoices";
+import { ForgotPassword } from "./auth/ForgotPassword";
 import { LoginPage } from "./auth/Login";
 import { RegisterPage } from "./auth/Register";
 import { VerifyRegistration } from "./auth/VerifyRegistration";
@@ -26,6 +27,7 @@ export const router = createBrowserRouter(
         <Route path="login" element={<LoginPage />} />
         <Route path="register" element={<RegisterPage />} />
         <Route path="verify-email" element={<VerifyRegistration />} />
+        <Route path="forgot-password" element={<ForgotPassword />} />
       </Route>
       <Route path="app" element={<ProtectedRoute Component={AppLayout} />}>
         <Route index element={<ProtectedRoute Component={Dashboard} />} />

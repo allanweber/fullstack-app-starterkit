@@ -3,12 +3,19 @@ import { AccountActivation } from './AccountActivation';
 
 import { Resend } from 'resend';
 import env from '../../env';
+import ResetPassword from './ResetPassword';
 
 const resend = new Resend(env.EMAIL_SERVER_PASSWORD);
 
 export async function sendActivationEmail(email: string, token: string) {
   const subject = 'Activate your account';
   const emailHtml = await render(AccountActivation({ token }));
+  await sendEmail(email, subject, emailHtml);
+}
+
+export async function sendChangePasswordEmail(email: string, token: string) {
+  const subject = 'Change your password';
+  const emailHtml = await render(ResetPassword({ token }));
   await sendEmail(email, subject, emailHtml);
 }
 

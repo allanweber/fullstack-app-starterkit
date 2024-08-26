@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 import { useNewRegistrationCode, useVerifyRegistration } from "../../services/authentication";
 
 import { MessageDisplay } from "@/components/MessageDisplay";
+import { Switch } from "@/components/Switch";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { Link } from "react-router-dom";
 import { z } from "zod";
 
 const verificationSchema = z.object({
@@ -148,57 +149,55 @@ export function VerifyRegistration() {
       <CardHeader>
         <CardTitle className="text-2xl">Verify Registration</CardTitle>
         <CardDescription>
-          {step === Steps.NEW_CODE
-            ? "Enter your email below to receive a new code"
-            : step === Steps.VERIFICATION
-            ? "Enter the code sent to your email"
-            : "Your account has been verified!"}
+          <Switch condition={step}>
+            <Switch.Case when={Steps.NEW_CODE}>
+              Enter your email below to receive a new code
+            </Switch.Case>
+            <Switch.Case when={Steps.VERIFICATION}>Enter the code sent to your email</Switch.Case>
+            <Switch.Case when={Steps.CODE_ACCEPTED}>Your account has been verified!</Switch.Case>
+          </Switch>
         </CardDescription>
       </CardHeader>
       <CardContent>
-        {step === Steps.NEW_CODE ? (
-          <>
-            <NewCodeForm onSuccess={() => setStep(Steps.VERIFICATION)} />
-            <div className="mt-4 text-center text-sm">
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full"
-                onClick={() => setStep(Steps.VERIFICATION)}
-              >
-                I have a code
+        <Switch condition={step}>
+          <Switch.Case when={Steps.NEW_CODE}>
+            <>
+              <NewCodeForm onSuccess={() => setStep(Steps.VERIFICATION)} />
+              <div className="mt-4 text-center text-sm">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => setStep(Steps.VERIFICATION)}
+                >
+                  I have a code
+                </Button>
+              </div>
+            </>
+          </Switch.Case>
+          <Switch.Case when={Steps.VERIFICATION}>
+            <>
+              <VerificationForm onSuccess={() => setStep(Steps.CODE_ACCEPTED)} />
+              <div className="mt-4 text-center text-sm">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => setStep(Steps.NEW_CODE)}
+                >
+                  Send me a new code
+                </Button>
+              </div>
+            </>
+          </Switch.Case>
+          <Switch.Case when={Steps.CODE_ACCEPTED}>
+            <>
+              <Button asChild type="button" className="w-full">
+                <Link to="/login">Sign in</Link>
               </Button>
-            </div>
-          </>
-        ) : step === Steps.VERIFICATION ? (
-          <>
-            <VerificationForm onSuccess={() => setStep(Steps.CODE_ACCEPTED)} />
-            <div className="mt-4 text-center text-sm">
-              <Button
-                type="button"
-                variant="outline"
-                className="w-full"
-                onClick={() => setStep(Steps.NEW_CODE)}
-              >
-                Send me a new code
-              </Button>
-            </div>
-          </>
-        ) : (
-          <>
-            <Button asChild type="button" className="w-full">
-              <Link to="/login">Sign in</Link>
-            </Button>
-          </>
-        )}
-        {step !== Steps.CODE_ACCEPTED && (
-          <div className="mt-4 text-center text-sm">
-            Already have an account?{" "}
-            <Link to="/login" className="underline">
-              Sign in
-            </Link>
-          </div>
-        )}
+            </>
+          </Switch.Case>
+        </Switch>
       </CardContent>
     </Card>
   );

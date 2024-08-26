@@ -18,10 +18,20 @@ export const verifyRegistrationSchema = z.object({
   code: z.string(),
 });
 
-export type VerifyRegistration = z.infer<typeof verifyRegistrationSchema>;
-
 export const registrationNewCodeSchema = z.object({
   email: z.string().email(),
 });
 
-export type RegistrationNewCode = z.infer<typeof registrationNewCodeSchema>;
+export const passwordResetRequestSchema = z.object({
+  email: z.string().email(),
+});
+
+export const passwordResetTokenSchema = z.object({
+  token: z.string(),
+});
+
+export const passwordResetSchema = z.object({
+  email: z.string().email(),
+  token: z.string(),
+  password: z.string().min(8).max(100),
+});
