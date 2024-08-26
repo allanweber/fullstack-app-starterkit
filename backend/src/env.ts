@@ -10,6 +10,10 @@ const EnvSchema = z.object({
   TOKEN_TTL: z.string().default('1h'),
   JWT_SECRET: z.string(),
   LOG_LEVEL: z.string().default('info'),
+  HOST_NAME: z.string(),
+  APP_NAME: z.string(),
+  EMAIL_SERVER_PASSWORD: z.string(),
+  EMAIL_FROM: z.string(),
 });
 
 export type EnvSchema = z.infer<typeof EnvSchema>;

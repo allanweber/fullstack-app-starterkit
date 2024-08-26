@@ -5,6 +5,11 @@
     "dev": "concurrently \"npm run dev --prefix frontend\" \"npm run dev --prefix backend\""
   },
   "devDependencies": {
+    "@types/react": "^18.3.4",
     "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "@react-email/components": "0.0.23",
+    "resend": "^4.0.0"
   }
 }

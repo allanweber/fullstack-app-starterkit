@@ -18,6 +18,7 @@ import {
   isWithinExpirationDate,
   TimeSpan,
 } from '../../utils/randoms';
+import { sendActivationEmail } from '../emails/email-service';
 import { tenancy } from './../../db/schema/tenancy';
 import { user } from './../../db/schema/user';
 import { userRoles } from './../../db/schema/user-roles';
@@ -219,6 +220,8 @@ export const signup = async (
         userId,
         role: 'super-user',
       });
+
+      await sendActivationEmail(email, registrationCode);
 
       return {
         user: newUser,
