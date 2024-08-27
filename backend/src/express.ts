@@ -27,6 +27,11 @@ export default (app: express.Application) => {
   //TODO: Search about errorHandler/Listeners
 
   /**
+   * Application routes under /app
+   */
+  app.use('/api', routes());
+
+  /**
    * Static files under /public including react frontend application
    */
   app.use(express.static(path.join(__dirname, '../public')));
@@ -35,14 +40,10 @@ export default (app: express.Application) => {
     res.sendFile(path.join(__dirname, '../public/index.html'));
   });
 
-  /**
-   * Application routes under /app
-   */
-  app.use('/api', routes());
-
-  //Not found
+  // All other routes are handled by the frontend
   app.get('**', (req, res) => {
-    res.status(404).json({ message: 'Not found' });
+    res.setHeader('Content-Type', 'text/html');
+    res.sendFile(path.join(__dirname, '../public/index.html'));
   });
 
   //Error handler must be the last middleware

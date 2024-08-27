@@ -1,11 +1,11 @@
 import {
   Body,
-  Button,
   Container,
   Head,
   Hr,
   Html,
   Img,
+  Link,
   Preview,
   Section,
   Tailwind,
@@ -47,11 +47,13 @@ export default function ResetPassword({ token }: { token: string }) {
                   password reset, please ignore this email or contact support.
                 </Text>
 
-                <Text className="text-[#2754C5] text-xl font-semibold">
-                  <Button href={url} target="_blank">
-                    Reset your password
-                  </Button>
-                </Text>
+                <Link
+                  href={url}
+                  target="_blank"
+                  className="text-[#2754C5] text-xl font-semibold"
+                >
+                  Reset your password
+                </Link>
 
                 <Text className="text-sm">{url}</Text>
               </Section>
