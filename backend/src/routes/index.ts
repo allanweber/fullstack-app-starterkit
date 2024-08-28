@@ -8,6 +8,7 @@ import {
   validatePasswordReset,
   verifyRegistration,
 } from '../app/authentication';
+import { contact } from '../app/landing';
 
 export default () => {
   const app = Router();
@@ -23,6 +24,8 @@ export default () => {
   app.post('/v1/auth/reset-password/request', requestPasswordReset);
   app.post('/v1/auth/reset-password/validate', validatePasswordReset);
   app.post('/v1/auth/reset-password', passwordReset);
+
+  app.post('/v1/landing/contact', contact);
 
   return app;
 };

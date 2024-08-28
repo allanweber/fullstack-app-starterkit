@@ -69,7 +69,12 @@ export function RegisterPage() {
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>Password</FormLabel>
-                  <Input placeholder="password" type="password" {...field} />
+                  <Input
+                    placeholder="password"
+                    type="password"
+                    autoComplete="current-password"
+                    {...field}
+                  />
                   <FormMessage />
                 </FormItem>
               )}
