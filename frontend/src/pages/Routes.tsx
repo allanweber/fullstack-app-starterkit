@@ -1,12 +1,11 @@
+import { AuthLayout } from "@/layouts/AuthLayout";
 import { createBrowserRouter, createRoutesFromElements, Route } from "react-router-dom";
+import { ProtectedRoute } from "../components/ProtectedRoute";
 import { AppLayout } from "../layouts/AppLayout";
 import { RootLayout } from "../layouts/RootLayout";
 import { About } from "./About";
-import { Dashboard } from "./app/Dashboard";
-
-import { AuthLayout } from "@/layouts/AuthLayout";
-import { ProtectedRoute } from "../components/ProtectedRoute";
 import Categories from "./app/categories";
+import { Dashboard } from "./app/Dashboard";
 import Schedules from "./app/schedules";
 import Settings from "./app/Settings";
 import Support from "./app/Support";
@@ -39,9 +38,6 @@ export const router = createBrowserRouter(
         <Route path="schedules" element={<Schedules />} />
         <Route path="settings" element={<Settings />} />
         <Route path="support" element={<Support />} />
-        {/* <Route path="invoices" element={<ProtectedRoute Component={Invoices} />}>
-          <Route path=":invoiceId" element={<ProtectedRoute Component={InvoiceId} />} />
-        </Route> */}
         <Route path="*" element={<NotFound to="/app" />} />
       </Route>
     </>
