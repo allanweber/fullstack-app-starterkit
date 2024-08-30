@@ -5,6 +5,7 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import { AuthProvider } from "./components/auth-provider";
 import { ThemeProvider } from "./components/theme-provider";
+import { TooltipProvider } from "./components/ui/tooltip";
 import "./index.css";
 import { router } from "./pages/Routes";
 
@@ -30,11 +31,13 @@ function App() {
     <ThemeProvider defaultTheme="system" storageKey="expenses-ui-theme">
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
-          <div className="bg-muted/40 min-h-screen w-full">
-            <RouterProvider router={router} />
-          </div>
+          <TooltipProvider>
+            <div className="bg-muted/40 min-h-screen w-full">
+              <RouterProvider router={router} />
+            </div>
+          </TooltipProvider>
         </AuthProvider>
-        <ReactQueryDevtools buttonPosition="bottom-left" />
+        <ReactQueryDevtools buttonPosition="bottom-right" />
       </QueryClientProvider>
     </ThemeProvider>
   );

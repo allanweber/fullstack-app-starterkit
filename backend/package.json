@@ -10,6 +10,7 @@
     "lint": "npx eslint .",
     "db:generate": "drizzle-kit generate --config=./src/drizzle.config.ts",
     "db:migrate": "cross-env tsx src/db/migrate.ts",
+    "db:migrate:prd": "dotenv -c production -- drizzle-kit migrate --config=./src/drizzle.config.ts",
     "db:seed": "cross-env tsx src/db/seed.ts"
   },
   "keywords": [],
@@ -42,6 +43,7 @@
     "@typescript-eslint/parser": "^8.1.0",
     "cross-env": "^7.0.3",
     "dotenv": "^16.4.5",
+    "dotenv-cli": "^7.4.2",
     "dotenv-expand": "^11.0.6",
     "drizzle-kit": "^0.24.0",
     "eslint": "^9.9.0",

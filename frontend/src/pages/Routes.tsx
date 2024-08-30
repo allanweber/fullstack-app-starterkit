@@ -2,12 +2,15 @@ import { createBrowserRouter, createRoutesFromElements, Route } from "react-rout
 import { AppLayout } from "../layouts/AppLayout";
 import { RootLayout } from "../layouts/RootLayout";
 import { About } from "./About";
-import { Dashboard } from "./app/dashboard";
+import { Dashboard } from "./app/Dashboard";
 
 import { AuthLayout } from "@/layouts/AuthLayout";
 import { ProtectedRoute } from "../components/ProtectedRoute";
-import { InvoiceId } from "./app/InvoiceId";
-import { Invoices } from "./app/Invoices";
+import Categories from "./app/categories";
+import Schedules from "./app/schedules";
+import Settings from "./app/Settings";
+import Support from "./app/Support";
+import Transactions from "./app/transactions";
 import { ForgotPassword } from "./auth/ForgotPassword";
 import { LoginPage } from "./auth/Login";
 import { RegisterPage } from "./auth/Register";
@@ -21,7 +24,7 @@ export const router = createBrowserRouter(
       <Route element={<RootLayout />}>
         <Route index element={<Index />} />
         <Route path="about" element={<About />} />
-        <Route path="*" element={<NotFound />} />
+        <Route path="*" element={<NotFound to="/" />} />
       </Route>
       <Route element={<AuthLayout />}>
         <Route path="login" element={<LoginPage />} />
@@ -30,10 +33,16 @@ export const router = createBrowserRouter(
         <Route path="forgot-password" element={<ForgotPassword />} />
       </Route>
       <Route path="app" element={<ProtectedRoute Component={AppLayout} />}>
-        <Route index element={<ProtectedRoute Component={Dashboard} />} />
-        <Route path="invoices" element={<ProtectedRoute Component={Invoices} />}>
+        <Route index element={<Dashboard />} />
+        <Route path="transactions" element={<Transactions />} />
+        <Route path="categories" element={<Categories />} />
+        <Route path="schedules" element={<Schedules />} />
+        <Route path="settings" element={<Settings />} />
+        <Route path="support" element={<Support />} />
+        {/* <Route path="invoices" element={<ProtectedRoute Component={Invoices} />}>
           <Route path=":invoiceId" element={<ProtectedRoute Component={InvoiceId} />} />
-        </Route>
+        </Route> */}
+        <Route path="*" element={<NotFound to="/app" />} />
       </Route>
     </>
   )

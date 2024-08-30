@@ -1,31 +1,17 @@
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ReactNode } from "react";
 import { Link } from "react-router-dom";
 
-export function NotFound({ children }: { children?: ReactNode }) {
+export function NotFound({ to }: { to: string }) {
   return (
-    <Card className="mx-auto max-w-md">
-      <CardHeader>
-        <CardTitle className="text-2xl">Ops</CardTitle>
-        <CardDescription>
-          {children || `The page you are looking for does not exist.`}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="flex items-center gap-2 flex-wrap">
-          <Button onClick={() => window.history.back()} variant="outline" className="w-1/3">
-            Go back
-          </Button>
-          <Button asChild className="w-1/3 ml-auto">
-            <Link to="/">Start Over</Link>
-          </Button>
-        </div>
-      </CardContent>
-
-      <div className="space-y-2 p-2">
-        <p className="flex items-center gap-2 flex-wrap"></p>
-      </div>
-    </Card>
+    <div className="mt-10 justify-center p-4 text-center">
+      <h1 className="mb-2 text-6xl font-bold text-gray-800">404</h1>
+      <p className="mb-4 text-2xl font-light text-gray-600">Page not found</p>
+      <p className="mb-8 text-lg text-gray-500">
+        Sorry, we couldn't find the page you're looking for.
+      </p>
+      <Link to={to} className="mb-4 inline-block text-sm">
+        <Button variant="default">Go back home</Button>
+      </Link>
+    </div>
   );
 }
