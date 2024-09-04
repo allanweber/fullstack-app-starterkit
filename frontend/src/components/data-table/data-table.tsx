@@ -142,7 +142,7 @@ export function DataTable<TData, TValue>({
           !controlsOpen && "hidden"
         )}
       >
-        <div className="-m-1 h-full p-1 sm:overflow-x-hidden sm:overflow-y-scroll">
+        <div className="-m-1 h-full p-1 sm:overflow-x-hidden sm:overflow-y-auto">
           <DataTableFilterControls table={table} columns={columns} filterFields={filterFields} />
         </div>
       </div>

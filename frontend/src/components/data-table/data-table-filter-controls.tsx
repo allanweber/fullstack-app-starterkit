@@ -27,6 +27,7 @@ interface DataTableFilterControlsProps<TData, TValue> {
 
 export function DataTableFilterControls<TData, TValue>({
   table,
+
   filterFields,
 }: DataTableFilterControlsProps<TData, TValue>) {
   const filters = table.getState().columnFilters;

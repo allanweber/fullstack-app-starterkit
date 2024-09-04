@@ -28,7 +28,7 @@ export default function Transactions() {
   }));
 
   return (
-    <main>
+    <>
       <h1 className="text-lg font-semibold md:text-2xl">Last Transactions</h1>
 
       <DataTable
@@ -38,6 +38,6 @@ export default function Transactions() {
         defaultColumnFilters={defaultColumnFilters}
         sortingState={[{ id: "date", desc: true }]}
       />
-    </main>
+    </>
   );
 }
