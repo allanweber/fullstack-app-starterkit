@@ -1,5 +1,4 @@
 import { hash, verify } from '@node-rs/argon2';
-import { generateCodeVerifier, generateState, Google } from 'arctic';
 import { and, eq } from 'drizzle-orm';
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
@@ -11,6 +10,7 @@ import {
   userProfile,
 } from '../../db/schema';
 import env from '../../env';
+import logger from '../../logger';
 import { messages } from '../../utils/messages';
 import {
   createDate,
@@ -27,6 +27,8 @@ import { tenancy } from './../../db/schema/tenancy';
 import { user } from './../../db/schema/user';
 import { userRoles } from './../../db/schema/user-roles';
 import {
+  googleSigninSchema,
+  GoogleUser,
   loginSchema,
   passwordResetRequestSchema,
   passwordResetSchema,
@@ -57,14 +59,6 @@ declare global {
     }
   }
 }
-
-const googleAuth = new Google(
-  env.GOOGLE_CLIENT_ID,
-  env.GOOGLE_CLIENT_SECRET,
-  `${
-    env.NODE_ENV !== 'production' ? 'http://localhost:5173' : env.HOST_NAME
-  }/auth/google`
-);
 
 const issueToken = (payload: Payload) => {
   const tokenTTL = process.env.TOKEN_TTL ? process.env.TOKEN_TTL : '2h';
@@ -559,47 +553,136 @@ export const authGoogle = async (
   next: NextFunction
 ) => {
   try {
-    const state = generateState();
-    const codeVerifier = generateCodeVerifier();
-    const url = await googleAuth.createAuthorizationURL(state, codeVerifier);
+    const googleSignin = googleSigninSchema.safeParse(req.body);
+    if (!googleSignin.success) {
+      return res.status(400).json(googleSignin.error.issues);
+    }
 
-    res.cookie('state', state, {
-      secure: true,
-      httpOnly: true,
-      path: '/',
-      maxAge: 600,
+    const googleData = jwt.decode(googleSignin.data.code) as GoogleUser;
+
+    if (!googleData) {
+      logger.error('Google Signin: Invalid token');
+      const error = {
+        status: 401,
+        code: messages.INVALID_CREDENTIALS_CODE,
+        message: messages.INVALID_CREDENTIALS,
+      };
+      next(error);
+    }
+
+    if (!googleData.email_verified) {
+      logger.error('Google Signin: Email not verified');
+      const error = {
+        status: 401,
+        code: messages.INVALID_CREDENTIALS_CODE,
+        message: messages.INVALID_CREDENTIALS,
+      };
+      next(error);
+    }
+
+    const registeredUser = await db.query.user.findFirst({
+      where: eq(user.email, googleData.email),
     });
-    res.cookie('code_verifier', codeVerifier, {
-      secure: true,
-      httpOnly: true,
-      path: '/',
-      maxAge: 600,
+
+    let signInUser = null;
+    if (!registeredUser) {
+      const tenancyId = generateId();
+      const userId = generateId();
+      signInUser = await db.transaction(async (tx) => {
+        await tx.insert(tenancy).values({
+          id: tenancyId,
+          name: googleData.email,
+        });
+
+        await tx.insert(tenancyPlan).values({
+          tenancyId,
+          isFree: true,
+          startsAt: new Date(),
+          expiresAt: createDate(new TimeSpan(1, 'y')),
+        });
+
+        const [newUser] = await tx
+          .insert(user)
+          .values({
+            id: userId,
+            email: googleData.email,
+            tenancyId,
+            email_verified: true,
+          })
+          .returning();
+
+        await tx.insert(userAccounts).values({
+          userId,
+          accountType: 'google',
+          googleId: googleData.sub,
+        });
+
+        const [profile] = await tx
+          .insert(userProfile)
+          .values({
+            userId,
+            displayName: googleData.email,
+            image: googleData.picture,
+            theme: 'light',
+            locale: 'en',
+          })
+          .returning();
+
+        await tx.insert(userRoles).values({
+          userId,
+          role: 'super-user',
+        });
+
+        return {
+          user: newUser,
+          tenancyId,
+          displayName: googleData.email,
+          role: 'super-user',
+          profile,
+        };
+      });
+    } else {
+      const userAccount = await db.query.userAccounts.findFirst({
+        where: eq(userAccounts.userId, registeredUser.id),
+      });
+
+      if (!userAccount || userAccount.accountType !== 'google') {
+        logger.error('Google Signin: Account type is not google');
+        const error = {
+          status: 401,
+          code: messages.INVALID_CREDENTIALS_CODE,
+          message: messages.INVALID_CREDENTIALS,
+        };
+        next(error);
+      }
+
+      const profile = await db.query.userProfile.findFirst({
+        where: eq(userProfile.userId, registeredUser.id),
+      });
+
+      signInUser = {
+        user: registeredUser,
+        tenancyId: registeredUser.tenancyId,
+        displayName: googleData.email,
+        role: 'super-user',
+        profile,
+      };
+    }
+
+    const token = issueToken({
+      email: signInUser.user.email,
+      roles: [signInUser.role],
+      userId: signInUser.user.id,
+      tenancyId: signInUser.tenancyId,
     });
 
-    return res.status(200).json({ url: url.href });
-  } catch (error: any) {
-    error.status = 500;
-    error.message = error.message || messages.INTERNAL_SERVER_ERROR;
-    error.code = error.code || messages.INTERNAL_SERVER_ERROR_CODE;
-    next(error);
-  }
-};
-
-export const authGoogleCallback = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const code = req.query.code;
-    const state = req.query.state;
-
-    console.log('cookies,', req.cookies);
-
-    const storedState = req.cookies.state;
-    const codeVerifier = req.cookies.code_verifier;
-
-    console.log('stored data', storedState, codeVerifier);
+    return res.status(200).json({
+      user: {
+        name: signInUser.profile?.displayName,
+        image: signInUser.profile?.image,
+      },
+      token: token,
+    });
   } catch (error: any) {
     error.status = 500;
     error.message = error.message || messages.INTERNAL_SERVER_ERROR;

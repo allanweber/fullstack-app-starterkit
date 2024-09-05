@@ -5,6 +5,7 @@ import ReactDOM from "react-dom/client";
 import { RouterProvider } from "react-router-dom";
 import { AuthProvider } from "./components/auth-provider";
 import { ThemeProvider } from "./components/theme-provider";
+import { Toaster } from "./components/ui/toaster";
 import { TooltipProvider } from "./components/ui/tooltip";
 import "./index.css";
 import { router } from "./pages/Routes";
@@ -39,6 +40,7 @@ function App() {
         </AuthProvider>
         <ReactQueryDevtools buttonPosition="bottom-right" />
       </QueryClientProvider>
+      <Toaster />
     </ThemeProvider>
   );
 }

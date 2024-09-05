@@ -1,3 +1,4 @@
+import { GoogleOAuthProvider } from "@react-oauth/google";
 import { createContext, useCallback, useEffect, useState } from "react";
 import { AuthResponse, UserResponse } from "../types/Auth";
 
@@ -61,7 +62,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, user, login, logout, getToken }}>
-      {children}
+      <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID!}>
+        {children}
+      </GoogleOAuthProvider>
     </AuthContext.Provider>
   );
 }

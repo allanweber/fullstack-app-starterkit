@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Login, loginSchema } from "@/types/Auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import GoogleSigninButton, { SignKind } from "./components/GoogleSignButton";
+import GoogleSigninButton from "./components/GoogleSignButton";
 
 const fallback = "/app" as const;
 
@@ -88,7 +88,7 @@ export function LoginPage() {
           </form>
         </Form>
         <div className="mt-4">
-          <GoogleSigninButton kind={SignKind.SIGNIN} />
+          <GoogleSigninButton />
         </div>
         <div className="mt-4 text-center text-sm">
           Don&apos;t have an account?{" "}

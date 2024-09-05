@@ -15,8 +15,6 @@ const EnvSchema = z.object({
   EMAIL_SERVER_PASSWORD: z.string(),
   EMAIL_FROM: z.string(),
   BCC_EMAIL: z.string(),
-  GOOGLE_CLIENT_ID: z.string(),
-  GOOGLE_CLIENT_SECRET: z.string(),
 });
 
 export type EnvSchema = z.infer<typeof EnvSchema>;

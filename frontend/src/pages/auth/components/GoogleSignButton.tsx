@@ -1,37 +1,49 @@
-import { Icons } from "@/components/Icons";
-import { Switch } from "@/components/Switch";
-import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { useGoogleSignIn } from "@/services/authentication";
+import { GoogleLogin } from "@react-oauth/google";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
-export enum SignKind {
-  SIGNIN = "signin",
-  SIGNUP = "signup",
-}
+const fallback = "/app" as const;
 
-export default function GoogleSigninButton({ kind }: { kind: SignKind }) {
-  const googleSignIn = useGoogleSignIn();
+export default function GoogleSigninButton() {
+  const auth = useAuth();
+  const [search] = useSearchParams();
+  const navigate = useNavigate();
+  const redirect = search.get("redirect") || fallback;
 
-  function signin() {
-    googleSignIn.mutate(undefined, {
-      onSuccess: ({ url }) => {
-        window.location.href = url;
-      },
-    });
-  }
-
+  const { toast } = useToast();
+  const mutation = useGoogleSignIn();
   return (
-    <Button
-      type="button"
-      variant="outline"
-      className="w-full"
-      onClick={() => signin()}
-      disabled={googleSignIn.isPending}
-    >
-      <Icons.Google className="stroke-white mr-2 h-5 w-5" />
-      <Switch condition={kind}>
-        <Switch.Case when={SignKind.SIGNIN}>Sign in with Google</Switch.Case>
-        <Switch.Case when={SignKind.SIGNUP}>Sign up with Google</Switch.Case>
-      </Switch>
-    </Button>
+    <GoogleLogin
+      useOneTap={true}
+      width={334}
+      theme="filled_blue"
+      onSuccess={(credentialResponse) => {
+        mutation.mutate(
+          { code: credentialResponse.credential! },
+          {
+            onSuccess: (data) => {
+              auth.login(data);
+              navigate(redirect);
+            },
+            onError: (error) => {
+              toast({
+                variant: "destructive",
+                title: "Uh oh! Something went wrong.",
+                description: error.message,
+              });
+            },
+          }
+        );
+      }}
+      onError={() => {
+        toast({
+          variant: "destructive",
+          title: "Uh oh! Something went wrong.",
+          description: "Please try again later.",
+        });
+      }}
+    />
   );
 }

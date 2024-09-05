@@ -35,3 +35,16 @@ export const passwordResetSchema = z.object({
   token: z.string(),
   password: z.string().min(8).max(100),
 });
+
+export const googleSigninSchema = z.object({
+  code: z.string(),
+});
+
+export interface GoogleUser {
+  sub: string;
+  given_name: string;
+  family_name: string;
+  picture: string;
+  email: string;
+  email_verified: boolean;
+}
