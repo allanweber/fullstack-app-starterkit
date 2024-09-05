@@ -11,6 +11,7 @@ import Settings from "./app/Settings";
 import Support from "./app/Support";
 import Transactions from "./app/transactions";
 import { ForgotPassword } from "./auth/ForgotPassword";
+import { Google } from "./auth/Google";
 import { LoginPage } from "./auth/Login";
 import { RegisterPage } from "./auth/Register";
 import { VerifyRegistration } from "./auth/VerifyRegistration";
@@ -30,6 +31,7 @@ export const router = createBrowserRouter(
         <Route path="register" element={<RegisterPage />} />
         <Route path="verify-email" element={<VerifyRegistration />} />
         <Route path="forgot-password" element={<ForgotPassword />} />
+        <Route path="auth/google" element={<Google />} />
       </Route>
       <Route path="app" element={<ProtectedRoute Component={AppLayout} />}>
         <Route index element={<Dashboard />} />

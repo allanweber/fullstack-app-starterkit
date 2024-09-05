@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Register, registerSchema } from "@/types/Auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+import GoogleSigninButton, { SignKind } from "./components/GoogleSignButton";
 
 const fallback = "/app" as const;
 
@@ -91,9 +92,7 @@ export function RegisterPage() {
           </form>
         </Form>
         <div className="mt-4">
-          <Button variant="outline" className="w-full">
-            Sign Up with Google
-          </Button>
+          <GoogleSigninButton kind={SignKind.SIGNUP} />
         </div>
         <div className="mt-4 text-center text-sm">
           Already have an account?{" "}

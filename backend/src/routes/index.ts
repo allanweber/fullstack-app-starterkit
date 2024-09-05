@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import {
+  authGoogle,
+  authGoogleCallback,
   passwordReset,
   registrationNewCode,
   requestPasswordReset,
@@ -19,6 +21,8 @@ export default () => {
 
   app.post('/v1/auth/signin', signin);
   app.post('/v1/auth/signup', signup);
+  app.post('/v1/auth/google', authGoogle);
+  app.post('/v1/auth/google/callback', authGoogleCallback);
   app.post('/v1/auth/verify-registration', verifyRegistration);
   app.post('/v1/auth/registration-new-code', registrationNewCode);
   app.post('/v1/auth/reset-password/request', requestPasswordReset);

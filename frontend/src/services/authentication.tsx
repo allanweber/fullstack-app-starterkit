@@ -108,3 +108,29 @@ export const useResetPassword = () => {
     },
   });
 };
+
+export const useGoogleSignIn = () => {
+  return useMutation({
+    mutationFn: async (): Promise<{ url: string }> => {
+      return fetch("/api/v1/auth/google", {
+        method: "POST",
+        credentials: "include",
+      }).then(responseOrError);
+    },
+  });
+};
+
+export const useGoogleSignInCallback = () => {
+  return useMutation({
+    mutationFn: async ({ state, code }: { state: string; code: string }): Promise<any> => {
+      return fetch("/api/v1/auth/google/callback", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ state, code }),
+      }).then(responseOrError);
+    },
+  });
+};

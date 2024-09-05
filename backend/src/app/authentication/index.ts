@@ -1,4 +1,5 @@
 import { hash, verify } from '@node-rs/argon2';
+import { generateCodeVerifier, generateState, Google } from 'arctic';
 import { and, eq } from 'drizzle-orm';
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
@@ -56,6 +57,14 @@ declare global {
     }
   }
 }
+
+const googleAuth = new Google(
+  env.GOOGLE_CLIENT_ID,
+  env.GOOGLE_CLIENT_SECRET,
+  `${
+    env.NODE_ENV !== 'production' ? 'http://localhost:5173' : env.HOST_NAME
+  }/auth/google`
+);
 
 const issueToken = (payload: Payload) => {
   const tokenTTL = process.env.TOKEN_TTL ? process.env.TOKEN_TTL : '2h';
@@ -536,6 +545,61 @@ export const passwordReset = async (
       code: messages.PASSWORD_RESET_SUCCESS_CODE,
       message: messages.PASSWORD_RESET_SUCCESS,
     });
+  } catch (error: any) {
+    error.status = 500;
+    error.message = error.message || messages.INTERNAL_SERVER_ERROR;
+    error.code = error.code || messages.INTERNAL_SERVER_ERROR_CODE;
+    next(error);
+  }
+};
+
+export const authGoogle = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const state = generateState();
+    const codeVerifier = generateCodeVerifier();
+    const url = await googleAuth.createAuthorizationURL(state, codeVerifier);
+
+    res.cookie('state', state, {
+      secure: true,
+      httpOnly: true,
+      path: '/',
+      maxAge: 600,
+    });
+    res.cookie('code_verifier', codeVerifier, {
+      secure: true,
+      httpOnly: true,
+      path: '/',
+      maxAge: 600,
+    });
+
+    return res.status(200).json({ url: url.href });
+  } catch (error: any) {
+    error.status = 500;
+    error.message = error.message || messages.INTERNAL_SERVER_ERROR;
+    error.code = error.code || messages.INTERNAL_SERVER_ERROR_CODE;
+    next(error);
+  }
+};
+
+export const authGoogleCallback = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const code = req.query.code;
+    const state = req.query.state;
+
+    console.log('cookies,', req.cookies);
+
+    const storedState = req.cookies.state;
+    const codeVerifier = req.cookies.code_verifier;
+
+    console.log('stored data', storedState, codeVerifier);
   } catch (error: any) {
     error.status = 500;
     error.message = error.message || messages.INTERNAL_SERVER_ERROR;
