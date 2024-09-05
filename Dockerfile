@@ -9,14 +9,14 @@ WORKDIR /app/frontend
 COPY frontend/package.json frontend/package-lock.json ./
 RUN npm install
 COPY frontend/ ./
+
+ARG VITE_GOOGLE_CLIENT_ID
 RUN npm run build
 
 # Stage 2: Build the backend using TypeScript
 FROM base AS backend-builder
 
 WORKDIR /app/backend
-
-ARG VITE_GOOGLE_CLIENT_ID
 
 COPY backend/package.json backend/package-lock.json ./
 RUN npm install
