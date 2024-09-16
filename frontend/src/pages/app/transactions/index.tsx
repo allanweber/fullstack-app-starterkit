@@ -30,13 +30,11 @@ export default function Transactions() {
   return (
     <>
       <h1 className="text-lg font-semibold md:text-2xl">Last Transactions</h1>
-
       <DataTable
         columns={columns}
         data={transactions}
         filterFields={filterFields}
         defaultColumnFilters={defaultColumnFilters}
-        sortingState={[{ id: "date", desc: true }]}
       />
     </>
   );

@@ -2,6 +2,7 @@ import { DataTableColumnHeader } from "@/components/data-table/data-table-column
 import { ARRAY_DELIMITER, RANGE_DELIMITER, SLIDER_DELIMITER } from "@/components/data-table/types";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { Color } from "@/lib/colors";
 import { isArrayOfDates, isArrayOfNumbers } from "@/lib/utils";
 import type { ColumnDef } from "@tanstack/react-table";
 import { format, isSameDay } from "date-fns";
@@ -134,16 +135,10 @@ export const columns: ColumnDef<ColumnSchema>[] = [
         return (
           <div className="flex flex-wrap gap-1">
             {value.map((v) => {
-              const color = TAGS.find((tag) => tag.tag === v)?.color || "gray";
+              const color = TAGS.find((tag) => tag.tag === v)?.color || "green";
+              const colorClass = Color[color].badge;
               return (
-                <Badge
-                  key={v}
-                  style={{
-                    backgroundColor: `${color}`,
-                    borderColor: `${color}`,
-                    color: `white`,
-                  }}
-                >
+                <Badge key={v} className={colorClass}>
                   {v}
                 </Badge>
               );

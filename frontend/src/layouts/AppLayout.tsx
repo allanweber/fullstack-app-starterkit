@@ -28,7 +28,11 @@ import { useAuth } from "../hooks/useAuth";
 
 const navLinks = [
   { to: "/app", icon: "Gauge", label: "Dashboard" },
-  { to: "/app/transactions", icon: "Receipt", label: "Transactions" },
+  {
+    to: "/app/transactions?sortBy=date&sortDirection=desc",
+    icon: "Receipt",
+    label: "Transactions",
+  },
   { to: "/app/categories", icon: "Tag", label: "Categories" },
   { to: "/app/schedules", icon: "CalendarDays", label: "Schedules" },
 ];

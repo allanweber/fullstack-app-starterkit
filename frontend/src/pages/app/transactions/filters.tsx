@@ -1,4 +1,6 @@
 import { DataTableFilterField, Option } from "@/components/data-table/types";
+import { Color } from "@/lib/colors";
+import { cn } from "@/lib/utils";
 import { ColumnSchema } from "./columns";
 import { categories, TAGS, transactions } from "./transactions-data";
 
@@ -46,16 +48,12 @@ export const filterFields = [
       if (typeof props.value === "boolean") return null;
       if (typeof props.value === "undefined") return null;
       const color = TAGS.find((tag) => tag.tag === props.value)?.color || "gray";
+
+      const colorClass = Color[color].dot;
       return (
         <div className="flex w-full items-center justify-between gap-3">
           <span className="truncate font-normal">{props.value}</span>
-          <span
-            className="h-2 w-2 rounded-full"
-            style={{
-              backgroundColor: `${color}`,
-              borderColor: `${color}`,
-            }}
-          />
+          <span className={cn("h-2 w-2 rounded-full", colorClass)} />
         </div>
       );
     },
