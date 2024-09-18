@@ -2,9 +2,16 @@ import { DataTableFilterField, Option } from "@/components/data-table/types";
 import { Color } from "@/lib/colors";
 import { cn } from "@/lib/utils";
 import { ColumnSchema } from "./columns";
-import { categories, TAGS, transactions } from "./transactions-data";
+import { accounts, categories, TAGS, transactions } from "./transactions-data";
 
 export const filterFields = [
+  {
+    label: "Account",
+    value: "account",
+    type: "checkbox",
+    defaultOpen: true,
+    options: accounts.map((account: string) => ({ label: account, value: account })),
+  },
   {
     label: "Time Range",
     value: "date",
@@ -20,6 +27,7 @@ export const filterFields = [
     max: 3000,
     options: transactions.map(({ amount }) => ({ label: `${amount}`, value: amount })),
     defaultOpen: true,
+    hint: "$",
   },
   {
     label: "Categories",

@@ -23,6 +23,7 @@ export type Slider = {
   min: number;
   max: number;
   options?: Option[];
+  hint?: string;
 };
 
 export type Timerange = {

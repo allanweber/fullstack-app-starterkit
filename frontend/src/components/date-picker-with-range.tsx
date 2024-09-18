@@ -1,4 +1,4 @@
-import { addDays, addHours, endOfDay, format, startOfDay } from "date-fns";
+import { addDays, endOfDay, format, startOfDay } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import * as React from "react";
 import type { DateRange } from "react-day-picker";
@@ -93,11 +93,6 @@ const presets = [
     to: endOfDay(addDays(new Date(), -1)),
   },
   {
-    label: "Last hour",
-    from: addHours(new Date(), -1),
-    to: new Date(),
-  },
-  {
     label: "Last 7 days",
     from: startOfDay(addDays(new Date(), -7)),
     to: endOfDay(new Date()),
@@ -110,6 +105,16 @@ const presets = [
   {
     label: "Last 30 days",
     from: startOfDay(addDays(new Date(), -30)),
+    to: endOfDay(new Date()),
+  },
+  {
+    label: "This month",
+    from: startOfDay(new Date(new Date().getFullYear(), new Date().getMonth(), 1)),
+    to: endOfDay(new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0)),
+  },
+  {
+    label: "Last 90 days",
+    from: startOfDay(addDays(new Date(), -90)),
     to: endOfDay(new Date()),
   },
 ];

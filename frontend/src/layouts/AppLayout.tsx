@@ -27,14 +27,21 @@ import { Link, Navigate, Outlet, useLocation, useNavigate } from "react-router-d
 import { useAuth } from "../hooks/useAuth";
 
 const navLinks = [
-  { to: "/app", icon: "Gauge", label: "Dashboard" },
+  { pathname: "/app", to: "/app", icon: "Gauge", label: "Dashboard" },
   {
+    pathname: "/app/transactions",
     to: "/app/transactions?sortBy=date&sortDirection=desc",
     icon: "Receipt",
     label: "Transactions",
   },
-  { to: "/app/categories", icon: "Tag", label: "Categories" },
-  { to: "/app/schedules", icon: "CalendarDays", label: "Schedules" },
+  {
+    pathname: "/app/categories",
+    to: "/app/categories",
+    icon: "Tag",
+    label: "Categories",
+  },
+  { pathname: "/app/schedules", to: "/app/schedules", icon: "CalendarDays", label: "Schedules" },
+  { pathname: "/app/accounts", to: "/app/accounts", icon: "Wallet", label: "Accounts" },
 ];
 
 export const AppLayout = () => {
@@ -73,7 +80,7 @@ export const AppLayout = () => {
                   to={link.to}
                   className={cn(
                     "flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:text-foreground md:h-8 md:w-8",
-                    location.pathname === link.to ? "scale-110 text-primary" : ""
+                    location.pathname === link.pathname ? "scale-110 text-primary" : ""
                   )}
                 >
                   <Icon name={link.icon as keyof typeof icons} className="h-6 w-6" />
@@ -133,7 +140,7 @@ export const AppLayout = () => {
                     to={link.to}
                     className={cn(
                       "flex items-center gap-4 px-2.5 text-muted-foreground hover:text-foreground",
-                      location.pathname === link.to ? "text-accent" : ""
+                      location.pathname === link.pathname ? "text-accent" : ""
                     )}
                   >
                     <Icon name={link.icon as keyof typeof icons} className="h-5 w-5" />

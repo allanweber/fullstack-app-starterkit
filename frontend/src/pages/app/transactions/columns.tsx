@@ -53,6 +53,14 @@ export const columns: ColumnDef<ColumnSchema>[] = [
     },
   },
   {
+    accessorKey: "account",
+    header: "Account",
+    cell: ({ row }) => {
+      const value = row.getValue("account");
+      return <div className="max-w-[200px] truncate">{`${value}`}</div>;
+    },
+  },
+  {
     accessorKey: "amount",
     header: ({ column }) => <DataTableColumnHeader column={column} title="Amount" />,
     cell: ({ row }) => {

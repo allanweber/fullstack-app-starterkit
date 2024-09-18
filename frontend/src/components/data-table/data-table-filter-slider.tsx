@@ -20,6 +20,7 @@ export function DataTableFilterSlider<TData>({
   value: _value,
   min,
   max,
+  hint = "",
 }: DataTableFilterSliderProps<TData>) {
   const value = _value as string;
   const updateSearchParams = useUpdateSearchParams();
@@ -42,7 +43,7 @@ export function DataTableFilterSlider<TData>({
           </Label>
           <InputWithAddons
             placeholder="from"
-            trailing="ms"
+            leading={hint}
             containerClassName="mb-2 h-9 rounded-lg"
             type="number"
             name={`min-${value}`}
@@ -67,7 +68,7 @@ export function DataTableFilterSlider<TData>({
           </Label>
           <InputWithAddons
             placeholder="to"
-            trailing="ms"
+            leading={hint}
             containerClassName="mb-2 h-9 rounded-lg"
             type="number"
             name={`max-${value}`}

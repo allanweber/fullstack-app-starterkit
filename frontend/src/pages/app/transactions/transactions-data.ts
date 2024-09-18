@@ -425,3 +425,5 @@ export const TAGS = [
 ];
 
 export const categories = ["Work", "Groceries", "Transport", "Dividend", "Other"];
+
+export const accounts = ["default"];
