@@ -1,29 +1,21 @@
-import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
-import { ARRAY_DELIMITER, RANGE_DELIMITER, SLIDER_DELIMITER } from "@/components/data-table/types";
+import ColoredNumber from "@/components/ColoredNumber";
+import { DataTableColumnHeader } from "@/components/data-table/client-only/data-table-column-header";
+import {
+  ARRAY_DELIMITER,
+  RANGE_DELIMITER,
+  SLIDER_DELIMITER,
+} from "@/components/data-table/client-only/types";
+import NumberDisplay from "@/components/NumberDisplay";
 import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Color } from "@/lib/colors";
 import { isArrayOfDates, isArrayOfNumbers } from "@/lib/utils";
+import { Account, Category, Tags, Transaction } from "@/types/transaction";
 import type { ColumnDef } from "@tanstack/react-table";
 import { format, isSameDay } from "date-fns";
-import { CircleMinus, CirclePlus, Minus } from "lucide-react";
+import { Minus } from "lucide-react";
 import { z } from "zod";
-import { categories, TAGS } from "./transactions-data";
 
-export const columnSchema = z.object({
-  id: z.string(),
-  account: z.string(),
-  date: z.number(),
-  amount: z.number(),
-  category: z.string(),
-  type: z.string(),
-  description: z.string().optional(),
-  tags: z.string().array(),
-});
-
-export type ColumnSchema = z.infer<typeof columnSchema>;
-
-export const columns: ColumnDef<ColumnSchema>[] = [
+export const columns: ColumnDef<Transaction>[] = [
   {
     accessorKey: "date",
     header: ({ column }) => <DataTableColumnHeader column={column} title="Date" />,
@@ -37,7 +29,9 @@ export const columns: ColumnDef<ColumnSchema>[] = [
     },
     filterFn: (row, id, value) => {
       let rowValue = row.getValue(id);
-      if (typeof rowValue === "number") rowValue = new Date(rowValue);
+      if (typeof rowValue === "number") {
+        rowValue = new Date(rowValue);
+      }
       if (value instanceof Date && rowValue instanceof Date) {
         return isSameDay(value, rowValue);
       }
@@ -53,14 +47,6 @@ export const columns: ColumnDef<ColumnSchema>[] = [
     },
   },
   {
-    accessorKey: "account",
-    header: "Account",
-    cell: ({ row }) => {
-      const value = row.getValue("account");
-      return <div className="max-w-[200px] truncate">{`${value}`}</div>;
-    },
-  },
-  {
     accessorKey: "amount",
     header: ({ column }) => <DataTableColumnHeader column={column} title="Amount" />,
     cell: ({ row }) => {
@@ -68,9 +54,17 @@ export const columns: ColumnDef<ColumnSchema>[] = [
       if (typeof value === "undefined") {
         return <Minus className="h-4 w-4 text-muted-foreground/50" />;
       }
+
+      const number = value as number;
+      const signedValue = row.original.type === "expense" ? number * -1 : number;
+
       return (
         <div>
-          <span className="font-mono">{`${value}`}</span>
+          <span className="font-mono">
+            <ColoredNumber value={signedValue} className="font-mono">
+              <NumberDisplay currency="€">{number}</NumberDisplay>
+            </ColoredNumber>
+          </span>
         </div>
       );
     },
@@ -88,35 +82,15 @@ export const columns: ColumnDef<ColumnSchema>[] = [
     accessorKey: "category",
     header: "Category",
     cell: ({ row }) => {
-      const value = row.getValue("category");
-      return <div className="max-w-[200px] truncate">{`${value}`}</div>;
-    },
-  },
-  {
-    accessorKey: "type",
-    header: "Type",
-    cell: ({ row }) => {
-      const value = row.getValue("type");
-      return (
-        <Tooltip key={row.id}>
-          <TooltipTrigger asChild>
-            <div className="flex items-center gap-2">
-              {value === "Expense" ? (
-                <CircleMinus className="h-4 w-4 text-red-500" />
-              ) : (
-                <CirclePlus className="h-4 w-4 text-green-500" />
-              )}
-            </div>
-          </TooltipTrigger>
-          <TooltipContent side="top">{`${value}`}</TooltipContent>
-        </Tooltip>
-      );
+      const value = row.getValue("category") as Category;
+      return <div className="max-w-[200px] truncate">{`${value.name}`}</div>;
     },
     filterFn: (row, id, value) => {
-      const rowValue = row.getValue(id);
-      if (typeof value === "string") return value === String(rowValue);
-      if (typeof value === "boolean") return value === rowValue;
-      if (Array.isArray(value)) return value.includes(rowValue);
+      const category = row.getValue(id) as Category;
+      if (typeof value === "string") {
+        return category.id === Number(value);
+      }
+      if (Array.isArray(value)) return value.some((i) => category.id === Number(i));
       return false;
     },
   },
@@ -135,42 +109,47 @@ export const columns: ColumnDef<ColumnSchema>[] = [
     },
   },
   {
+    accessorKey: "account",
+    header: "Account",
+    cell: ({ row }) => {
+      const value = row.getValue("account") as Account;
+      return <div className="max-w-[200px] truncate">{`${value.name}`}</div>;
+    },
+    filterFn: (row, id, value) => {
+      const account = row.getValue(id) as Account;
+      if (typeof value === "string") {
+        return account.id === Number(value);
+      }
+      if (Array.isArray(value)) return value.some((i) => account.id === Number(i));
+      return false;
+    },
+  },
+  {
     accessorKey: "tags",
     header: "Tags",
     cell: ({ row }) => {
-      const value = row.getValue("tags") as string | string[];
-      if (Array.isArray(value)) {
-        return (
-          <div className="flex flex-wrap gap-1">
-            {value.map((v) => {
-              const color = TAGS.find((tag) => tag.tag === v)?.color || "green";
-              const colorClass = Color[color].badge;
-              return (
-                <Badge key={v} className={colorClass}>
-                  {v}
-                </Badge>
-              );
-            })}
-          </div>
-        );
-      }
-      const color = TAGS.find((tag) => tag.tag === value)?.color || "gray";
+      const value = row.getValue("tags") as Tags[];
       return (
-        <Badge
-          style={{
-            backgroundColor: `${color}`,
-            borderColor: `${color}`,
-            color: `white`,
-          }}
-        >
-          {value}
-        </Badge>
+        <div className="flex flex-wrap gap-1">
+          {value.map(({ tag }) => {
+            const colorClass = Color[tag.color].badge;
+            return (
+              <Badge key={tag.id} className={colorClass}>
+                {tag.name}
+              </Badge>
+            );
+          })}
+        </div>
       );
     },
     filterFn: (row, id, value) => {
-      const array = row.getValue(id) as string[];
-      if (typeof value === "string") return array.includes(value);
-      if (Array.isArray(value)) return value.some((i) => array.includes(i));
+      const tags = row.getValue(id) as Tags[];
+      if (typeof value === "string") {
+        return tags.some((i) => i.tag.id === Number(value));
+      }
+
+      if (Array.isArray(value))
+        return value.some((i) => tags.some((tag) => tag.tag.id === Number(i)));
       return false;
     },
   },
@@ -198,24 +177,20 @@ export const columnFilterSchema = z.object({
     .optional(),
   category: z
     .string()
-    .refine((value) => categories.includes(value))
-    .optional()
-    .or(
-      z
-        .string()
-        .transform((val) => val.split(ARRAY_DELIMITER))
-        .refine((value) => value.every((v) => categories.includes(v)))
-        .pipe(z.array(z.string()))
-    )
+    .transform((val) => val.split(ARRAY_DELIMITER))
+    .pipe(z.array(z.string()))
+    .optional(),
+  account: z
+    .string()
+    .transform((val) => val.split(ARRAY_DELIMITER))
+    .pipe(z.array(z.string()))
     .optional(),
   tags: z
     .string()
-    .refine((value) => TAGS.map((t) => t.tag).includes(value))
     .or(
       z
         .string()
         .transform((val) => val.split(ARRAY_DELIMITER))
-        .refine((value) => value.every((v) => TAGS.map((t) => t.tag).includes(v)))
         .pipe(z.array(z.string()))
     )
     .optional(),

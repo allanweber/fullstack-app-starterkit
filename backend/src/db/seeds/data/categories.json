@@ -1,0 +1,34 @@
+[
+  {
+    "name": "Work",
+    "type": "income"
+  },
+  {
+    "name": "Dividend",
+    "type": "income"
+  },
+  {
+    "name": "Groceries",
+    "type": "expense"
+  },
+  {
+    "name": "Transport",
+    "type": "expense"
+  },
+  {
+    "name": "Home",
+    "type": "expense"
+  },
+  {
+    "name": "Lifestyle",
+    "type": "expense"
+  },
+  {
+    "name": "Subscriptions",
+    "type": "expense"
+  },
+  {
+    "name": "Other",
+    "type": "expense"
+  }
+]

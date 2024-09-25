@@ -4,7 +4,7 @@ import type { Table } from "@tanstack/react-table";
 import { useMemo } from "react";
 import type { DateRange } from "react-day-picker";
 
-import { DatePickerWithRange } from "../date-picker-with-range";
+import { DatePickerWithRange } from "../../date-picker-with-range";
 
 import { isArrayOfDates } from "@/lib/utils";
 import { RANGE_DELIMITER, type DataTableTimerangeFilterField } from "./types";
@@ -36,7 +36,7 @@ export function DataTableFilterTimeRange<TData>({
   );
 
   const setDate = (date: DateRange | undefined) => {
-    if (!date) return; // TODO: remove from search params if columnFilter is removed
+    if (!date) return;
     if (date.from && !date.to) {
       column?.setFilterValue(date.from);
       updateSearchParams({ [value]: `${date.from.getTime()}` });

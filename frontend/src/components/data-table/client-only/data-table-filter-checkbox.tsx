@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { Search } from "lucide-react";
 import { SetStateAction, useState } from "react";
-import { InputWithAddons } from "../ui/input-with-addons";
+import { InputWithAddons } from "../../ui/input-with-addons";
 import { ARRAY_DELIMITER, type DataTableCheckboxFilterField } from "./types";
 
 type DataTableFilterCheckboxProps<TData> = DataTableCheckboxFilterField<TData> & {
@@ -35,7 +35,6 @@ export function DataTableFilterCheckbox<TData>({
 
   // TODO: check if we could useMemo
   const filters = filterValue ? (Array.isArray(filterValue) ? filterValue : [filterValue]) : [];
-
   const Component = component;
 
   return (
@@ -53,7 +52,9 @@ export function DataTableFilterCheckbox<TData>({
       ) : null}
       <div className="rounded-lg border border-border empty:border-none">
         {filterOptions.map((option, index) => {
-          const checked = filters.includes(option.value);
+          const checked = filters.some((e: string) => {
+            return e == (option.value as string);
+          });
 
           return (
             <div

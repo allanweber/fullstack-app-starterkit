@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { SLIDER_DELIMITER, type DataTableSliderFilterField } from "./types";
 
 import { isArrayOfNumbers } from "@/lib/utils";
-import { Slider } from "../ui/slider";
+import { Slider } from "../../ui/slider";
 
 type DataTableFilterSliderProps<TData> = DataTableSliderFilterField<TData> & {
   table: Table<TData>;

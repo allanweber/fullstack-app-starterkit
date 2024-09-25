@@ -1,16 +1,23 @@
-import { DataTable } from "@/components/data-table/data-table";
+import { DataTable } from "@/components/data-table/client-only/data-table";
 import { MessageDisplay } from "@/components/MessageDisplay";
 import { Button } from "@/components/ui/button";
 import useKeyPairSearchParams from "@/hooks/useKeyPairSearchParams";
+import { useAccounts } from "@/services/accounts";
+import { useCategories } from "@/services/categories";
+import { useTags } from "@/services/tags";
+import { useTransactions } from "@/services/transactions";
 import { Link } from "react-router-dom";
 import { columnFilterSchema, columns } from "./columns";
 import { filterFields } from "./filters";
-import { transactions } from "./transactions-data";
 
 export default function Transactions() {
   const entries = useKeyPairSearchParams();
-
   const search = columnFilterSchema.safeParse(entries);
+  const { data: transactions, error, isLoading, isSuccess } = useTransactions();
+  const { data: accounts } = useAccounts();
+  const { data: categories } = useCategories();
+  const { data: tags } = useTags();
+
   if (!search.success) {
     return (
       <div className="flex  flex-col items-center gap-4">
@@ -27,15 +34,21 @@ export default function Transactions() {
     value,
   }));
 
+  const filters = filterFields(categories, accounts, tags);
+
   return (
     <>
       <h1 className="text-lg font-semibold md:text-2xl">Last Transactions</h1>
-      <DataTable
-        columns={columns}
-        data={transactions}
-        filterFields={filterFields}
-        defaultColumnFilters={defaultColumnFilters}
-      />
+      {error && <MessageDisplay message={error.message} />}
+      {isLoading && <MessageDisplay message="Loading transactions..." />}
+      {isSuccess && transactions && (
+        <DataTable
+          columns={columns}
+          data={transactions.data}
+          defaultColumnFilters={defaultColumnFilters}
+          filterFields={filters}
+        />
+      )}
     </>
   );
 }

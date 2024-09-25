@@ -1,0 +1,758 @@
+[
+  {
+    "account": "Checking Account",
+    "date": 1695726400000,
+    "amount": 70.0,
+    "category": "Lifestyle",
+    "type": "expense",
+    "description": "Gym membership",
+    "tags": ["Health", "Fitness"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695732400000,
+    "amount": 60.0,
+    "category": "Groceries",
+    "type": "expense",
+    "description": "Groceries at Whole Foods",
+    "tags": ["Groceries"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695738400000,
+    "amount": 110.0,
+    "category": "Transport",
+    "type": "expense",
+    "description": "Car maintenance",
+    "tags": ["Car", "Repairs"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695744400000,
+    "amount": 200.0,
+    "category": "Lifestyle",
+    "type": "expense",
+    "description": "New phone case and accessories",
+    "tags": ["Electronics", "Lifestyle"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695750400000,
+    "amount": 400.0,
+    "category": "Work",
+    "type": "income",
+    "description": "Freelance writing job",
+    "tags": ["Freelance"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695756400000,
+    "amount": 150.0,
+    "category": "Home",
+    "type": "expense",
+    "description": "New home decor",
+    "tags": ["Furniture", "Home"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695762400000,
+    "amount": 90.0,
+    "category": "Transport",
+    "type": "expense",
+    "description": "Taxi ride to airport",
+    "tags": ["Transport", "Travel"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695768400000,
+    "amount": 600.0,
+    "category": "Work",
+    "type": "income",
+    "description": "Monthly project payment",
+    "tags": ["Consulting", "Work"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695774400000,
+    "amount": 50.0,
+    "category": "Lifestyle",
+    "type": "expense",
+    "description": "Dinner at Italian restaurant",
+    "tags": ["Dining", "Entertainment"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695780400000,
+    "amount": 130.0,
+    "category": "Transport",
+    "type": "expense",
+    "description": "Annual car insurance payment",
+    "tags": ["Insurance", "Car"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695786400000,
+    "amount": 180.0,
+    "category": "Lifestyle",
+    "type": "expense",
+    "description": "New gaming console",
+    "tags": ["Electronics", "Entertainment"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695792400000,
+    "amount": 80.0,
+    "category": "Groceries",
+    "type": "expense",
+    "description": "Groceries for the week",
+    "tags": ["Groceries"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695798400000,
+    "amount": 15.0,
+    "category": "Transport",
+    "type": "expense",
+    "description": "Bus fare to downtown",
+    "tags": ["Transit", "Transport"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695804400000,
+    "amount": 350.0,
+    "category": "Work",
+    "type": "income",
+    "description": "Freelance logo design",
+    "tags": ["Freelance"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695810400000,
+    "amount": 100.0,
+    "category": "Lifestyle",
+    "type": "expense",
+    "description": "Spa treatment",
+    "tags": ["Health", "Beauty"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695816400000,
+    "amount": 55.0,
+    "category": "Groceries",
+    "type": "expense",
+    "description": "Organic groceries",
+    "tags": ["Groceries"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695822400000,
+    "amount": 600.0,
+    "category": "Work",
+    "type": "income",
+    "description": "Photography session",
+    "tags": ["Freelance", "Work"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695828400000,
+    "amount": 90.0,
+    "category": "Lifestyle",
+    "type": "expense",
+    "description": "New workout gear",
+    "tags": ["Clothing", "Fitness"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695834400000,
+    "amount": 35.0,
+    "category": "Transport",
+    "type": "expense",
+    "description": "Parking at city center",
+    "tags": ["Parking", "Car"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695840400000,
+    "amount": 100.0,
+    "category": "Lifestyle",
+    "type": "expense",
+    "description": "Spa day with friends",
+    "tags": ["Beauty", "Health"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695846400000,
+    "amount": 400.0,
+    "category": "Work",
+    "type": "income",
+    "description": "Blogging revenue",
+    "tags": ["Freelance", "Royalties"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695852400000,
+    "amount": 35.0,
+    "category": "Groceries",
+    "type": "expense",
+    "description": "Weekly groceries",
+    "tags": ["Groceries"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695858400000,
+    "amount": 200.0,
+    "category": "Lifestyle",
+    "type": "expense",
+    "description": "New winter jacket",
+    "tags": ["Clothing"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695864400000,
+    "amount": 70.0,
+    "category": "Subscriptions",
+    "type": "expense",
+    "description": "Music streaming service",
+    "tags": ["Subscriptions", "Music"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695870400000,
+    "amount": 150.0,
+    "category": "Transport",
+    "type": "expense",
+    "description": "Car insurance",
+    "tags": ["Car", "Insurance"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695876400000,
+    "amount": 80.0,
+    "category": "Groceries",
+    "type": "expense",
+    "description": "Groceries from local store",
+    "tags": ["Groceries"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695882400000,
+    "amount": 600.0,
+    "category": "Work",
+    "type": "income",
+    "description": "Freelance programming gig",
+    "tags": ["Freelance", "Programming"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695888400000,
+    "amount": 45.0,
+    "category": "Transport",
+    "type": "expense",
+    "description": "Gas for the week",
+    "tags": ["Car", "Gas"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695894400000,
+    "amount": 50.0,
+    "category": "Lifestyle",
+    "type": "expense",
+    "description": "Cinema night with friends",
+    "tags": ["Entertainment"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695900400000,
+    "amount": 90.0,
+    "category": "Home",
+    "type": "expense",
+    "description": "Monthly water bill",
+    "tags": ["Utilities", "Water"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695906400000,
+    "amount": 220.0,
+    "category": "Lifestyle",
+    "type": "expense",
+    "description": "Weekend spa retreat",
+    "tags": ["Health", "Beauty"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695912400000,
+    "amount": 55.0,
+    "category": "Transport",
+    "type": "expense",
+    "description": "Train ticket to the city",
+    "tags": ["Transit"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695918400000,
+    "amount": 120.0,
+    "category": "Home",
+    "type": "expense",
+    "description": "Electricity bill",
+    "tags": ["Utilities", "Electricity"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695924400000,
+    "amount": 750.0,
+    "category": "Work",
+    "type": "income",
+    "description": "Monthly client project",
+    "tags": ["Consulting", "Freelance"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695930400000,
+    "amount": 25.0,
+    "category": "Transport",
+    "type": "expense",
+    "description": "Metro card reload",
+    "tags": ["Transit", "Transport"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695936400000,
+    "amount": 150.0,
+    "category": "Lifestyle",
+    "type": "expense",
+    "description": "Fashion accessories",
+    "tags": ["Clothing"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695942400000,
+    "amount": 50.0,
+    "category": "Groceries",
+    "type": "expense",
+    "description": "Weekly groceries",
+    "tags": ["Groceries"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695948400000,
+    "amount": 35.0,
+    "category": "Transport",
+    "type": "expense",
+    "description": "Parking fee",
+    "tags": ["Parking", "Car"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695954400000,
+    "amount": 85.0,
+    "category": "Transport",
+    "type": "expense",
+    "description": "Taxi fare to meeting",
+    "tags": ["Transport"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695960400000,
+    "amount": 500.0,
+    "category": "Work",
+    "type": "income",
+    "description": "Freelance photography gig",
+    "tags": ["Freelance"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695966400000,
+    "amount": 110.0,
+    "category": "Transport",
+    "type": "expense",
+    "description": "Car tune-up",
+    "tags": ["Car", "Repairs"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695972400000,
+    "amount": 70.0,
+    "category": "Lifestyle",
+    "type": "expense",
+    "description": "Concert ticket",
+    "tags": ["Entertainment", "Music"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695978400000,
+    "amount": 55.0,
+    "category": "Groceries",
+    "type": "expense",
+    "description": "Groceries for dinner party",
+    "tags": ["Groceries"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695984400000,
+    "amount": 30.0,
+    "category": "Transport",
+    "type": "expense",
+    "description": "Parking at concert venue",
+    "tags": ["Parking", "Car"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695990400000,
+    "amount": 150.0,
+    "category": "Home",
+    "type": "expense",
+    "description": "Furniture for living room",
+    "tags": ["Furniture", "Home"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1695996400000,
+    "amount": 40.0,
+    "category": "Lifestyle",
+    "type": "expense",
+    "description": "Brunch with friends",
+    "tags": ["Dining", "Entertainment"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696002400000,
+    "amount": 300.0,
+    "category": "Work",
+    "type": "income",
+    "description": "Quarterly dividend payment",
+    "tags": ["Dividends"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696008400000,
+    "amount": 25.0,
+    "category": "Transport",
+    "type": "expense",
+    "description": "Bus fare for weekend trip",
+    "tags": ["Transit", "Transport"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696014400000,
+    "amount": 70.0,
+    "category": "Subscriptions",
+    "type": "expense",
+    "description": "Online software subscription",
+    "tags": ["Subscriptions", "Software"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696020400000,
+    "amount": 75.0,
+    "category": "Lifestyle",
+    "type": "expense",
+    "description": "Dinner at steakhouse",
+    "tags": ["Dining", "Entertainment"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696026400000,
+    "amount": 900.0,
+    "category": "Work",
+    "type": "income",
+    "description": "Freelance web development",
+    "tags": ["Freelance"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696032400000,
+    "amount": 65.0,
+    "category": "Transport",
+    "type": "expense",
+    "description": "Gas for car",
+    "tags": ["Gas", "Car"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696038400000,
+    "amount": 120.0,
+    "category": "Home",
+    "type": "expense",
+    "description": "Internet bill",
+    "tags": ["Utilities", "Internet"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696044400000,
+    "amount": 100.0,
+    "category": "Lifestyle",
+    "type": "expense",
+    "description": "Spa day",
+    "tags": ["Health", "Beauty"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696050400000,
+    "amount": 90.0,
+    "category": "Groceries",
+    "type": "expense",
+    "description": "Groceries for the week",
+    "tags": ["Groceries"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696056400000,
+    "amount": 40.0,
+    "category": "Transport",
+    "type": "expense",
+    "description": "Bus fare for work",
+    "tags": ["Transit", "Transport"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696062400000,
+    "amount": 500.0,
+    "category": "Work",
+    "type": "income",
+    "description": "Freelance marketing project",
+    "tags": ["Freelance"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696068400000,
+    "amount": 60.0,
+    "category": "Lifestyle",
+    "type": "expense",
+    "description": "Dinner at sushi restaurant",
+    "tags": ["Dining", "Entertainment"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696074400000,
+    "amount": 100.0,
+    "category": "Home",
+    "type": "expense",
+    "description": "Monthly gas bill",
+    "tags": ["Utilities", "Gas"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696080400000,
+    "amount": 200.0,
+    "category": "Work",
+    "type": "income",
+    "description": "Monthly royalty payment",
+    "tags": ["Freelance", "Royalties"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696086400000,
+    "amount": 80.0,
+    "category": "Lifestyle",
+    "type": "expense",
+    "description": "Movie night with friends",
+    "tags": ["Entertainment"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696092400000,
+    "amount": 110.0,
+    "category": "Transport",
+    "type": "expense",
+    "description": "Car repair",
+    "tags": ["Repairs", "Car"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696098400000,
+    "amount": 60.0,
+    "category": "Groceries",
+    "type": "expense",
+    "description": "Groceries at Trader Joe's",
+    "tags": ["Groceries"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696104400000,
+    "amount": 600.0,
+    "category": "Work",
+    "type": "income",
+    "description": "Photography project",
+    "tags": ["Freelance"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696110400000,
+    "amount": 45.0,
+    "category": "Transport",
+    "type": "expense",
+    "description": "Taxi fare to airport",
+    "tags": ["Transport"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696116400000,
+    "amount": 75.0,
+    "category": "Lifestyle",
+    "type": "expense",
+    "description": "Dinner at Italian restaurant",
+    "tags": ["Dining", "Entertainment"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696122400000,
+    "amount": 450.0,
+    "category": "Work",
+    "type": "income",
+    "description": "Freelance web design",
+    "tags": ["Freelance"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696128400000,
+    "amount": 25.0,
+    "category": "Transport",
+    "type": "expense",
+    "description": "Metro card reload",
+    "tags": ["Transit", "Transport"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696134400000,
+    "amount": 90.0,
+    "category": "Groceries",
+    "type": "expense",
+    "description": "Groceries for weekend party",
+    "tags": ["Groceries"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696140400000,
+    "amount": 120.0,
+    "category": "Home",
+    "type": "expense",
+    "description": "Electricity bill",
+    "tags": ["Utilities", "Electricity"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696146400000,
+    "amount": 300.0,
+    "category": "Work",
+    "type": "income",
+    "description": "Quarterly dividends",
+    "tags": ["Dividends"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696152400000,
+    "amount": 75.0,
+    "category": "Lifestyle",
+    "type": "expense",
+    "description": "Dinner at French restaurant",
+    "tags": ["Dining", "Entertainment"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696158400000,
+    "amount": 60.0,
+    "category": "Groceries",
+    "type": "expense",
+    "description": "Weekly groceries",
+    "tags": ["Groceries"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696164400000,
+    "amount": 45.0,
+    "category": "Transport",
+    "type": "expense",
+    "description": "Taxi fare",
+    "tags": ["Transport"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696170400000,
+    "amount": 500.0,
+    "category": "Work",
+    "type": "income",
+    "description": "Consulting project",
+    "tags": ["Consulting", "Freelance"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696176400000,
+    "amount": 130.0,
+    "category": "Transport",
+    "type": "expense",
+    "description": "Car insurance",
+    "tags": ["Insurance", "Car"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696182400000,
+    "amount": 200.0,
+    "category": "Lifestyle",
+    "type": "expense",
+    "description": "New wardrobe for fall",
+    "tags": ["Clothing"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696188400000,
+    "amount": 90.0,
+    "category": "Groceries",
+    "type": "expense",
+    "description": "Groceries for the week",
+    "tags": ["Groceries"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696194400000,
+    "amount": 55.0,
+    "category": "Transport",
+    "type": "expense",
+    "description": "Parking fee",
+    "tags": ["Parking", "Car"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696200400000,
+    "amount": 65.0,
+    "category": "Transport",
+    "type": "expense",
+    "description": "Gas for car",
+    "tags": ["Gas", "Car"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696206400000,
+    "amount": 850.0,
+    "category": "Work",
+    "type": "income",
+    "description": "Freelance writing gig",
+    "tags": ["Freelance"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696212400000,
+    "amount": 60.0,
+    "category": "Lifestyle",
+    "type": "expense",
+    "description": "Dinner with colleagues",
+    "tags": ["Dining", "Entertainment"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696218400000,
+    "amount": 150.0,
+    "category": "Lifestyle",
+    "type": "expense",
+    "description": "Spa day retreat",
+    "tags": ["Health", "Beauty"]
+  },
+  {
+    "account": "Checking Account",
+    "date": 1696224400000,
+    "amount": 110.0,
+    "category": "Transport",
+    "type": "expense",
+    "description": "Car maintenance",
+    "tags": ["Repairs", "Car"]
+  }
+]
