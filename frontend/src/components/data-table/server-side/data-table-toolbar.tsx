@@ -6,6 +6,8 @@ import { PanelLeftClose, PanelLeftOpen, X } from "lucide-react";
 import useUpdateSearchParams from "@/hooks/use-update-search-params";
 
 import { Kbd } from "@/components/ui/kbd";
+import { useFilterSearchParams } from "@/hooks/useFilterSearchParams";
+import { useSortingSearchParams } from "@/hooks/useSortingSearchParams";
 import { useEffect } from "react";
 import { DataTableViewOptions } from "../data-table-view-options";
 
@@ -20,8 +22,8 @@ export function DataTableToolbar<TData>({
   controlsOpen,
   setControlsOpen,
 }: DataTableToolbarProps<TData>) {
-  const filters = table.getState().columnFilters;
-  const sorting = table.getState().sorting;
+  const filters = useFilterSearchParams();
+  const sorting = useSortingSearchParams();
   const updateSearchParams = useUpdateSearchParams();
 
   useEffect(() => {
@@ -64,24 +66,21 @@ export function DataTableToolbar<TData>({
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        <p className="text-sm text-muted-foreground">
-          {table.getFilteredRowModel().rows.length} of {table.getCoreRowModel().rows.length} row(s)
-          filtered
-        </p>
       </div>
       <div className="flex items-center gap-2">
-        {filters.length || sorting.length ? (
+        {filters || sorting ? (
           <Button
             size="sm"
             variant="ghost"
             onClick={() => {
-              table.resetColumnFilters();
-              table.resetSorting();
-              const resetValues = filters.reduce<Record<string, null>>((prev, curr) => {
-                prev[curr.id] = null;
-                return prev;
-              }, {});
-              if (sorting.length) {
+              const resetValues = Object.keys(filters || {}).reduce<Record<string, null>>(
+                (prev, curr) => {
+                  prev[curr] = null;
+                  return prev;
+                },
+                {}
+              );
+              if (sorting) {
                 resetValues.sortBy = null;
                 resetValues.sortDirection = null;
               }

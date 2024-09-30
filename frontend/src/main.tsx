@@ -20,7 +20,8 @@ const queryClient = new QueryClient({
   },
   queryCache: new QueryCache({
     onError: (error) => {
-      if (error.message === "401") {
+      console.error("THIS IS THE ERROR", error);
+      if (error.message === "401" || error.message === "Unauthorized") {
         window.location.href = "/login";
       }
     },
@@ -38,7 +39,7 @@ function App() {
             </div>
           </TooltipProvider>
         </AuthProvider>
-        <ReactQueryDevtools buttonPosition="bottom-right" />
+        <ReactQueryDevtools buttonPosition="bottom-left" />
       </QueryClientProvider>
       <Toaster />
     </ThemeProvider>

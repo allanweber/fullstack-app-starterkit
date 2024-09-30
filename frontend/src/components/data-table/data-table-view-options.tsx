@@ -34,8 +34,6 @@ export function DataTableViewOptions<TData>({ table }: DataTableViewOptionsProps
             return (
               <DropdownMenuCheckboxItem
                 key={column.id}
-                // TODO: better extract the name into a separate config (to be used here and the data-table header)
-                className={column.id === "url" ? "uppercase" : "capitalize"}
                 onSelect={(e) => e.preventDefault()}
                 checked={column.getIsVisible()}
                 onCheckedChange={(value) => column.toggleVisibility(!!value)}

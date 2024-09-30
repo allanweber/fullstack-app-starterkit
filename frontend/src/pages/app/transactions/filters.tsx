@@ -1,4 +1,4 @@
-import { DataTableFilterField, Option } from "@/components/data-table/client-only/types";
+import { DataTableFilterField, Option } from "@/components/data-table/types";
 import { Color } from "@/lib/colors";
 import { cn } from "@/lib/utils";
 import { Account, Category, Tag, Transaction } from "@/types/transaction";
@@ -9,6 +9,12 @@ export const filterFields = (
   tags: Tag[] | undefined
 ) =>
   [
+    {
+      label: "Description",
+      value: "description",
+      type: "input",
+      defaultOpen: true,
+    },
     {
       label: "Account",
       value: "account",
@@ -38,11 +44,6 @@ export const filterFields = (
       type: "checkbox",
       options: categories?.map(({ id, name }) => ({ label: name, value: id })),
       defaultOpen: true,
-    },
-    {
-      label: "Description",
-      value: "description",
-      type: "input",
     },
     {
       label: "Tags",

@@ -1,7 +1,6 @@
 export class Paginated<T> {
-  public pagination: Pagination;
-
   public data: T[];
+  public pagination: Pagination;
 
   constructor(list: T[], pagination: Pagination) {
     this.data = list;
@@ -10,16 +9,16 @@ export class Paginated<T> {
 }
 
 export class Pagination implements PaginatedParams {
-  public pageSize: number;
   public page: number;
-  public total: number;
+  public pageSize: number;
   public totalPages: number;
+  public total: number;
 
   constructor(pageSize: number, page: number, total: number) {
     this.page = page;
     this.pageSize = pageSize;
-    this.total = total;
     this.totalPages = Math.ceil(total / pageSize);
+    this.total = total;
   }
 }
 

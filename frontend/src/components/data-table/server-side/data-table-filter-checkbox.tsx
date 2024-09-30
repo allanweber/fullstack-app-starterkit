@@ -1,21 +1,18 @@
 import useUpdateSearchParams from "@/hooks/use-update-search-params";
-import type { Table } from "@tanstack/react-table";
 
 import { Checkbox } from "@/components/ui/checkbox";
 
 import { Label } from "@/components/ui/label";
+import useNamedSearchParam from "@/hooks/useNamedSearchParam";
 import { cn } from "@/lib/utils";
 import { Search } from "lucide-react";
 import { SetStateAction, useState } from "react";
 import { InputWithAddons } from "../../ui/input-with-addons";
 import { ARRAY_DELIMITER, type DataTableCheckboxFilterField } from "../types";
 
-type DataTableFilterCheckboxProps<TData> = DataTableCheckboxFilterField<TData> & {
-  table: Table<TData>;
-};
+type DataTableFilterCheckboxProps<TData> = DataTableCheckboxFilterField<TData> & {};
 
 export function DataTableFilterCheckbox<TData>({
-  table,
   value: _value,
   options,
   component,
@@ -23,18 +20,14 @@ export function DataTableFilterCheckbox<TData>({
   const value = _value as string;
   const [inputValue, setInputValue] = useState("");
   const updateSearchParams = useUpdateSearchParams();
-  const column = table.getColumn(value);
-  const facetedValue = column?.getFacetedUniqueValues();
-  const filterValue = column?.getFilterValue();
+  const searchParam = useNamedSearchParam(value);
+  const searchParamArray = searchParam?.split(ARRAY_DELIMITER);
 
   if (!options?.length) return null;
 
   const filterOptions = options.filter(
     (option) => inputValue === "" || option.label.toLowerCase().includes(inputValue.toLowerCase())
   );
-
-  // TODO: check if we could useMemo
-  const filters = filterValue ? (Array.isArray(filterValue) ? filterValue : [filterValue]) : [];
   const Component = component;
 
   return (
@@ -52,9 +45,10 @@ export function DataTableFilterCheckbox<TData>({
       ) : null}
       <div className="rounded-lg border border-border empty:border-none">
         {filterOptions.map((option, index) => {
-          const checked = filters.some((e: string) => {
-            return e == (option.value as string);
-          });
+          const checked =
+            searchParamArray?.some((e: string) => {
+              return e == (option.value as string);
+            }) || false;
 
           return (
             <div
@@ -68,31 +62,27 @@ export function DataTableFilterCheckbox<TData>({
                 id={`${value}-${option.value}`}
                 checked={checked}
                 onCheckedChange={(checked) => {
-                  const newValue = checked
-                    ? [...(filters || []), option.value]
-                    : filters?.filter((value) => option.value !== value);
-                  column?.setFilterValue(newValue?.length ? newValue : undefined);
+                  const update = checked
+                    ? [...(searchParamArray || []), option.value]
+                    : searchParamArray?.filter((value) => option.value != value);
+
                   updateSearchParams({
-                    [value]: newValue?.length ? newValue.join(ARRAY_DELIMITER) : null,
+                    [value]: update?.length ? update.join(ARRAY_DELIMITER) : null,
                   });
                 }}
               />
               <Label
                 htmlFor={`${value}-${option.value}`}
-                className="flex w-full items-center justify-center gap-1 truncate text-muted-foreground group-hover:text-accent-foreground"
+                className="flex w-full gap-1 truncate text-muted-foreground group-hover:text-accent-foreground"
               >
                 {Component ? (
                   <Component {...option} />
                 ) : (
                   <span className="truncate font-normal">{option.label}</span>
                 )}
-                <span className="ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs">
-                  {facetedValue?.get(option.value)}
-                </span>
                 <button
                   type="button"
                   onClick={() => {
-                    column?.setFilterValue(option.value);
                     updateSearchParams({
                       [value]: `${option.value}`,
                     });

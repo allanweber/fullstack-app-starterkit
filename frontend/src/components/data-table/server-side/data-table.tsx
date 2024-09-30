@@ -1,10 +1,4 @@
-import type {
-  ColumnDef,
-  ColumnFiltersState,
-  PaginationState,
-  SortingState,
-  VisibilityState,
-} from "@tanstack/react-table";
+import type { ColumnDef, SortingState, VisibilityState } from "@tanstack/react-table";
 import {
   flexRender,
   getCoreRowModel,
@@ -14,7 +8,6 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import * as React from "react";
 
 import {
   Table,
@@ -27,50 +20,33 @@ import {
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { cn } from "@/lib/utils";
 
-import useUpdateSearchParams from "@/hooks/use-update-search-params";
-import { useSearchParams } from "react-router-dom";
+import { Paginated } from "@/types/paginated";
 import { DataTableFilterField } from "../types";
 import { DataTableFilterControls } from "./data-table-filter-controls";
+import { TableLoading } from "./data-table-loading";
 import { DataTablePagination } from "./data-table-pagination";
 import { DataTableToolbar } from "./data-table-toolbar";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
-  data: TData[];
-  defaultColumnFilters?: ColumnFiltersState;
+  paginatedData: Paginated<TData> | undefined | null;
+  isLoading: boolean;
   filterFields?: DataTableFilterField<TData>[];
   sortingState?: SortingState;
 }
 
 export function DataTable<TData, TValue>({
   columns,
-  data,
-  defaultColumnFilters = [],
+  paginatedData,
+  isLoading,
   filterFields = [],
   sortingState = [],
 }: DataTableProps<TData, TValue>) {
-  const updateSearchParams = useUpdateSearchParams();
-  const [searchParams] = useSearchParams();
-  const [columnFilters, setColumnFilters] =
-    React.useState<ColumnFiltersState>(defaultColumnFilters);
+  // const updateSearchParams = useUpdateSearchParams();
+  // const [searchParams] = useSearchParams();
 
-  const sortingStart = searchParams.get("sortBy")
-    ? [
-        {
-          id: searchParams.get("sortBy")!,
-          desc: searchParams.get("sortDirection")
-            ? searchParams.get("sortDirection") === "desc"
-            : false,
-        },
-      ]
-    : sortingState;
-  const [sorting, setSorting] = React.useState<SortingState>(sortingStart);
-
-  const paginationStart = {
-    pageIndex: searchParams.get("page") ? Number(searchParams.get("page")) - 1 : 0,
-    pageSize: searchParams.get("pageSize") ? Number(searchParams.get("pageSize")) : 15,
-  };
-  const [pagination, setPagination] = React.useState<PaginationState>(paginationStart);
+  // const sortingStart = sortingState;
+  // const [sorting, setSorting] = React.useState<SortingState>(sortingStart);
 
   const [columnVisibility, setColumnVisibility] = useLocalStorage<VisibilityState>(
     "data-table-visibility",
@@ -79,36 +55,25 @@ export function DataTable<TData, TValue>({
   const [controlsOpen, setControlsOpen] = useLocalStorage("data-table-controls", true);
 
   const table = useReactTable({
-    data,
+    data: [],
     columns,
-    state: { columnFilters, sorting, columnVisibility, pagination },
+    state: { columnVisibility },
     onColumnVisibilityChange: setColumnVisibility,
-    onColumnFiltersChange: setColumnFilters,
-    onSortingChange: (updater) => {
-      const newSortingValue = updater instanceof Function ? updater(sorting) : updater;
-      if (newSortingValue.length === 0) {
-        updateSearchParams({
-          sortBy: null,
-          sortDirection: null,
-        });
-      } else {
-        updateSearchParams({
-          sortBy: newSortingValue[0].id,
-          sortDirection: newSortingValue[0].desc ? "desc" : "asc",
-        });
-      }
-      setSorting(updater);
-    },
-    onPaginationChange: (updater) => {
-      setPagination((old) => {
-        const newPaginationValue = updater instanceof Function ? updater(old) : updater;
-        updateSearchParams({
-          page: newPaginationValue.pageIndex + 1,
-          pageSize: newPaginationValue.pageSize,
-        });
-        return newPaginationValue;
-      });
-    },
+    // onSortingChange: (updater) => {
+    //   const newSortingValue = updater instanceof Function ? updater(sorting) : updater;
+    //   if (newSortingValue.length === 0) {
+    //     updateSearchParams({
+    //       sortBy: null,
+    //       sortDirection: null,
+    //     });
+    //   } else {
+    //     updateSearchParams({
+    //       sortBy: newSortingValue[0].id,
+    //       sortDirection: newSortingValue[0].desc ? "desc" : "asc",
+    //     });
+    //   }
+    //   setSorting(updater);
+    // },
     getSortedRowModel: getSortedRowModel(),
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -125,7 +90,7 @@ export function DataTable<TData, TValue>({
         )}
       >
         <div className="-m-1 h-full p-1 sm:overflow-x-hidden sm:overflow-y-auto">
-          <DataTableFilterControls table={table} columns={columns} filterFields={filterFields} />
+          <DataTableFilterControls columns={columns} filterFields={filterFields} />
         </div>
       </div>
       <div className="flex max-w-full flex-1 flex-col gap-4 overflow-hidden p-1">
@@ -162,6 +127,12 @@ export function DataTable<TData, TValue>({
                     ))}
                   </TableRow>
                 ))
+              ) : isLoading ? (
+                <TableRow>
+                  <TableCell colSpan={table.getHeaderGroups()[0].headers.length}>
+                    <TableLoading />
+                  </TableCell>
+                </TableRow>
               ) : (
                 <TableRow>
                   <TableCell colSpan={columns.length} className="h-24 text-center">
@@ -172,7 +143,7 @@ export function DataTable<TData, TValue>({
             </TableBody>
           </Table>
         </div>
-        <DataTablePagination table={table} />
+        {paginatedData && <DataTablePagination pagination={paginatedData.pagination} />}
       </div>
     </div>
   );

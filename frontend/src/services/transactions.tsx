@@ -1,16 +1,47 @@
+import { ARRAY_DELIMITER } from "@/components/data-table/types";
 import { useAuth } from "@/hooks/useAuth";
-import { Paginated } from "@/types/paginated";
+import { TransactionFilters } from "@/pages/app/transactions/columns";
+import { PageRequest, Paginated } from "@/types/paginated";
 import { Transaction } from "@/types/transaction";
 import { useQuery } from "@tanstack/react-query";
 import { responseOrError } from "./response";
 
-export const useTransactions = () => {
+export const useTransactions = (pageRequest: PageRequest<TransactionFilters>) => {
   const { getToken } = useAuth();
 
   return useQuery({
-    queryKey: [`transactions`],
+    queryKey: [`transactions-${JSON.stringify(pageRequest)}`],
     queryFn: async (): Promise<Paginated<Transaction>> => {
-      return fetch("/api/v1/transactions", {
+      const url = ["/api/v1/transactions"];
+      const params = new URLSearchParams();
+      params.append("page", `${pageRequest.page}`);
+      params.append("pageSize", `${pageRequest.pageSize}`);
+
+      if (pageRequest.filters) {
+        Object.entries(pageRequest.filters).forEach(([key, value]) => {
+          if (value instanceof Date) {
+            params.append(key, value.getTime().toString());
+          } else {
+            params.append(key, value.toString());
+          }
+          if (Array.isArray(value)) {
+            params.set(
+              key,
+              value
+                .map((v) => {
+                  if (v instanceof Date) {
+                    return v.getTime().toString();
+                  }
+                  return v.toString();
+                })
+                .join(ARRAY_DELIMITER)
+            );
+          }
+        });
+      }
+      url.push(`?${params.toString()}`);
+
+      return fetch(url.join(""), {
         headers: {
           Authorization: `Bearer ${getToken()}`,
         },

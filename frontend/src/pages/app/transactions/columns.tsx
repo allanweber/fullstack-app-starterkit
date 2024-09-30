@@ -1,10 +1,6 @@
 import ColoredNumber from "@/components/ColoredNumber";
-import { DataTableColumnHeader } from "@/components/data-table/client-only/data-table-column-header";
-import {
-  ARRAY_DELIMITER,
-  RANGE_DELIMITER,
-  SLIDER_DELIMITER,
-} from "@/components/data-table/client-only/types";
+import { DataTableColumnHeader } from "@/components/data-table/server-side/data-table-column-header";
+import { ARRAY_DELIMITER, RANGE_DELIMITER, SLIDER_DELIMITER } from "@/components/data-table/types";
 import NumberDisplay from "@/components/NumberDisplay";
 import { Badge } from "@/components/ui/badge";
 import { Color } from "@/lib/colors";
@@ -200,3 +196,5 @@ export const columnFilterSchema = z.object({
     .refine((value) => ["Expense", "Income"].includes(value))
     .optional(),
 });
+
+export type TransactionFilters = z.infer<typeof columnFilterSchema>;

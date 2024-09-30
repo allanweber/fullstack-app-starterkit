@@ -1,4 +1,4 @@
-import type { ColumnDef, Table } from "@tanstack/react-table";
+import type { ColumnDef } from "@tanstack/react-table";
 
 import {
   Accordion,
@@ -13,6 +13,7 @@ import { X } from "lucide-react";
 
 import { DataTableFilterCheckbox } from "./data-table-filter-checkbox";
 
+import { useFilterSearchParams } from "@/hooks/useFilterSearchParams";
 import { DataTableFilterField } from "../types";
 import { DataTableFilterInput } from "./data-table-filter-input";
 import { DataTableFilterResetButton } from "./data-table-filter-reset-button";
@@ -20,17 +21,15 @@ import { DataTableFilterSlider } from "./data-table-filter-slider";
 import { DataTableFilterTimeRange } from "./data-table-filter-timerange";
 
 interface DataTableFilterControlsProps<TData, TValue> {
-  table: Table<TData>;
   columns: ColumnDef<TData, TValue>[];
   filterFields?: DataTableFilterField<TData>[];
 }
 
 export function DataTableFilterControls<TData, TValue>({
-  table,
-
   filterFields,
 }: DataTableFilterControlsProps<TData, TValue>) {
-  const filters = table.getState().columnFilters;
+  const filters = useFilterSearchParams();
+
   const updateSearchParams = useUpdateSearchParams();
 
   return (
@@ -38,16 +37,18 @@ export function DataTableFilterControls<TData, TValue>({
       <div className="flex h-[46px] items-center justify-between gap-3">
         <p className="font-medium text-foreground">Filters</p>
         <div>
-          {filters.length ? (
+          {filters ? (
             <Button
               variant="ghost"
               size="sm"
               onClick={() => {
-                table.resetColumnFilters();
-                const resetValues = filters.reduce<Record<string, null>>((prev, curr) => {
-                  prev[curr.id] = null;
-                  return prev;
-                }, {});
+                const resetValues = Object.keys(filters || {}).reduce<Record<string, null>>(
+                  (prev, curr) => {
+                    prev[curr] = null;
+                    return prev;
+                  },
+                  {}
+                );
                 updateSearchParams(resetValues);
               }}
             >
@@ -59,7 +60,6 @@ export function DataTableFilterControls<TData, TValue>({
       </div>
       <Accordion
         type="multiple"
-        // REMINDER: open all filters by default
         defaultValue={filterFields
           ?.filter(({ defaultOpen }) => defaultOpen)
           ?.map(({ value }) => value as string)}
@@ -74,23 +74,23 @@ export function DataTableFilterControls<TData, TValue>({
               <AccordionTrigger className="p-2 hover:no-underline">
                 <div className="flex items-center gap-2">
                   <p className="text-sm font-medium text-foreground">{field.label}</p>
-                  <DataTableFilterResetButton table={table} {...field} />
+                  <DataTableFilterResetButton {...field} />
                 </div>
               </AccordionTrigger>
               <AccordionContent className="-m-4 p-5">
                 {(() => {
                   switch (field.type) {
                     case "checkbox": {
-                      return <DataTableFilterCheckbox table={table} {...field} />;
+                      return <DataTableFilterCheckbox {...field} />;
                     }
                     case "slider": {
-                      return <DataTableFilterSlider table={table} {...field} />;
+                      return <DataTableFilterSlider {...field} />;
                     }
                     case "input": {
-                      return <DataTableFilterInput table={table} {...field} />;
+                      return <DataTableFilterInput {...field} />;
                     }
                     case "timerange": {
-                      return <DataTableFilterTimeRange table={table} {...field} />;
+                      return <DataTableFilterTimeRange {...field} />;
                     }
                   }
                 })()}

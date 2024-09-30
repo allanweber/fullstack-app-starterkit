@@ -9,3 +9,9 @@ export interface PaginatedParams {
   total: number;
   totalPages: number;
 }
+
+export interface PageRequest<T> {
+  page: number;
+  pageSize: number;
+  filters: T | undefined;
+}

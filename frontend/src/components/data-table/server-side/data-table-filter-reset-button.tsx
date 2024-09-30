@@ -1,27 +1,35 @@
 import useUpdateSearchParams from "@/hooks/use-update-search-params";
-import type { Table } from "@tanstack/react-table";
 
 import { Button } from "@/components/ui/button";
+import useNamedSearchParam from "@/hooks/useNamedSearchParam";
 import { X } from "lucide-react";
-import type { DataTableFilterField } from "../types";
+import {
+  ARRAY_DELIMITER,
+  RANGE_DELIMITER,
+  SLIDER_DELIMITER,
+  type DataTableFilterField,
+} from "../types";
 
-type DataTableFilterResetButtonProps<TData> = DataTableFilterField<TData> & {
-  table: Table<TData>;
-};
+type DataTableFilterResetButtonProps<TData> = DataTableFilterField<TData> & {};
 
 export function DataTableFilterResetButton<TData>({
-  table,
   value: _value,
 }: DataTableFilterResetButtonProps<TData>) {
   const value = _value as string;
   const updateSearchParams = useUpdateSearchParams();
-  const column = table.getColumn(value);
-  const filterValue = column?.getFilterValue();
 
-  // TODO: check if we could useMemo
-  const filters = filterValue ? (Array.isArray(filterValue) ? filterValue : [filterValue]) : [];
+  const searchParam = useNamedSearchParam(value);
+  const filters = searchParam
+    ? searchParam.includes(ARRAY_DELIMITER)
+      ? searchParam.split(ARRAY_DELIMITER)
+      : searchParam.includes(SLIDER_DELIMITER)
+      ? searchParam.split(SLIDER_DELIMITER)
+      : searchParam.includes(RANGE_DELIMITER)
+      ? searchParam.split(RANGE_DELIMITER)
+      : [searchParam]
+    : [];
 
-  if (filters.length === 0) return null;
+  if (!searchParam) return null;
 
   return (
     <Button
@@ -29,14 +37,13 @@ export function DataTableFilterResetButton<TData>({
       className="h-5 rounded-full px-1.5 py-1 font-mono text-[10px]"
       onClick={(e) => {
         e.stopPropagation();
-        column?.setFilterValue(undefined);
         updateSearchParams({ [value]: null });
       }}
       asChild
     >
-      {/* REMINDER: `AccordionTrigger` is also a button(!) and we get Hydration error when rendering button within button */}
       <div role="button">
         <span>{filters.length}</span>
+
         <X className="ml-1 h-2.5 w-2.5 text-muted-foreground" />
       </div>
     </Button>
