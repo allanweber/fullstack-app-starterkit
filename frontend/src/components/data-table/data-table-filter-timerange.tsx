@@ -4,10 +4,10 @@ import type { Table } from "@tanstack/react-table";
 import { useMemo } from "react";
 import type { DateRange } from "react-day-picker";
 
-import { DatePickerWithRange } from "../../date-picker-with-range";
+import { DatePickerWithRange } from "../date-picker-with-range";
 
 import { isArrayOfDates } from "@/lib/utils";
-import { RANGE_DELIMITER, type DataTableTimerangeFilterField } from "../types";
+import { RANGE_DELIMITER, type DataTableTimerangeFilterField } from "./types";
 
 type DataTableFilterTimerangeProps<TData> = DataTableTimerangeFilterField<TData> & {
   table: Table<TData>;

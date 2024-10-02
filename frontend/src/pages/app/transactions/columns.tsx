@@ -1,5 +1,5 @@
 import ColoredNumber from "@/components/ColoredNumber";
-import { DataTableColumnHeader } from "@/components/data-table/server-side/data-table-column-header";
+import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
 import { ARRAY_DELIMITER, RANGE_DELIMITER, SLIDER_DELIMITER } from "@/components/data-table/types";
 import NumberDisplay from "@/components/NumberDisplay";
 import { Badge } from "@/components/ui/badge";

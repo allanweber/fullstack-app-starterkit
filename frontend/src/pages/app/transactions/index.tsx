@@ -1,4 +1,4 @@
-import { DataTable } from "@/components/data-table/server-side/data-table";
+import { DataTable } from "@/components/data-table/data-table";
 import { MessageDisplay } from "@/components/MessageDisplay";
 import useKeyPairSearchParams from "@/hooks/useKeyPairSearchParams";
 import { useAccounts } from "@/services/accounts";
@@ -12,32 +12,21 @@ export default function Transactions() {
   const entries = useKeyPairSearchParams();
   const search = columnFilterSchema.safeParse(entries);
 
-  const {
-    data: transactions,
-    error,
-    isLoading,
-    isSuccess,
-  } = useTransactions({
+  const pageRequest = {
     page: 1,
     pageSize: 15,
     filters: search.success && Object.keys(search.data).length > 0 ? search.data : undefined,
-  });
+  };
+
+  const { data: transactions, error, isLoading, isSuccess } = useTransactions(pageRequest);
   const { data: accounts } = useAccounts();
   const { data: categories } = useCategories();
   const { data: tags } = useTags();
 
-  // if (!search.success) {
-  //   return (
-  //     <div className="flex  flex-col items-center gap-4">
-  //       <MessageDisplay message="Invalid search parameters" />
-  //       <Button asChild className="w-full">
-  //         <Link to="/app/transactions">Clear filters</Link>
-  //       </Button>
-  //     </div>
-  //   );
-  // }
-
-  console.log({ transactions, accounts, categories, tags });
+  const defaultColumnFilters = Object.entries(search.data || {}).map(([key, value]) => ({
+    id: key,
+    value,
+  }));
 
   const filters = filterFields(categories, accounts, tags);
 
@@ -45,12 +34,15 @@ export default function Transactions() {
     <>
       <h1 className="text-lg font-semibold md:text-2xl">Last Transactions</h1>
       {error && <MessageDisplay message={error.message} />}
-      <DataTable
-        columns={columns}
-        paginatedData={transactions}
-        filterFields={filters}
-        isLoading={isLoading}
-      />
+      {isSuccess && transactions && (
+        <DataTable
+          columns={columns}
+          data={transactions.data}
+          defaultColumnFilters={defaultColumnFilters}
+          filterFields={filters}
+          serverSide={true}
+        />
+      )}
     </>
   );
 }

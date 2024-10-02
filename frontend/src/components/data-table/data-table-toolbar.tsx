@@ -7,7 +7,7 @@ import useUpdateSearchParams from "@/hooks/use-update-search-params";
 
 import { Kbd } from "@/components/ui/kbd";
 import { useEffect } from "react";
-import { DataTableViewOptions } from "../data-table-view-options";
+import { DataTableViewOptions } from "./data-table-view-options";
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -64,10 +64,6 @@ export function DataTableToolbar<TData>({
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
-        <p className="text-sm text-muted-foreground">
-          {table.getFilteredRowModel().rows.length} of {table.getCoreRowModel().rows.length} row(s)
-          filtered
-        </p>
       </div>
       <div className="flex items-center gap-2">
         {filters.length || sorting.length ? (

@@ -1,18 +1,25 @@
+import useUpdateSearchParams from "@/hooks/use-update-search-params";
+import type { Table } from "@tanstack/react-table";
+
 import { InputWithAddons } from "@/components/ui/input-with-addons";
 import { Label } from "@/components/ui/label";
-import useUpdateSearchParams from "@/hooks/use-update-search-params";
-import useNamedSearchParam from "@/hooks/useNamedSearchParam";
 import { Search } from "lucide-react";
 import { useEffect, useState } from "react";
-import type { DataTableInputFilterField } from "../types";
+import type { DataTableInputFilterField } from "./types";
 
-type DataTableFilterInputProps<TData> = DataTableInputFilterField<TData> & {};
+type DataTableFilterInputProps<TData> = DataTableInputFilterField<TData> & {
+  table: Table<TData>;
+};
 
-export function DataTableFilterInput<TData>({ value: _value }: DataTableFilterInputProps<TData>) {
+export function DataTableFilterInput<TData>({
+  table,
+  value: _value,
+}: DataTableFilterInputProps<TData>) {
   const value = _value as string;
   const updateSearchParams = useUpdateSearchParams();
-  const searchParam = useNamedSearchParam(value);
-  const [content, setContent] = useState(searchParam);
+  const column = table.getColumn(value);
+  const filterValue = column?.getFilterValue();
+  const [content, setContent] = useState<string | null>(null);
 
   const onChangeInput = (val: string) => {
     const newValue = val.trim() === "" ? null : val;
@@ -20,8 +27,9 @@ export function DataTableFilterInput<TData>({ value: _value }: DataTableFilterIn
   };
 
   useEffect(() => {
-    setContent(searchParam);
-  }, [searchParam]);
+    const value = typeof filterValue === "string" ? filterValue : null;
+    setContent(value);
+  }, [filterValue]);
 
   useEffect(() => {
     const delayInputTimeoutId = setTimeout(() => {

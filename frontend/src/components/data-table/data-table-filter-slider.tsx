@@ -1,15 +1,20 @@
 import useUpdateSearchParams from "@/hooks/use-update-search-params";
+import type { Table } from "@tanstack/react-table";
 
 import { InputWithAddons } from "@/components/ui/input-with-addons";
 import { Label } from "@/components/ui/label";
-import { SLIDER_DELIMITER, type DataTableSliderFilterField } from "../types";
+import { SLIDER_DELIMITER, type DataTableSliderFilterField } from "./types";
 
-import useNamedSearchParam from "@/hooks/useNamedSearchParam";
-import { Slider } from "../../ui/slider";
+import { isArrayOfNumbers } from "@/lib/utils";
+import { useEffect, useState } from "react";
+import { Slider } from "../ui/slider";
 
-type DataTableFilterSliderProps<TData> = DataTableSliderFilterField<TData> & {};
+type DataTableFilterSliderProps<TData> = DataTableSliderFilterField<TData> & {
+  table: Table<TData>;
+};
 
 export function DataTableFilterSlider<TData>({
+  table,
   value: _value,
   min,
   max,
@@ -17,15 +22,29 @@ export function DataTableFilterSlider<TData>({
 }: DataTableFilterSliderProps<TData>) {
   const value = _value as string;
   const updateSearchParams = useUpdateSearchParams();
-  const searchParam = useNamedSearchParam(value);
-  const searchParamArray = searchParam?.split(SLIDER_DELIMITER);
+  const column = table.getColumn(value);
+  const filterValue = column?.getFilterValue();
+  const [content, setContent] = useState<number[] | undefined>(undefined);
 
-  const filters =
-    typeof searchParamArray === "number"
-      ? [searchParamArray, searchParamArray]
-      : Array.isArray(searchParamArray)
-      ? searchParamArray.map(Number)
-      : undefined;
+  useEffect(() => {
+    const value =
+      typeof filterValue === "number"
+        ? [filterValue, filterValue]
+        : Array.isArray(filterValue) && isArrayOfNumbers(filterValue)
+        ? filterValue
+        : undefined;
+    setContent(value);
+  }, [filterValue]);
+
+  useEffect(() => {
+    const delayInputTimeoutId = setTimeout(() => {
+      updateSearchParams({
+        [value]: content ? content.join(SLIDER_DELIMITER) : null,
+      });
+    }, 500);
+    return () => clearTimeout(delayInputTimeoutId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [content]);
 
   return (
     <div className="grid gap-3 mb-2">
@@ -41,16 +60,15 @@ export function DataTableFilterSlider<TData>({
             type="number"
             name={`min-${value}`}
             id={`min-${value}`}
-            value={`${filters?.[0] ?? min}`}
+            value={`${content?.[0] ?? min}`}
             min={min}
             max={max}
             onChange={(e) => {
               const val = Number.parseInt(e.target.value) || 0;
               const newValue =
-                Array.isArray(filters) && val < filters[1] ? [val, filters[1]] : [val, max];
-              updateSearchParams({
-                [value]: newValue.join(SLIDER_DELIMITER),
-              });
+                Array.isArray(content) && val < content[1] ? [val, content[1]] : [val, max];
+              column?.setFilterValue(newValue);
+              setContent(newValue);
             }}
           />
         </div>
@@ -65,16 +83,15 @@ export function DataTableFilterSlider<TData>({
             type="number"
             name={`max-${value}`}
             id={`max-${value}`}
-            value={`${filters?.[1] ?? max}`}
+            value={`${content?.[1] ?? max}`}
             min={min}
             max={max}
             onChange={(e) => {
               const val = Number.parseInt(e.target.value) || 0;
               const newValue =
-                Array.isArray(filters) && val > filters[0] ? [filters[0], val] : [min, val];
-              updateSearchParams({
-                [value]: newValue.join(SLIDER_DELIMITER),
-              });
+                Array.isArray(content) && val > content[0] ? [content[0], val] : [min, val];
+              column?.setFilterValue(newValue);
+              setContent(newValue);
             }}
           />
         </div>
@@ -82,11 +99,10 @@ export function DataTableFilterSlider<TData>({
       <Slider
         min={min}
         max={max}
-        value={filters || [min, max]}
+        value={content || [min, max]}
         onValueChange={(values) => {
-          updateSearchParams({
-            [value]: values.join(SLIDER_DELIMITER),
-          });
+          column?.setFilterValue(values);
+          setContent(values);
         }}
       />
     </div>

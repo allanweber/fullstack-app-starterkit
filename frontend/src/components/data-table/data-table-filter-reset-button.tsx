@@ -3,7 +3,7 @@ import type { Table } from "@tanstack/react-table";
 
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
-import type { DataTableFilterField } from "../types";
+import type { DataTableFilterField } from "./types";
 
 type DataTableFilterResetButtonProps<TData> = DataTableFilterField<TData> & {
   table: Table<TData>;

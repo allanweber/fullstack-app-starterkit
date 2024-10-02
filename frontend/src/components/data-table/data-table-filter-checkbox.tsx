@@ -7,8 +7,8 @@ import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
 import { Search } from "lucide-react";
 import { SetStateAction, useState } from "react";
-import { InputWithAddons } from "../../ui/input-with-addons";
-import { ARRAY_DELIMITER, type DataTableCheckboxFilterField } from "../types";
+import { InputWithAddons } from "../ui/input-with-addons";
+import { ARRAY_DELIMITER, type DataTableCheckboxFilterField } from "./types";
 
 type DataTableFilterCheckboxProps<TData> = DataTableCheckboxFilterField<TData> & {
   table: Table<TData>;
@@ -70,8 +70,9 @@ export function DataTableFilterCheckbox<TData>({
                 onCheckedChange={(checked) => {
                   const newValue = checked
                     ? [...(filters || []), option.value]
-                    : filters?.filter((value) => option.value !== value);
+                    : filters?.filter((value) => option.value != value);
                   column?.setFilterValue(newValue?.length ? newValue : undefined);
+
                   updateSearchParams({
                     [value]: newValue?.length ? newValue.join(ARRAY_DELIMITER) : null,
                   });
