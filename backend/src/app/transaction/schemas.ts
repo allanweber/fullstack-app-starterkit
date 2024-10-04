@@ -1,7 +1,8 @@
 import { z } from 'zod';
 import { ARRAY_DELIMITER } from '../../utils/types';
+import { paginatedSchema } from '../paginated';
 
-export const columnFilterSchema = z.object({
+export const columnFilterSchema = paginatedSchema.extend({
   date: z.coerce
     .number()
     .pipe(z.coerce.date())
@@ -33,12 +34,8 @@ export const columnFilterSchema = z.object({
     .optional(),
   tags: z
     .string()
-    .or(
-      z
-        .string()
-        .transform((val) => val.split(ARRAY_DELIMITER))
-        .pipe(z.array(z.string()))
-    )
+    .transform((val) => val.split(ARRAY_DELIMITER))
+    .pipe(z.array(z.string()))
     .optional(),
   description: z.string().optional(),
   type: z

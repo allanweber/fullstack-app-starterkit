@@ -35,6 +35,7 @@ export function DataTableFilterCheckbox<TData>({
 
   // TODO: check if we could useMemo
   const filters = filterValue ? (Array.isArray(filterValue) ? filterValue : [filterValue]) : [];
+
   const Component = component;
 
   return (

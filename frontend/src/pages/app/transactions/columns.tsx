@@ -183,12 +183,8 @@ export const columnFilterSchema = z.object({
     .optional(),
   tags: z
     .string()
-    .or(
-      z
-        .string()
-        .transform((val) => val.split(ARRAY_DELIMITER))
-        .pipe(z.array(z.string()))
-    )
+    .transform((val) => val.split(ARRAY_DELIMITER))
+    .pipe(z.array(z.string()))
     .optional(),
   description: z.string().optional(),
   type: z

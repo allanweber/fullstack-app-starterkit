@@ -1,9 +1,9 @@
 export interface Paginated<T> {
-  pagination: PaginatedParams;
+  pagination: PaginatedState;
   data: T[];
 }
 
-export interface PaginatedParams {
+export interface PaginatedState {
   pageSize: number;
   page: number;
   total: number;
@@ -13,5 +13,7 @@ export interface PaginatedParams {
 export interface PageRequest<T> {
   page: number;
   pageSize: number;
-  filters: T | undefined;
+  sortBy?: string | undefined;
+  sortDirection?: string | undefined;
+  filters?: T | undefined;
 }

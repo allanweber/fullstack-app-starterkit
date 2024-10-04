@@ -13,9 +13,12 @@ export const useTransactions = (pageRequest: PageRequest<TransactionFilters>) =>
     queryKey: [`transactions-${JSON.stringify(pageRequest)}`],
     queryFn: async (): Promise<Paginated<Transaction>> => {
       const url = ["/api/v1/transactions"];
+
       const params = new URLSearchParams();
       params.append("page", `${pageRequest.page}`);
       params.append("pageSize", `${pageRequest.pageSize}`);
+      params.append("sortBy", pageRequest.sortBy || "date");
+      params.append("sortDirection", pageRequest.sortDirection || "desc");
 
       if (pageRequest.filters) {
         Object.entries(pageRequest.filters).forEach(([key, value]) => {

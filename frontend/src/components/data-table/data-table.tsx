@@ -28,20 +28,30 @@ import { useLocalStorage } from "@/hooks/use-local-storage";
 import { cn } from "@/lib/utils";
 
 import useUpdateSearchParams from "@/hooks/use-update-search-params";
+import { PaginatedState } from "@/types/paginated";
 import { useSearchParams } from "react-router-dom";
 import { DataTableFilterControls } from "./data-table-filter-controls";
+import { DataTableLoading } from "./data-table-loading";
 import { DataTablePagination } from "./data-table-pagination";
+import { DataTableServerPagination } from "./data-table-server-pagination";
 import { DataTableToolbar } from "./data-table-toolbar";
 import { DataTableFilterField } from "./types";
 
+interface ServerSide {
+  isLoading: boolean;
+  pagination?: PaginatedState;
+}
+
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+  data?: TData[];
   defaultColumnFilters?: ColumnFiltersState;
   filterFields?: DataTableFilterField<TData>[];
   sortingState?: SortingState;
-  serverSide?: boolean;
+  serverSide?: ServerSide;
 }
+
+const fallbackPaginatedState: PaginatedState = { page: 1, pageSize: 15, total: 0, totalPages: 0 };
 
 export function DataTable<TData, TValue>({
   columns,
@@ -49,7 +59,7 @@ export function DataTable<TData, TValue>({
   defaultColumnFilters = [],
   filterFields = [],
   sortingState = [],
-  serverSide = false,
+  serverSide = undefined,
 }: DataTableProps<TData, TValue>) {
   const updateSearchParams = useUpdateSearchParams();
   const [searchParams] = useSearchParams();
@@ -80,13 +90,21 @@ export function DataTable<TData, TValue>({
   );
   const [controlsOpen, setControlsOpen] = useLocalStorage("data-table-controls", true);
 
+  React.useEffect(() => {
+    updateSearchParams({
+      page: pagination.pageIndex + 1,
+      pageSize: pagination.pageSize,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pagination]);
+
   const table = useReactTable({
-    data,
+    data: data || [],
     columns,
     state: { columnFilters, sorting, columnVisibility, pagination },
-    manualFiltering: serverSide,
-    manualSorting: serverSide,
-    manualPagination: serverSide,
+    manualFiltering: !!serverSide,
+    manualSorting: !!serverSide,
+    manualPagination: !!serverSide,
     onColumnVisibilityChange: setColumnVisibility,
     onColumnFiltersChange: setColumnFilters,
     onSortingChange: (updater) => {
@@ -107,10 +125,6 @@ export function DataTable<TData, TValue>({
     onPaginationChange: (updater) => {
       setPagination((old) => {
         const newPaginationValue = updater instanceof Function ? updater(old) : updater;
-        updateSearchParams({
-          page: newPaginationValue.pageIndex + 1,
-          pageSize: newPaginationValue.pageSize,
-        });
         return newPaginationValue;
       });
     },
@@ -157,7 +171,9 @@ export function DataTable<TData, TValue>({
               ))}
             </TableHeader>
             <TableBody>
-              {table.getRowModel().rows?.length ? (
+              {serverSide?.isLoading ? (
+                <DataTableLoading columns={columns} />
+              ) : table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
                     {row.getVisibleCells().map((cell) => (
@@ -177,7 +193,14 @@ export function DataTable<TData, TValue>({
             </TableBody>
           </Table>
         </div>
-        <DataTablePagination table={table} />
+        {serverSide ? (
+          <DataTableServerPagination
+            pagination={serverSide.pagination || fallbackPaginatedState}
+            table={table}
+          />
+        ) : (
+          <DataTablePagination table={table} />
+        )}
       </div>
     </div>
   );

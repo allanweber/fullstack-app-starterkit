@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 export class Paginated<T> {
   public data: T[];
   public pagination: Pagination;
@@ -28,3 +30,10 @@ export interface PaginatedParams {
   total: number;
   totalPages: number;
 }
+
+export const paginatedSchema = z.object({
+  pageSize: z.string().regex(/^\d+$/).transform(Number).optional(),
+  page: z.string().regex(/^\d+$/).transform(Number).optional(),
+  sortBy: z.string().optional(),
+  sortDirection: z.enum(['asc', 'desc']).optional(),
+});

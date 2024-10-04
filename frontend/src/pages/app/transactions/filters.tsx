@@ -43,7 +43,6 @@ export const filterFields = (
       value: "category",
       type: "checkbox",
       options: categories?.map(({ id, name }) => ({ label: name, value: id })),
-      defaultOpen: true,
     },
     {
       label: "Tags",
