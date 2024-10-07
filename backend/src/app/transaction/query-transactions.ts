@@ -12,7 +12,13 @@ import {
 } from 'drizzle-orm';
 import { NextFunction, Request, Response } from 'express';
 import db from '../../db';
-import { transactions } from '../../db/schema';
+import {
+  account,
+  category,
+  tag,
+  transactions,
+  transactionsTag,
+} from '../../db/schema';
 import logger from '../../logger';
 import { messages } from '../../utils/messages';
 import { Paginated, Pagination } from '../paginated';
@@ -43,8 +49,8 @@ export const queryTransactions = async (
     const sortColumn = search.data?.sortBy || 'date';
     const orderBy =
       search.data?.sortDirection === 'asc'
-        ? [asc(sql.identifier(sortColumn))]
-        : [desc(sql.identifier(sortColumn))];
+        ? asc(sql.identifier(sortColumn))
+        : desc(sql.identifier(sortColumn));
 
     if (search.data?.description) {
       conditions.push(
@@ -114,55 +120,72 @@ export const queryTransactions = async (
       );
     }
 
-    const trans = await db.query.transactions.findMany({
-      where: and(...conditions),
-      orderBy,
-      columns: {
-        tenancyId: false,
-        created_at: false,
-      },
-      with: {
+    const transactionsRows = await db
+      .select({
+        id: transactions.id,
+        date: transactions.date,
+        amount: transactions.amount,
+        description: transactions.description,
+        type: transactions.type,
         account: {
-          columns: {
-            tenancyId: false,
-            created_at: false,
-          },
+          id: account.id,
+          name: account.name,
         },
         category: {
-          columns: {
-            tenancyId: false,
-            created_at: false,
-          },
+          id: category.id,
+          name: category.name,
+          type: category.type,
         },
-        tags: {
-          columns: {
-            transactionId: false,
-            tagId: false,
-          },
-          with: {
-            tag: {
-              columns: {
-                tenancyId: false,
-                created_at: false,
-              },
-            },
-          },
-        },
-      },
-      limit: pageSize,
-      offset: (page - 1) * pageSize,
-    });
-
-    const [{ count }] = await db
-      .select({
-        count: sql`COUNT(*)`.mapWith(Number).as('count'),
+        count: sql<number>`count(*) over()`,
       })
       .from(transactions)
-      .where(and(...conditions));
+      .innerJoin(account, eq(transactions.accountId, account.id))
+      .innerJoin(category, eq(transactions.categoryId, category.id))
+      .orderBy(orderBy)
+      .where(and(...conditions))
+      .limit(pageSize)
+      .offset((page - 1) * pageSize);
+
+    const tags = await db
+      .select({
+        transactionId: transactionsTag.transactionId,
+        tagId: transactionsTag.tagId,
+        name: tag.name,
+        color: tag.color,
+      })
+      .from(transactionsTag)
+      .innerJoin(tag, eq(transactionsTag.tagId, tag.id))
+      .where(
+        inArray(
+          transactionsTag.transactionId,
+          transactionsRows.map((t) => t.id)
+        )
+      );
+
+    const tagsMap = tags.reduce((acc, tag) => {
+      if (!acc[tag.transactionId]) {
+        acc[tag.transactionId] = [];
+      }
+      acc[tag.transactionId].push({
+        id: tag.tagId,
+        name: tag.name,
+        color: tag.color,
+      });
+      return acc;
+    }, {} as Record<number, any[]>);
+
+    const result = transactionsRows.map((t) => ({
+      ...Object.fromEntries(
+        Object.entries(t).filter(([key]) => key !== 'count')
+      ),
+      tags: tagsMap[t.id] || [],
+    }));
+
+    const counter = transactionsRows.length > 0 ? transactionsRows[0].count : 0;
 
     return res
       .status(200)
-      .json(new Paginated(trans, new Pagination(pageSize, page, count)));
+      .json(new Paginated(result, new Pagination(pageSize, page, counter)));
   } catch (error: any) {
     error.status = 500;
     error.message = error.message || messages.INTERNAL_SERVER_ERROR;

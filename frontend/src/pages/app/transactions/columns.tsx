@@ -5,7 +5,7 @@ import NumberDisplay from "@/components/NumberDisplay";
 import { Badge } from "@/components/ui/badge";
 import { Color } from "@/lib/colors";
 import { isArrayOfDates, isArrayOfNumbers } from "@/lib/utils";
-import { Account, Category, Tags, Transaction } from "@/types/transaction";
+import { Account, Category, Tag, Tags, Transaction } from "@/types/transaction";
 import type { ColumnDef } from "@tanstack/react-table";
 import { format, isSameDay } from "date-fns";
 import { Minus } from "lucide-react";
@@ -124,10 +124,10 @@ export const columns: ColumnDef<Transaction>[] = [
     accessorKey: "tags",
     header: "Tags",
     cell: ({ row }) => {
-      const value = row.getValue("tags") as Tags[];
+      const value = row.getValue("tags") as Tag[];
       return (
         <div className="flex flex-wrap gap-1">
-          {value.map(({ tag }) => {
+          {value.map((tag) => {
             const colorClass = Color[tag.color].badge;
             return (
               <Badge key={tag.id} className={colorClass}>
