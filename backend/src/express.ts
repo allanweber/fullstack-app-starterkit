@@ -34,16 +34,16 @@ export default (app: express.Application) => {
   /**
    * Static files under /public including react frontend application
    */
-  app.use(express.static(path.join(__dirname, '../public')));
+  app.use(express.static(path.join(__dirname, '../../public')));
   app.get('/', (req, res) => {
     res.setHeader('Content-Type', 'text/html');
-    res.sendFile(path.join(__dirname, '../public/index.html'));
+    res.sendFile(path.join(__dirname, '../../public/index.html'));
   });
 
   // All other routes are handled by the frontend
   app.get('**', (req, res) => {
     res.setHeader('Content-Type', 'text/html');
-    res.sendFile(path.join(__dirname, '../public/index.html'));
+    res.sendFile(path.join(__dirname, '../../public/index.html'));
   });
 
   //Error handler must be the last middleware

@@ -18,11 +18,13 @@ FROM base AS backend-builder
 
 WORKDIR /app/backend
 
+ARG DATABASE_URL
 COPY backend/package.json backend/package-lock.json ./
 RUN npm install
 
 COPY backend/prisma ./prisma
 RUN npx prisma generate
+RUN npx prisma migrate deploy
 
 COPY backend/ ./
 RUN npm run build

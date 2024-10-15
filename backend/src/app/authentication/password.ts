@@ -1,7 +1,7 @@
-import { prismaClient } from '@/prisma';
 import { verify } from '@node-rs/argon2';
 import { VerificationType } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
+import { prismaClient } from '../../prisma';
 import { messages } from '../../utils/messages';
 import {
   createDate,

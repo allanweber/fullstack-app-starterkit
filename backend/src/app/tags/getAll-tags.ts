@@ -1,5 +1,5 @@
-import { prismaClient } from '@/prisma';
 import { NextFunction, Request, Response } from 'express';
+import { prismaClient } from '../../prisma';
 import { messages } from '../../utils/messages';
 
 export const getAllTags = async (

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { messages } from '@/utils/messages';
+import { messages } from '../utils/messages';
 
 export const handleErrors = (error: any, req: any, res: any, next: any) => {
   const status = error.status || 500;

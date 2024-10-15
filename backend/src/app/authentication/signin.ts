@@ -1,8 +1,8 @@
-import logger from '@/logger';
-import { prismaClient } from '@/prisma';
-import { messages } from '@/utils/messages';
 import { AccountType } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
+import logger from '../../logger';
+import { prismaClient } from '../../prisma';
+import { messages } from '../../utils/messages';
 import { loginSchema } from './auth.schemas';
 import { verifyPassword } from './password';
 import { issueToken } from './token';

@@ -1,5 +1,6 @@
+import { VerificationType } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
-
+import { prismaClient } from '../../prisma';
 import { messages } from '../../utils/messages';
 import {
   createDate,
@@ -8,9 +9,6 @@ import {
   TimeSpan,
 } from '../../utils/randoms';
 import { sendActivationEmail } from '../emails/email-service';
-
-import { prismaClient } from '@/prisma';
-import { VerificationType } from '@prisma/client';
 import {
   registrationNewCodeSchema,
   verifyRegistrationSchema,

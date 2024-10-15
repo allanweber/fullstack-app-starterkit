@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { prismaClient } from '@/prisma';
 import { endOfDay, startOfDay } from 'date-fns';
 import logger from '../../logger';
+import { prismaClient } from '../../prisma';
 import { messages } from '../../utils/messages';
 import { Paginated, Pagination } from '../paginated';
 import { columnFilterSchema } from './schemas';

@@ -13,7 +13,7 @@
     "lint": "npx eslint ."
   },
   "prisma": {
-    "seed": "ts-node prisma/seed.ts"
+    "seed": "ts-node src/prisma/seed.ts"
   },
   "dependencies": {
     "@node-rs/argon2": "^1.8.3",

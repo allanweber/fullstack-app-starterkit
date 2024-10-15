@@ -1,8 +1,8 @@
-import { prismaClient } from '@/prisma';
 import { AccountType, Role } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import logger from '../../logger';
+import { prismaClient } from '../../prisma';
 import { messages } from '../../utils/messages';
 import { createDate, TimeSpan } from '../../utils/randoms';
 import { googleSigninSchema, GoogleUser } from './auth.schemas';

@@ -1,19 +1,16 @@
+import { AccountType, Role, VerificationType } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
-
-import { sendActivationEmail } from '@/app/emails/email-service';
-import { messages } from '@/utils/messages';
+import { prismaClient } from '../../prisma';
+import { messages } from '../../utils/messages';
 import {
   createDate,
   generateOTP,
   generateUUID,
   hashPassword,
   TimeSpan,
-} from '@/utils/randoms';
-
+} from '../../utils/randoms';
+import { sendActivationEmail } from '../emails/email-service';
 import { signupSchema } from './auth.schemas';
-
-import { prismaClient } from '@/prisma';
-import { AccountType, Role, VerificationType } from '@prisma/client';
 import { issueToken } from './token';
 
 export const signup = async (
