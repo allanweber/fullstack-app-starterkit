@@ -1,4 +1,13 @@
-export function generateId(): string {
+import { hash } from '@node-rs/argon2';
+
+export const passwordConfig = {
+  memoryCost: 19456,
+  timeCost: 2,
+  outputLen: 32,
+  parallelism: 1,
+};
+
+export function generateUUID(): string {
   return '10000000-1000-4000-8000-100000000000'.replace(/[018]/g, (c) =>
     (
       +c ^
@@ -6,6 +15,13 @@ export function generateId(): string {
     ).toString(16)
   );
 }
+
+export const hashPassword = async (saltPassword: string, password: string) => {
+  return await hash(password, {
+    salt: Buffer.from(saltPassword, 'hex'),
+    ...passwordConfig,
+  });
+};
 
 export function generateOTP(): string {
   const digits = '0123456789';

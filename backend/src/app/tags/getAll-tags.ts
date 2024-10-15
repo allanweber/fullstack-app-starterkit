@@ -1,7 +1,5 @@
-import { eq } from 'drizzle-orm';
+import { prismaClient } from '@/prisma';
 import { NextFunction, Request, Response } from 'express';
-import db from '../../db';
-import { tag } from '../../db/schema';
 import { messages } from '../../utils/messages';
 
 export const getAllTags = async (
@@ -19,12 +17,17 @@ export const getAllTags = async (
       throw error;
     }
 
-    const tags = await db.query.tag.findMany({
-      where: eq(tag.tenancyId, tenancyId),
-      orderBy: [tag.name],
-      columns: {
-        tenancyId: false,
-        created_at: false,
+    const tags = await prismaClient.tag.findMany({
+      where: {
+        tenancyId,
+      },
+      orderBy: {
+        name: 'asc',
+      },
+      select: {
+        id: true,
+        name: true,
+        color: true,
       },
     });
 

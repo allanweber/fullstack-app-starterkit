@@ -23,6 +23,7 @@ export function DataTableFilterInput<TData>({
 
   const onChangeInput = (val: string) => {
     const newValue = val.trim() === "" ? null : val;
+    column?.setFilterValue(newValue);
     setContent(newValue);
   };
 

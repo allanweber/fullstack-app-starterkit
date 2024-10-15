@@ -20,6 +20,10 @@ WORKDIR /app/backend
 
 COPY backend/package.json backend/package-lock.json ./
 RUN npm install
+
+COPY backend/prisma ./prisma
+RUN npx prisma generate
+
 COPY backend/ ./
 RUN npm run build
 
@@ -30,6 +34,7 @@ WORKDIR /app
 
 COPY --from=backend-builder /app/backend/dist ./dist
 COPY --from=backend-builder /app/backend/node_modules ./node_modules
+
 # Copy the built frontend files into the backend public folder
 COPY --from=frontend-builder /app/frontend/dist ./public
 COPY backend/package.json ./
@@ -41,4 +46,4 @@ USER node
 ARG HOSTNAME
 
 # Start the application
-CMD ["node", "dist/server.js"]
+CMD ["node", "dist/src/server.js"]

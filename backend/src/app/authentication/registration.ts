@@ -1,7 +1,5 @@
-import { and, eq } from 'drizzle-orm';
 import { NextFunction, Request, Response } from 'express';
-import db from '../../db';
-import { emailVerification } from '../../db/schema';
+
 import { messages } from '../../utils/messages';
 import {
   createDate,
@@ -10,7 +8,9 @@ import {
   TimeSpan,
 } from '../../utils/randoms';
 import { sendActivationEmail } from '../emails/email-service';
-import { user } from './../../db/schema/user';
+
+import { prismaClient } from '@/prisma';
+import { VerificationType } from '@prisma/client';
 import {
   registrationNewCodeSchema,
   verifyRegistrationSchema,
@@ -27,11 +27,11 @@ export const verifyRegistration = async (
       return res.status(400).json(register.error.issues);
     }
 
-    const verification = await db.query.emailVerification.findFirst({
-      where: and(
-        eq(emailVerification.code, register.data.code),
-        eq(emailVerification.verificationType, 'registration')
-      ),
+    const verification = await prismaClient.emailVerification.findFirst({
+      where: {
+        code: register.data.code,
+        type: VerificationType.REGISTRATION,
+      },
     });
 
     if (!verification) {
@@ -44,7 +44,7 @@ export const verifyRegistration = async (
       return;
     }
 
-    if (!isWithinExpirationDate(verification.expires_at)) {
+    if (!isWithinExpirationDate(verification.expiresAt)) {
       const error = {
         status: 400,
         code: messages.VERIFICATION_EXPIRED_CODE,
@@ -54,17 +54,21 @@ export const verifyRegistration = async (
       return;
     }
 
-    await db.transaction(async (tx) => {
-      await tx
-        .update(user)
-        .set({
-          email_verified: true,
-        })
-        .where(eq(user.id, verification.userId));
+    await prismaClient.$transaction(async (tx) => {
+      await tx.user.update({
+        where: {
+          id: verification.userId,
+        },
+        data: {
+          emailVerified: true,
+        },
+      });
 
-      await tx
-        .delete(emailVerification)
-        .where(eq(emailVerification.id, verification.id));
+      await tx.emailVerification.delete({
+        where: {
+          userId: verification.userId,
+        },
+      });
     });
 
     return res.status(200).json({
@@ -90,8 +94,10 @@ export const registrationNewCode = async (
       return res.status(400).json(newCode.error.issues);
     }
 
-    const existingUser = await db.query.user.findFirst({
-      where: eq(user.email, newCode.data.email),
+    const existingUser = await prismaClient.user.findFirst({
+      where: {
+        email: newCode.data.email,
+      },
     });
 
     if (!existingUser) {
@@ -101,18 +107,22 @@ export const registrationNewCode = async (
       });
     }
 
-    await db.transaction(async (tx) => {
-      await tx
-        .delete(emailVerification)
-        .where(eq(emailVerification.userId, existingUser.id));
+    await prismaClient.$transaction(async (tx) => {
+      await tx.emailVerification.deleteMany({
+        where: {
+          userId: existingUser.id,
+        },
+      });
 
       const registrationCode = generateOTP();
-      await tx.insert(emailVerification).values({
-        code: registrationCode,
-        userId: existingUser.id,
-        verificationType: 'registration',
-        email: existingUser.email,
-        expires_at: createDate(new TimeSpan(15, 'm')),
+      await tx.emailVerification.create({
+        data: {
+          code: registrationCode,
+          userId: existingUser.id,
+          type: VerificationType.REGISTRATION,
+          email: existingUser.email,
+          expiresAt: createDate(new TimeSpan(15, 'm')),
+        },
       });
 
       await sendActivationEmail(existingUser.email, registrationCode);

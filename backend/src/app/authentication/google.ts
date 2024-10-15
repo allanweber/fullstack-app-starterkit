@@ -1,14 +1,10 @@
-import { eq } from 'drizzle-orm';
+import { prismaClient } from '@/prisma';
+import { AccountType, Role } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import db from '../../db';
-import { tenancyPlan, userAccounts, userProfile } from '../../db/schema';
 import logger from '../../logger';
 import { messages } from '../../utils/messages';
-import { createDate, generateId, TimeSpan } from '../../utils/randoms';
-import { tenancy } from './../../db/schema/tenancy';
-import { user } from './../../db/schema/user';
-import { userRoles } from './../../db/schema/user-roles';
+import { createDate, TimeSpan } from '../../utils/randoms';
 import { googleSigninSchema, GoogleUser } from './auth.schemas';
 import { issueToken } from './token';
 
@@ -45,70 +41,78 @@ export const authGoogle = async (
       next(error);
     }
 
-    const registeredUser = await db.query.user.findFirst({
-      where: eq(user.email, googleData.email),
+    const registeredUser = await prismaClient.user.findFirst({
+      where: {
+        email: googleData.email,
+      },
     });
 
     let signInUser = null;
     if (!registeredUser) {
-      const tenancyId = generateId();
-      const userId = generateId();
-      signInUser = await db.transaction(async (tx) => {
-        await tx.insert(tenancy).values({
-          id: tenancyId,
-          name: googleData.email,
+      signInUser = await prismaClient.$transaction(async (tx) => {
+        const tenancy = await tx.tenancy.create({
+          data: {
+            name: googleData.email,
+          },
         });
 
-        await tx.insert(tenancyPlan).values({
-          tenancyId,
-          isFree: true,
-          startsAt: new Date(),
-          expiresAt: createDate(new TimeSpan(1, 'y')),
+        await tx.tenancyPlan.create({
+          data: {
+            tenancyId: tenancy.id,
+            isFree: true,
+            startsAt: new Date(),
+            expiresAt: createDate(new TimeSpan(1, 'y')),
+          },
         });
 
-        const [newUser] = await tx
-          .insert(user)
-          .values({
-            id: userId,
+        const newUser = await tx.user.create({
+          data: {
             email: googleData.email,
-            tenancyId,
-            email_verified: true,
-          })
-          .returning();
-
-        await tx.insert(userAccounts).values({
-          userId,
-          accountType: 'google',
-          googleId: googleData.sub,
+            tenancyId: tenancy.id,
+            emailVerified: true,
+          },
         });
 
-        const [profile] = await tx
-          .insert(userProfile)
-          .values({
-            userId,
-            displayName: googleData.email,
+        await tx.userAccount.create({
+          data: {
+            userId: newUser.id,
+            type: AccountType.GOOGLE,
+            googleId: googleData.sub,
+          },
+        });
+
+        const profile = await tx.userProfile.create({
+          data: {
+            userId: newUser.id,
+            displayName: googleData.given_name || googleData.email,
+            firstName: googleData.given_name,
+            lastName: googleData.family_name,
             image: googleData.picture,
             theme: 'light',
             locale: 'en',
-          })
-          .returning();
+          },
+        });
 
-        await tx.insert(userRoles).values({
-          userId,
-          role: 'super-user',
+        await tx.userRoles.create({
+          data: {
+            userId: newUser.id,
+            role: Role.SUPER_USER,
+          },
         });
 
         return {
           user: newUser,
-          tenancyId,
+          tenancyId: tenancy.id,
           displayName: googleData.email,
-          role: 'super-user',
+          role: [Role.SUPER_USER],
           profile,
         };
       });
     } else {
-      const userAccount = await db.query.userAccounts.findFirst({
-        where: eq(userAccounts.userId, registeredUser.id),
+      const userAccount = await prismaClient.userAccount.findFirst({
+        where: {
+          userId: registeredUser.id,
+        },
       });
 
       if (!userAccount) {
@@ -121,52 +125,57 @@ export const authGoogle = async (
         next(error);
       }
 
-      if (userAccount?.accountType !== 'google') {
+      if (userAccount?.type !== AccountType.GOOGLE) {
         logger.info('Transforming email account to google account');
-        await db.transaction(async (tx) => {
-          await tx
-            .update(userAccounts)
-            .set({
-              accountType: 'google',
+        await prismaClient.$transaction(async (tx) => {
+          await tx.userAccount.update({
+            where: {
+              userId: registeredUser.id,
+            },
+            data: {
+              type: AccountType.GOOGLE,
               googleId: googleData.sub,
               salt: null,
               passwordHash: null,
-            })
-            .where(eq(userAccounts.userId, registeredUser.id));
+            },
+          });
 
-          await tx
-            .update(userProfile)
-            .set({
+          await tx.userProfile.update({
+            where: {
+              userId: registeredUser.id,
+            },
+            data: {
               displayName: googleData.email,
               image: googleData.picture,
-            })
-            .where(eq(userProfile.userId, registeredUser.id));
-
-          await tx
-            .update(userRoles)
-            .set({
-              role: 'super-user',
-            })
-            .where(eq(userRoles.userId, registeredUser.id));
+            },
+          });
         });
       }
 
-      const profile = await db.query.userProfile.findFirst({
-        where: eq(userProfile.userId, registeredUser.id),
+      const profile = await prismaClient.userProfile.findFirst({
+        where: {
+          userId: registeredUser.id,
+        },
+      });
+
+      const userRoles = await prismaClient.userRoles.findMany({
+        where: {
+          userId: registeredUser.id,
+        },
       });
 
       signInUser = {
         user: registeredUser,
         tenancyId: registeredUser.tenancyId,
         displayName: googleData.email,
-        role: 'super-user',
+        role: userRoles.map((role) => role.role),
         profile,
       };
     }
 
     const token = issueToken({
       email: signInUser.user.email,
-      roles: [signInUser.role],
+      roles: signInUser.role.map((role) => role.toString()),
       userId: signInUser.user.id,
       tenancyId: signInUser.tenancyId,
     });

@@ -1,12 +1,31 @@
+// {
+//   "compilerOptions": {
+//     "lib": ["es2023"],
+//     "jsx": "react",
+//     "target": "es2022",
+//     "module": "node16",
+//     "strict": true,
+//     "esModuleInterop": true,
+//     "skipLibCheck": true,
+//     "moduleResolution": "node16",
+//     "outDir": "./dist",
+//     "resolveJsonModule": true,
+//     "paths": {
+//       "@/*": ["./src/*"]
+//     }
+//   }
+// }
 {
   "compilerOptions": {
-    "jsx": "react",
-    "target": "es6",
-    "module": "commonjs",
-    "strict": true,
-    "esModuleInterop": true,
-    "outDir": "./dist",
+    "target": "es2021",
+    "module": "NodeNext",
+    "skipLibCheck": true,
     "resolveJsonModule": true,
-    "skipLibCheck": true
-  }
+    "jsx": "react",
+    "outDir": "./dist",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["**/*.ts"]
 }

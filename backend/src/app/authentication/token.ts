@@ -3,8 +3,8 @@ import env from '../../env';
 export type Payload = {
   email: string;
   roles: string[];
-  userId: string;
-  tenancyId: string;
+  userId: number;
+  tenancyId: number;
 };
 
 export const issueToken = (payload: Payload) => {

@@ -4,9 +4,10 @@ import { ZodError, z } from 'zod';
 
 const EnvSchema = z.object({
   NODE_ENV: z.string().default('development'),
+  DB_MIGRATING: z.string().default('false'),
+  DB_SEEDING: z.string().default('false'),
   PORT: z.string().default('3001'),
   DATABASE_URL: z.string(),
-  DATABASE_AUTH_TOKEN: z.string(),
   TOKEN_TTL: z.string().default('1h'),
   JWT_SECRET: z.string(),
   LOG_LEVEL: z.string().default('info'),

@@ -1,7 +1,5 @@
-import { eq } from 'drizzle-orm';
+import { prismaClient } from '@/prisma';
 import { NextFunction, Request, Response } from 'express';
-import db from '../../db';
-import { category } from '../../db/schema';
 import { messages } from '../../utils/messages';
 
 export const getAllCategories = async (
@@ -19,12 +17,17 @@ export const getAllCategories = async (
       throw error;
     }
 
-    const categories = await db.query.category.findMany({
-      where: eq(category.tenancyId, tenancyId),
-      orderBy: [category.name],
-      columns: {
-        tenancyId: false,
-        created_at: false,
+    const categories = await prismaClient.category.findMany({
+      where: {
+        tenancyId,
+      },
+      orderBy: {
+        name: 'asc',
+      },
+      select: {
+        id: true,
+        name: true,
+        type: true,
       },
     });
 

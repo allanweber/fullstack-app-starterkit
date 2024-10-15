@@ -1,25 +1,19 @@
-import { eq } from 'drizzle-orm';
 import { NextFunction, Request, Response } from 'express';
-import db from '../../db';
-import {
-  emailVerification,
-  tenancyPlan,
-  userAccounts,
-  userProfile,
-} from '../../db/schema';
-import { messages } from '../../utils/messages';
+
+import { sendActivationEmail } from '@/app/emails/email-service';
+import { messages } from '@/utils/messages';
 import {
   createDate,
-  generateId,
   generateOTP,
+  generateUUID,
+  hashPassword,
   TimeSpan,
-} from '../../utils/randoms';
-import { sendActivationEmail } from '../emails/email-service';
-import { tenancy } from './../../db/schema/tenancy';
-import { user } from './../../db/schema/user';
-import { userRoles } from './../../db/schema/user-roles';
+} from '@/utils/randoms';
+
 import { signupSchema } from './auth.schemas';
-import { hashPassword } from './password';
+
+import { prismaClient } from '@/prisma';
+import { AccountType, Role, VerificationType } from '@prisma/client';
 import { issueToken } from './token';
 
 export const signup = async (
@@ -33,8 +27,10 @@ export const signup = async (
       return res.status(400).json(register.error.issues);
     }
 
-    const existingUser = await db.query.user.findFirst({
-      where: eq(user.email, register.data.email),
+    const existingUser = await prismaClient.user.findFirst({
+      where: {
+        email: register.data.email,
+      },
     });
 
     if (existingUser) {
@@ -48,86 +44,90 @@ export const signup = async (
     }
 
     const { email, password } = register.data;
-    const saltPassword = generateId();
+    const saltPassword = generateUUID();
     const passwordHash = await hashPassword(saltPassword, password);
-
     const registrationCode = generateOTP();
-    const tenancyId = generateId();
-    const userId = generateId();
-    const registeredUser = await db.transaction(async (tx) => {
-      await tx.insert(tenancy).values({
-        id: tenancyId,
-        name: email,
+
+    const registeredUser = await prismaClient.$transaction(async (tx) => {
+      const tenancy = await tx.tenancy.create({
+        data: {
+          name: email,
+        },
       });
 
-      await tx.insert(tenancyPlan).values({
-        tenancyId,
-        isFree: true,
-        startsAt: new Date(),
-        expiresAt: createDate(new TimeSpan(1, 'y')),
+      await tx.tenancyPlan.create({
+        data: {
+          tenancyId: tenancy.id,
+          isFree: true,
+          startsAt: new Date(),
+          expiresAt: createDate(new TimeSpan(1, 'y')),
+        },
       });
 
-      const [newUser] = await tx
-        .insert(user)
-        .values({
-          id: userId,
+      const user = await tx.user.create({
+        data: {
           email,
-          tenancyId,
-          email_verified: false,
-        })
-        .returning();
-
-      await tx.insert(userAccounts).values({
-        userId,
-        accountType: 'email',
-        passwordHash,
-        salt: saltPassword,
+          tenancyId: tenancy.id,
+          emailVerified: false,
+        },
       });
 
-      await tx.insert(userProfile).values({
-        userId,
-        displayName: email,
-        theme: 'light',
-        locale: 'en',
+      await tx.userAccount.create({
+        data: {
+          userId: user.id,
+          type: AccountType.EMAIL,
+          passwordHash,
+          salt: saltPassword,
+        },
       });
 
-      await tx.insert(emailVerification).values({
-        code: registrationCode,
-        userId,
-        verificationType: 'registration',
-        email: email,
-        expires_at: createDate(new TimeSpan(15, 'm')),
+      await tx.userRoles.create({
+        data: {
+          userId: user.id,
+          role: Role.SUPER_USER,
+        },
       });
 
-      await tx.insert(userRoles).values({
-        userId,
-        role: 'super-user',
+      await tx.userProfile.create({
+        data: {
+          userId: user.id,
+          displayName: email,
+          theme: 'light',
+          locale: 'en',
+        },
+      });
+
+      await tx.emailVerification.create({
+        data: {
+          code: registrationCode,
+          userId: user.id,
+          type: VerificationType.REGISTRATION,
+          email: email,
+          expiresAt: createDate(new TimeSpan(15, 'm')),
+        },
       });
 
       await sendActivationEmail(email, registrationCode);
 
       return {
-        user: newUser,
-        tenancyId,
+        user: user,
+        tenancyId: tenancy.id,
         displayName: email,
-        role: 'super-user',
+        role: Role.SUPER_USER,
       };
     });
 
-    if (registeredUser.user.email_verified) {
-      const profile = await db.query.userProfile.findFirst({
-        where: eq(userProfile.userId, registeredUser.user.id),
-      });
-
+    if (registeredUser.user.emailVerified) {
       const token = issueToken({
         email: registeredUser.user.email,
         userId: registeredUser.user.id,
         roles: [registeredUser.role],
         tenancyId: registeredUser.tenancyId,
       });
+
       return res.status(200).json({
         enabled: true,
-        user: { name: profile?.displayName, image: profile?.image },
+        user: { name: registeredUser.displayName, image: null },
         token: token,
       });
     }

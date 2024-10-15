@@ -1,0 +1,159 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model Tenancy {
+    id           Int           @id @default(autoincrement())
+    name         String        @db.VarChar(255)
+    TenancyPlan  TenancyPlan[]
+    Users        User[]
+    Accounts     Account[]
+    Categories   Category[]
+    Tags         Tag[]
+    Transactions Transaction[]
+    createdAt    DateTime      @default(now())
+}
+
+model TenancyPlan {
+    id                   Int      @id @default(autoincrement())
+    tenancyId            Int
+    tenancy              Tenancy  @relation(fields: [tenancyId], references: [id], onDelete: Cascade)
+    isFree               Boolean
+    startsAt             DateTime
+    expiresAt            DateTime
+    stripeSubscriptionId String?
+    stripeCustomerId     String?
+    stripePriceId        String?
+    createdAt            DateTime @default(now())
+}
+
+model User {
+    id                Int                @id @default(autoincrement())
+    email             String             @unique
+    emailVerified     Boolean            @default(false)
+    tenancyId         Int
+    tenancy           Tenancy            @relation(fields: [tenancyId], references: [id], onDelete: Cascade)
+    UserRoles         UserRoles[]
+    UserProfile       UserProfile?
+    UserAccount       UserAccount?
+    EmailVerification EmailVerification?
+    createdAt         DateTime           @default(now())
+}
+
+enum Role {
+    ADMIN
+    SUPER_USER
+    USER
+}
+
+model UserRoles {
+    id        Int      @id @default(autoincrement())
+    userId    Int
+    role      Role
+    User      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    createdAt DateTime @default(now())
+}
+
+model UserProfile {
+    userId      Int       @id @unique
+    User        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    displayName String?   @db.VarChar(100)
+    firstName   String?   @db.VarChar(100)
+    lastName    String?   @db.VarChar(100)
+    dateOfBirth DateTime?
+    image       String?   @db.Text
+    bio         String?   @db.VarChar(512)
+    locale      String?   @db.VarChar(10)
+    theme       String?   @db.VarChar(10)
+    createdAt   DateTime  @default(now())
+}
+
+enum AccountType {
+    EMAIL
+    GOOGLE
+    FACEBOOK
+    TWITTER
+}
+
+model UserAccount {
+    userId       Int         @id @unique
+    User         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+    type         AccountType
+    passwordHash String?     @db.VarChar(255)
+    salt         String?     @db.VarChar(255)
+    googleId     String?     @unique @db.VarChar(255)
+    createdAt    DateTime    @default(now())
+}
+
+enum VerificationType {
+    REGISTRATION
+    RESET_PASSWORD
+}
+
+model EmailVerification {
+    userId    Int              @id @unique
+    User      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+    type      VerificationType
+    email     String           @db.VarChar(255)
+    code      String           @db.VarChar(10)
+    expiresAt DateTime
+    createdAt DateTime         @default(now())
+}
+
+// END OF COMMON SCHEMA
+
+model Account {
+    id           Int           @id @default(autoincrement())
+    tenancyId    Int
+    tenancy      Tenancy       @relation(fields: [tenancyId], references: [id], onDelete: Cascade)
+    name         String        @db.VarChar(50)
+    Transactions Transaction[]
+    createdAt    DateTime      @default(now())
+}
+
+enum TransactionType {
+    INCOME
+    EXPENSE
+    INVESTMENT
+}
+
+model Category {
+    id           Int             @id @default(autoincrement())
+    tenancyId    Int
+    tenancy      Tenancy         @relation(fields: [tenancyId], references: [id], onDelete: Cascade)
+    name         String          @db.VarChar(50)
+    type         TransactionType
+    Transactions Transaction[]
+    createdAt    DateTime        @default(now())
+}
+
+model Tag {
+    id           Int           @id @default(autoincrement())
+    tenancyId    Int
+    tenancy      Tenancy       @relation(fields: [tenancyId], references: [id], onDelete: Cascade)
+    name         String        @db.VarChar(50)
+    color        String        @db.VarChar(10)
+    Transactions Transaction[]
+    createdAt    DateTime      @default(now())
+}
+
+model Transaction {
+    id          Int             @id @default(autoincrement())
+    tenancyId   Int
+    tenancy     Tenancy         @relation(fields: [tenancyId], references: [id])
+    accountId   Int
+    account     Account         @relation(fields: [accountId], references: [id])
+    categoryId  Int
+    category    Category        @relation(fields: [categoryId], references: [id])
+    date        DateTime
+    type        TransactionType
+    amount      Float
+    description String?
+    tags        Tag[]
+    createdAt   DateTime        @default(now())
+}

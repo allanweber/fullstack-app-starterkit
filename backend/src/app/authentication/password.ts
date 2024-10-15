@@ -1,24 +1,21 @@
-import { hash, verify } from '@node-rs/argon2';
-import { and, eq } from 'drizzle-orm';
+import { prismaClient } from '@/prisma';
+import { verify } from '@node-rs/argon2';
+import { VerificationType } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
-import db from '../../db';
-import { emailVerification, userAccounts } from '../../db/schema';
 import { messages } from '../../utils/messages';
-import { createDate, generateId, TimeSpan } from '../../utils/randoms';
+import {
+  createDate,
+  generateUUID,
+  hashPassword,
+  passwordConfig,
+  TimeSpan,
+} from '../../utils/randoms';
 import { sendChangePasswordEmail } from '../emails/email-service';
-import { user } from './../../db/schema/user';
 import {
   passwordResetRequestSchema,
   passwordResetSchema,
   passwordResetTokenSchema,
 } from './auth.schemas';
-
-const passwordConfig = {
-  memoryCost: 19456,
-  timeCost: 2,
-  outputLen: 32,
-  parallelism: 1,
-};
 
 export const verifyPassword = async (
   hashed: string,
@@ -27,13 +24,6 @@ export const verifyPassword = async (
 ) => {
   return await verify(hashed, password, {
     salt: Buffer.from(salt, 'hex'),
-    ...passwordConfig,
-  });
-};
-
-export const hashPassword = async (saltPassword: string, password: string) => {
-  return await hash(password, {
-    salt: Buffer.from(saltPassword, 'hex'),
     ...passwordConfig,
   });
 };
@@ -49,8 +39,10 @@ export const requestPasswordReset = async (
       return res.status(400).json(passwordReset.error.issues);
     }
 
-    const existingUser = await db.query.user.findFirst({
-      where: eq(user.email, passwordReset.data.email),
+    const existingUser = await prismaClient.user.findFirst({
+      where: {
+        email: passwordReset.data.email,
+      },
     });
 
     if (!existingUser) {
@@ -60,18 +52,22 @@ export const requestPasswordReset = async (
       });
     }
 
-    const token = generateId();
-    await db.transaction(async (tx) => {
-      await tx
-        .delete(emailVerification)
-        .where(eq(emailVerification.userId, existingUser.id));
+    const token = generateUUID();
+    await prismaClient.$transaction(async (tx) => {
+      await tx.emailVerification.deleteMany({
+        where: {
+          userId: existingUser.id,
+        },
+      });
 
-      await tx.insert(emailVerification).values({
-        code: token,
-        userId: existingUser.id,
-        verificationType: 'reset-password',
-        email: existingUser.email,
-        expires_at: createDate(new TimeSpan(15, 'm')),
+      await tx.emailVerification.create({
+        data: {
+          code: token,
+          userId: existingUser.id,
+          type: VerificationType.RESET_PASSWORD,
+          email: existingUser.email,
+          expiresAt: createDate(new TimeSpan(15, 'm')),
+        },
       });
 
       await sendChangePasswordEmail(existingUser.email, token);
@@ -100,11 +96,11 @@ export const validatePasswordReset = async (
       return res.status(400).json(token.error.issues);
     }
 
-    const resetRequested = await db.query.emailVerification.findFirst({
-      where: and(
-        eq(emailVerification.code, token.data.token),
-        eq(emailVerification.verificationType, 'reset-password')
-      ),
+    const resetRequested = await prismaClient.emailVerification.findFirst({
+      where: {
+        code: token.data.token,
+        type: VerificationType.RESET_PASSWORD,
+      },
     });
 
     if (!resetRequested) {
@@ -140,8 +136,10 @@ export const passwordReset = async (
       return res.status(400).json(passwordReset.error.issues);
     }
 
-    const existingUser = await db.query.user.findFirst({
-      where: eq(user.email, passwordReset.data.email),
+    const existingUser = await prismaClient.user.findFirst({
+      where: {
+        email: passwordReset.data.email,
+      },
     });
 
     if (!existingUser) {
@@ -154,12 +152,12 @@ export const passwordReset = async (
       return;
     }
 
-    const resetRequested = await db.query.emailVerification.findFirst({
-      where: and(
-        eq(emailVerification.code, passwordReset.data.token),
-        eq(emailVerification.verificationType, 'reset-password'),
-        eq(emailVerification.userId, existingUser.id)
-      ),
+    const resetRequested = await prismaClient.emailVerification.findFirst({
+      where: {
+        code: passwordReset.data.token,
+        type: VerificationType.RESET_PASSWORD,
+        userId: existingUser.id,
+      },
     });
 
     if (!resetRequested) {
@@ -172,24 +170,28 @@ export const passwordReset = async (
       return;
     }
 
-    const saltPassword = generateId();
-    const passwordHash = await hash(passwordReset.data.password, {
-      salt: Buffer.from(saltPassword, 'hex'),
-      ...passwordConfig,
-    });
+    const saltPassword = generateUUID();
+    const passwordHash = await hashPassword(
+      saltPassword,
+      passwordReset.data.password
+    );
 
-    await db.transaction(async (tx) => {
-      await tx
-        .update(userAccounts)
-        .set({
+    await prismaClient.$transaction(async (tx) => {
+      await tx.userAccount.update({
+        where: {
+          userId: existingUser.id,
+        },
+        data: {
           passwordHash,
           salt: saltPassword,
-        })
-        .where(eq(userAccounts.userId, existingUser.id));
+        },
+      });
 
-      await tx
-        .delete(emailVerification)
-        .where(eq(emailVerification.id, resetRequested.id));
+      await tx.emailVerification.deleteMany({
+        where: {
+          userId: existingUser.id,
+        },
+      });
     });
 
     return res.status(200).json({

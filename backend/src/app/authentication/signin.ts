@@ -1,10 +1,8 @@
-import { eq } from 'drizzle-orm';
+import logger from '@/logger';
+import { prismaClient } from '@/prisma';
+import { messages } from '@/utils/messages';
+import { AccountType } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
-import db from '../../db';
-import { userAccounts, userProfile } from '../../db/schema';
-import { messages } from '../../utils/messages';
-import { user } from './../../db/schema/user';
-import { userRoles } from './../../db/schema/user-roles';
 import { loginSchema } from './auth.schemas';
 import { verifyPassword } from './password';
 import { issueToken } from './token';
@@ -20,8 +18,10 @@ export const signin = async (
       return res.status(400).json(login.error.issues);
     }
 
-    const registeredUser = await db.query.user.findFirst({
-      where: eq(user.email, login.data.email),
+    const registeredUser = await prismaClient.user.findFirst({
+      where: {
+        email: login.data.email,
+      },
     });
 
     const error401 = {
@@ -30,25 +30,31 @@ export const signin = async (
       message: messages.INVALID_CREDENTIALS,
     };
 
-    if (!registeredUser || !registeredUser.email_verified) {
+    if (!registeredUser || !registeredUser.emailVerified) {
+      logger.error('User not found or email not verified');
       next(error401);
       return;
     }
 
-    const userAccount = await db.query.userAccounts.findFirst({
-      where: eq(userAccounts.userId, registeredUser.id),
+    const userAccount = await prismaClient.userAccount.findFirst({
+      where: {
+        userId: registeredUser.id,
+      },
     });
 
     if (!userAccount) {
-      return registeredUser.email_verified;
+      logger.error('User account not found');
+      next(error401);
+      return;
     }
 
-    if (userAccount.accountType === 'email') {
+    if (AccountType.EMAIL === userAccount.type) {
       const validPassword = await verifyPassword(
         userAccount.passwordHash!,
         userAccount.salt!,
         login.data.password
       );
+
       if (!validPassword) {
         next(error401);
         return;
@@ -58,12 +64,16 @@ export const signin = async (
       return;
     }
 
-    const profile = await db.query.userProfile.findFirst({
-      where: eq(userProfile.userId, registeredUser.id),
+    const profile = await prismaClient.userProfile.findFirst({
+      where: {
+        userId: registeredUser.id,
+      },
     });
 
-    const userRole = await db.query.userRoles.findMany({
-      where: eq(userRoles.userId, registeredUser.id),
+    const userRole = await prismaClient.userRoles.findMany({
+      where: {
+        userId: registeredUser.id,
+      },
     });
 
     const token = issueToken({

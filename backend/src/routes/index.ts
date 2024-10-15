@@ -1,5 +1,4 @@
-import { Router } from 'express';
-import { getAllAccounts } from '../app/accounts';
+import { getAllAccounts } from '@/app/accounts';
 import {
   authGoogle,
   passwordReset,
@@ -9,11 +8,12 @@ import {
   signup,
   validatePasswordReset,
   verifyRegistration,
-} from '../app/authentication';
-import { getAllCategories } from '../app/category';
-import { contact } from '../app/landing';
-import { getAllTags } from '../app/tags';
-import { queryTransactions } from '../app/transaction';
+} from '@/app/authentication';
+import { getAllCategories } from '@/app/category';
+import { contact } from '@/app/landing';
+import { getAllTags } from '@/app/tags';
+import { queryTransactions } from '@/app/transaction';
+import { Router } from 'express';
 import { protectRoute } from './protected';
 
 export default () => {

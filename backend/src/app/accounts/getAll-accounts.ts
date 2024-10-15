@@ -1,7 +1,5 @@
-import { eq } from 'drizzle-orm';
+import { prismaClient } from '@/prisma';
 import { NextFunction, Request, Response } from 'express';
-import db from '../../db';
-import { account } from '../../db/schema';
 import { messages } from '../../utils/messages';
 
 export const getAllAccounts = async (
@@ -19,12 +17,16 @@ export const getAllAccounts = async (
       throw error;
     }
 
-    const accounts = await db.query.account.findMany({
-      where: eq(account.tenancyId, tenancyId),
-      orderBy: [account.name],
-      columns: {
-        tenancyId: false,
-        created_at: false,
+    const accounts = await prismaClient.account.findMany({
+      where: {
+        tenancyId,
+      },
+      orderBy: {
+        name: 'asc',
+      },
+      select: {
+        id: true,
+        name: true,
       },
     });
 
