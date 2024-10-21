@@ -1,5 +1,7 @@
 import { VerificationType } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
+import { sendActivationEmail } from '../../components/emails/email-service';
+import { validate } from '../../components/lib/validator';
 import { prismaClient } from '../../prisma';
 import { messages } from '../../utils/messages';
 import {
@@ -8,7 +10,6 @@ import {
   isWithinExpirationDate,
   TimeSpan,
 } from '../../utils/randoms';
-import { sendActivationEmail } from '../emails/email-service';
 import {
   registrationNewCodeSchema,
   verifyRegistrationSchema,
@@ -20,14 +21,14 @@ export const verifyRegistration = async (
   next: NextFunction
 ) => {
   try {
-    const register = verifyRegistrationSchema.safeParse(req.body);
-    if (!register.success) {
-      return res.status(400).json(register.error.issues);
-    }
+    const { body: register } = await validate({
+      req,
+      schema: { body: verifyRegistrationSchema },
+    });
 
     const verification = await prismaClient.emailVerification.findFirst({
       where: {
-        code: register.data.code,
+        code: register.code,
         type: VerificationType.REGISTRATION,
       },
     });
@@ -87,14 +88,14 @@ export const registrationNewCode = async (
   next: NextFunction
 ) => {
   try {
-    const newCode = registrationNewCodeSchema.safeParse(req.body);
-    if (!newCode.success) {
-      return res.status(400).json(newCode.error.issues);
-    }
+    const { body: newCode } = await validate({
+      req,
+      schema: { body: registrationNewCodeSchema },
+    });
 
     const existingUser = await prismaClient.user.findFirst({
       where: {
-        email: newCode.data.email,
+        email: newCode.email,
       },
     });
 

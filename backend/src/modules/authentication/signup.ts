@@ -1,5 +1,7 @@
 import { AccountType, Role, VerificationType } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
+import { sendActivationEmail } from '../../components/emails/email-service';
+import { validate } from '../../components/lib/validator';
 import { prismaClient } from '../../prisma';
 import { messages } from '../../utils/messages';
 import {
@@ -9,7 +11,6 @@ import {
   hashPassword,
   TimeSpan,
 } from '../../utils/randoms';
-import { sendActivationEmail } from '../emails/email-service';
 import { signupSchema } from './auth.schemas';
 import { issueToken } from './token';
 
@@ -19,14 +20,14 @@ export const signup = async (
   next: NextFunction
 ) => {
   try {
-    const register = signupSchema.safeParse(req.body);
-    if (!register.success) {
-      return res.status(400).json(register.error.issues);
-    }
+    const { body: register } = await validate({
+      req,
+      schema: { body: signupSchema },
+    });
 
     const existingUser = await prismaClient.user.findFirst({
       where: {
-        email: register.data.email,
+        email: register.email,
       },
     });
 
@@ -40,7 +41,7 @@ export const signup = async (
       return;
     }
 
-    const { email, password } = register.data;
+    const { email, password } = register;
     const saltPassword = generateUUID();
     const passwordHash = await hashPassword(saltPassword, password);
     const registrationCode = generateOTP();

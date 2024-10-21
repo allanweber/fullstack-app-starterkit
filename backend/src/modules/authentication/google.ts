@@ -1,6 +1,7 @@
 import { AccountType, Role } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
+import { validate } from '../../components/lib/validator';
 import logger from '../../logger';
 import { prismaClient } from '../../prisma';
 import { messages } from '../../utils/messages';
@@ -14,12 +15,12 @@ export const authGoogle = async (
   next: NextFunction
 ) => {
   try {
-    const googleSignin = googleSigninSchema.safeParse(req.body);
-    if (!googleSignin.success) {
-      return res.status(400).json(googleSignin.error.issues);
-    }
+    const { body: googleSignin } = await validate({
+      req,
+      schema: { body: googleSigninSchema },
+    });
 
-    const googleData = jwt.decode(googleSignin.data.code) as GoogleUser;
+    const googleData = jwt.decode(googleSignin.code) as GoogleUser;
 
     if (!googleData) {
       logger.error('Google Signin: Invalid token');

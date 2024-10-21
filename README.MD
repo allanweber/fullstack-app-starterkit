@@ -4,8 +4,6 @@
 
 ```bash
 docker run --name postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_USER=postgres -e POSTGRES_DB=starter_kit -p 5432:5432 -d postgres
-
-docker run --name postgres_prd -e POSTGRES_PASSWORD=postgres_prd -e POSTGRES_USER=postgres_prd -e POSTGRES_DB=postgres_prd -p 5432:5432 -d postgres
 ```
 
 ## Prisma

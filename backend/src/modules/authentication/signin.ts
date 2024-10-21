@@ -1,5 +1,6 @@
 import { AccountType } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
+import { validate } from '../../components/lib/validator';
 import logger from '../../logger';
 import { prismaClient } from '../../prisma';
 import { messages } from '../../utils/messages';
@@ -13,14 +14,14 @@ export const signin = async (
   next: NextFunction
 ) => {
   try {
-    const login = loginSchema.safeParse(req.body);
-    if (!login.success) {
-      return res.status(400).json(login.error.issues);
-    }
+    const { body: login } = await validate({
+      req,
+      schema: { body: loginSchema },
+    });
 
     const registeredUser = await prismaClient.user.findFirst({
       where: {
-        email: login.data.email,
+        email: login.email,
       },
     });
 
@@ -52,7 +53,7 @@ export const signin = async (
       const validPassword = await verifyPassword(
         userAccount.passwordHash!,
         userAccount.salt!,
-        login.data.password
+        login.password
       );
 
       if (!validPassword) {
@@ -88,9 +89,6 @@ export const signin = async (
       token: token,
     });
   } catch (error: any) {
-    error.status = 500;
-    error.message = error.message || messages.INTERNAL_SERVER_ERROR;
-    error.code = error.code || messages.INTERNAL_SERVER_ERROR_CODE;
     next(error);
   }
 };

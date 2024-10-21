@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import { Payload } from '../app/authentication/token';
-import env from '../env';
-import { messages } from '../utils/messages';
+import env from '../../env';
+import { Payload } from '../../modules/authentication/token';
+import { messages } from '../../utils/messages';
 
 const error = {
   status: 401,
@@ -12,7 +12,7 @@ const error = {
 
 const TOKEN_PREFIX = 'Bearer ';
 
-export const protectRoute = async (
+export const accessTokenGuard = async (
   req: Request,
   res: Response,
   next: NextFunction

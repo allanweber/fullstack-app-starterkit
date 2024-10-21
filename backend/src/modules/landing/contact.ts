@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
+import { sendContactEmail } from '../../components/emails/email-service';
+import { validate } from '../../components/lib/validator';
 import { messages } from '../../utils/messages';
-import { sendContactEmail } from '../emails/email-service';
 import { contactSchema } from './landing.schemas';
 
 export const contact = async (
@@ -9,15 +10,15 @@ export const contact = async (
   next: NextFunction
 ) => {
   try {
-    const contact = contactSchema.safeParse(req.body);
-    if (!contact.success) {
-      return res.status(400).json(contact.error.issues);
-    }
+    const { body: contact } = await validate({
+      req,
+      schema: { body: contactSchema },
+    });
 
     await sendContactEmail(
-      contact.data.firstName + ' ' + contact.data.lastName,
-      contact.data.email,
-      contact.data.message
+      contact.firstName + ' ' + contact.lastName,
+      contact.email,
+      contact.message
     );
 
     return res.status(200).json({

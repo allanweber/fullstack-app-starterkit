@@ -1,6 +1,8 @@
 import { verify } from '@node-rs/argon2';
 import { VerificationType } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
+import { sendChangePasswordEmail } from '../../components/emails/email-service';
+import { validate } from '../../components/lib/validator';
 import { prismaClient } from '../../prisma';
 import { messages } from '../../utils/messages';
 import {
@@ -10,7 +12,6 @@ import {
   passwordConfig,
   TimeSpan,
 } from '../../utils/randoms';
-import { sendChangePasswordEmail } from '../emails/email-service';
 import {
   passwordResetRequestSchema,
   passwordResetSchema,
@@ -34,14 +35,14 @@ export const requestPasswordReset = async (
   next: NextFunction
 ) => {
   try {
-    const passwordReset = passwordResetRequestSchema.safeParse(req.body);
-    if (!passwordReset.success) {
-      return res.status(400).json(passwordReset.error.issues);
-    }
+    const { body: passwordReset } = await validate({
+      req,
+      schema: { body: passwordResetRequestSchema },
+    });
 
     const existingUser = await prismaClient.user.findFirst({
       where: {
-        email: passwordReset.data.email,
+        email: passwordReset.email,
       },
     });
 
@@ -91,14 +92,14 @@ export const validatePasswordReset = async (
   next: NextFunction
 ) => {
   try {
-    const token = passwordResetTokenSchema.safeParse(req.body);
-    if (!token.success) {
-      return res.status(400).json(token.error.issues);
-    }
+    const { body: token } = await validate({
+      req,
+      schema: { body: passwordResetTokenSchema },
+    });
 
     const resetRequested = await prismaClient.emailVerification.findFirst({
       where: {
-        code: token.data.token,
+        code: token.token,
         type: VerificationType.RESET_PASSWORD,
       },
     });
@@ -131,14 +132,14 @@ export const passwordReset = async (
   next: NextFunction
 ) => {
   try {
-    const passwordReset = passwordResetSchema.safeParse(req.body);
-    if (!passwordReset.success) {
-      return res.status(400).json(passwordReset.error.issues);
-    }
+    const { body: passwordReset } = await validate({
+      req,
+      schema: { body: passwordResetSchema },
+    });
 
     const existingUser = await prismaClient.user.findFirst({
       where: {
-        email: passwordReset.data.email,
+        email: passwordReset.email,
       },
     });
 
@@ -154,7 +155,7 @@ export const passwordReset = async (
 
     const resetRequested = await prismaClient.emailVerification.findFirst({
       where: {
-        code: passwordReset.data.token,
+        code: passwordReset.token,
         type: VerificationType.RESET_PASSWORD,
         userId: existingUser.id,
       },
@@ -173,7 +174,7 @@ export const passwordReset = async (
     const saltPassword = generateUUID();
     const passwordHash = await hashPassword(
       saltPassword,
-      passwordReset.data.password
+      passwordReset.password
     );
 
     await prismaClient.$transaction(async (tx) => {

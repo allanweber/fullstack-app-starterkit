@@ -124,56 +124,48 @@ export const queryTransactions = async (
       };
     }
 
-    const transactions = await prismaClient.transaction.findMany({
-      where: {
-        tenancyId,
-        ...conditions,
-      },
-      orderBy: {
-        [sortColumn]: sortDirection,
-      },
-      skip: pageSize * (page - 1),
-      take: pageSize,
-      select: {
-        id: true,
-        date: true,
-        description: true,
-        amount: true,
-        account: {
-          select: {
-            id: true,
-            name: true,
+    const { data: transactions, count } =
+      await prismaClient.transaction.findManyAndCount({
+        where: {
+          tenancyId,
+          ...conditions,
+        },
+        orderBy: {
+          [sortColumn]: sortDirection,
+        },
+        skip: pageSize * (page - 1),
+        take: pageSize,
+        select: {
+          id: true,
+          date: true,
+          description: true,
+          amount: true,
+          account: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          category: {
+            select: {
+              id: true,
+              name: true,
+              type: true,
+            },
+          },
+          tags: {
+            select: {
+              id: true,
+              name: true,
+              color: true,
+            },
           },
         },
-        category: {
-          select: {
-            id: true,
-            name: true,
-            type: true,
-          },
-        },
-        tags: {
-          select: {
-            id: true,
-            name: true,
-            color: true,
-          },
-        },
-      },
-    });
-
-    const counter = await prismaClient.transaction.count({
-      where: {
-        tenancyId,
-        ...conditions,
-      },
-    });
+      });
 
     return res
       .status(200)
-      .json(
-        new Paginated(transactions, new Pagination(pageSize, page, counter))
-      );
+      .json(new Paginated(transactions, new Pagination(pageSize, page, count)));
   } catch (error: any) {
     error.status = 500;
     error.message = error.message || messages.INTERNAL_SERVER_ERROR;
