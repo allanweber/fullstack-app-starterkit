@@ -13,57 +13,59 @@ export const queryTransactions = async (
   next: NextFunction
 ) => {
   try {
-    let search = columnFilterSchema.safeParse(req.query);
-    if (!search.success) {
-      logger.error('Invalid request', search.error.errors);
-      search = columnFilterSchema.safeParse({
+    const result = columnFilterSchema.safeParse(req.query);
+    let { data: search } = result;
+    const { success, error } = result;
+    if (!success) {
+      logger.error('Invalid request', error.errors);
+      search = {
         page: 1,
         pageSize: 15,
         sortBy: 'date',
         sortDirection: 'desc',
-      });
+      };
     }
 
     const page = Number(req.query.page) || 1;
     const pageSize = Number(req.query.pageSize) || 15;
     const tenancyId = req.user?.tenancyId;
-    const sortColumn = search.data?.sortBy || 'date';
-    const sortDirection = search.data?.sortDirection || 'desc';
+    const sortColumn = search.sortBy || 'date';
+    const sortDirection = search.sortDirection || 'desc';
 
     let conditions = {};
 
-    if (search.data?.description) {
+    if (search.description) {
       conditions = {
-        description: { contains: search.data.description, mode: 'insensitive' },
+        description: { contains: search.description, mode: 'insensitive' },
       };
     }
 
-    if (search.data?.account) {
-      if (Array.isArray(search.data.account)) {
+    if (search.account) {
+      if (Array.isArray(search.account)) {
         conditions = {
           ...conditions,
-          accountId: { in: search.data.account.map(Number) },
+          accountId: { in: search.account.map(Number) },
         };
       } else {
         conditions = {
           ...conditions,
-          accountId: { equals: search.data.account },
+          accountId: { equals: search.account },
         };
       }
     }
 
-    if (search.data?.date) {
-      if (Array.isArray(search.data.date)) {
+    if (search.date) {
+      if (Array.isArray(search.date)) {
         conditions = {
           ...conditions,
           date: {
-            gte: search.data.date[0],
-            lte: search.data.date[1],
+            gte: search.date[0],
+            lte: search.date[1],
           },
         };
       } else {
-        const from = startOfDay(search.data.date);
-        const to = endOfDay(search.data.date);
+        const from = startOfDay(search.date);
+        const to = endOfDay(search.date);
         conditions = {
           ...conditions,
           date: {
@@ -74,43 +76,43 @@ export const queryTransactions = async (
       }
     }
 
-    if (search.data?.amount) {
-      if (Array.isArray(search.data.amount)) {
+    if (search.amount) {
+      if (Array.isArray(search.amount)) {
         conditions = {
           ...conditions,
           amount: {
-            gte: search.data.amount[0],
-            lte: search.data.amount[1],
+            gte: search.amount[0],
+            lte: search.amount[1],
           },
         };
       } else {
         conditions = {
           ...conditions,
           amount: {
-            gte: search.data.amount,
+            gte: search.amount,
           },
         };
       }
     }
 
-    if (search.data?.category) {
-      if (Array.isArray(search.data.category)) {
+    if (search.category) {
+      if (Array.isArray(search.category)) {
         conditions = {
           ...conditions,
-          categoryId: { in: search.data.category.map(Number) },
+          categoryId: { in: search.category.map(Number) },
         };
       } else {
         conditions = {
           ...conditions,
-          categoryId: { equals: search.data.category },
+          categoryId: { equals: search.category },
         };
       }
     }
 
-    if (search.data?.tags) {
-      const tags = Array.isArray(search.data.tags)
-        ? search.data.tags.map(Number)
-        : [search.data.tags as number];
+    if (search.tags) {
+      const tags = Array.isArray(search.tags)
+        ? search.tags.map(Number)
+        : [search.tags as number];
 
       conditions = {
         ...conditions,
