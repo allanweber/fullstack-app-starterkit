@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
+import { messages } from '../../components/utils/messages';
 import { prismaClient } from '../../prisma';
-import { messages } from '../../utils/messages';
 
 export const getAllAccounts = async (
   req: Request,

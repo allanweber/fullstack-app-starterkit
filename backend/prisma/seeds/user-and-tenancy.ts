@@ -1,10 +1,7 @@
 import { AccountType, PrismaClient, Role } from '@prisma/client';
-import {
-  createDate,
-  generateUUID,
-  hashPassword,
-  TimeSpan,
-} from '../../src/utils/randoms';
+import { createDate, TimeSpan } from '../../src/components/utils/date-time';
+import { hashPassword } from '../../src/components/utils/password';
+import { generateUUID } from '../../src/components/utils/uuid';
 
 export default async function seed(client: PrismaClient) {
   const email = 'allan@mail.com';

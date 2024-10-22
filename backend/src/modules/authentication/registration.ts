@@ -2,14 +2,14 @@ import { VerificationType } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
 import { sendActivationEmail } from '../../components/emails/email-service';
 import { validate } from '../../components/lib/validator';
-import { prismaClient } from '../../prisma';
-import { messages } from '../../utils/messages';
 import {
   createDate,
-  generateOTP,
   isWithinExpirationDate,
   TimeSpan,
-} from '../../utils/randoms';
+} from '../../components/utils/date-time';
+import { messages } from '../../components/utils/messages';
+import { generateOTP } from '../../components/utils/password';
+import { prismaClient } from '../../prisma';
 import {
   registrationNewCodeSchema,
   verifyRegistrationSchema,

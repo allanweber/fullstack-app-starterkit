@@ -1,38 +1,3 @@
-import { hash } from '@node-rs/argon2';
-
-export const passwordConfig = {
-  memoryCost: 19456,
-  timeCost: 2,
-  outputLen: 32,
-  parallelism: 1,
-};
-
-export function generateUUID(): string {
-  return '10000000-1000-4000-8000-100000000000'.replace(/[018]/g, (c) =>
-    (
-      +c ^
-      (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (+c / 4)))
-    ).toString(16)
-  );
-}
-
-export const hashPassword = async (saltPassword: string, password: string) => {
-  return await hash(password, {
-    salt: Buffer.from(saltPassword, 'hex'),
-    ...passwordConfig,
-  });
-};
-
-export function generateOTP(): string {
-  const digits = '0123456789';
-  let OTP = '';
-  const len = digits.length;
-  for (let i = 0; i < 6; i++) {
-    OTP += digits[Math.floor(Math.random() * len)];
-  }
-  return OTP;
-}
-
 export function isWithinExpirationDate(date: Date): boolean {
   return Date.now() < date.getTime();
 }

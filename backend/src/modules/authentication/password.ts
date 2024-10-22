@@ -1,33 +1,17 @@
-import { verify } from '@node-rs/argon2';
 import { VerificationType } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
 import { sendChangePasswordEmail } from '../../components/emails/email-service';
 import { validate } from '../../components/lib/validator';
+import { createDate, TimeSpan } from '../../components/utils/date-time';
+import { messages } from '../../components/utils/messages';
+import { hashPassword } from '../../components/utils/password';
+import { generateUUID } from '../../components/utils/uuid';
 import { prismaClient } from '../../prisma';
-import { messages } from '../../utils/messages';
-import {
-  createDate,
-  generateUUID,
-  hashPassword,
-  passwordConfig,
-  TimeSpan,
-} from '../../utils/randoms';
 import {
   passwordResetRequestSchema,
   passwordResetSchema,
   passwordResetTokenSchema,
 } from './auth.schemas';
-
-export const verifyPassword = async (
-  hashed: string,
-  salt: string,
-  password: string
-) => {
-  return await verify(hashed, password, {
-    salt: Buffer.from(salt, 'hex'),
-    ...passwordConfig,
-  });
-};
 
 export const requestPasswordReset = async (
   req: Request,

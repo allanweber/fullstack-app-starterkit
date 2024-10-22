@@ -2,15 +2,11 @@ import { AccountType, Role, VerificationType } from '@prisma/client';
 import { NextFunction, Request, Response } from 'express';
 import { sendActivationEmail } from '../../components/emails/email-service';
 import { validate } from '../../components/lib/validator';
+import { createDate, TimeSpan } from '../../components/utils/date-time';
+import { messages } from '../../components/utils/messages';
+import { generateOTP, hashPassword } from '../../components/utils/password';
+import { generateUUID } from '../../components/utils/uuid';
 import { prismaClient } from '../../prisma';
-import { messages } from '../../utils/messages';
-import {
-  createDate,
-  generateOTP,
-  generateUUID,
-  hashPassword,
-  TimeSpan,
-} from '../../utils/randoms';
 import { signupSchema } from './auth.schemas';
 import { issueToken } from './token';
 

@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { sendContactEmail } from '../../components/emails/email-service';
 import { validate } from '../../components/lib/validator';
-import { messages } from '../../utils/messages';
+import { messages } from '../../components/utils/messages';
 import { contactSchema } from './landing.schemas';
 
 export const contact = async (

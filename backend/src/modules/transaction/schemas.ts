@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { ARRAY_DELIMITER } from '../../utils/types';
-import { paginatedSchema } from '../paginated';
+import { paginatedSchema } from '../../components/types/paginated';
+import { ARRAY_DELIMITER } from '../../components/types/search';
 
 export const columnFilterSchema = paginatedSchema.extend({
   date: z.coerce

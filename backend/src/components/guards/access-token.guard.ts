@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
 import env from '../../env';
-import { Payload } from '../../modules/authentication/token';
-import { messages } from '../../utils/messages';
+import { Payload } from '../types/request';
+import { messages } from '../utils/messages';
 
 const error = {
   status: 401,

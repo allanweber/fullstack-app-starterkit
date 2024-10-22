@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 
 import { endOfDay, startOfDay } from 'date-fns';
+import { Paginated, Pagination } from '../../components/types/paginated';
+import { messages } from '../../components/utils/messages';
 import logger from '../../logger';
 import { prismaClient } from '../../prisma';
-import { messages } from '../../utils/messages';
-import { Paginated, Pagination } from '../paginated';
 import { columnFilterSchema } from './schemas';
 
 export const queryTransactions = async (
