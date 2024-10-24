@@ -34,7 +34,7 @@ export function DataTableFilterControls<TData, TValue>({
   const updateSearchParams = useUpdateSearchParams();
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col">
       <div className="flex h-[46px] items-center justify-between gap-3">
         <p className="font-medium text-foreground">Filters</p>
         <div>
