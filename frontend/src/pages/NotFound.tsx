@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 
-export function NotFound({ to }: { to: string }) {
+export default function NotFound({ to }: { to: string }) {
   return (
     <div className="mt-10 justify-center p-4 text-center">
       <h1 className="mb-2 text-6xl font-bold text-gray-800">404</h1>

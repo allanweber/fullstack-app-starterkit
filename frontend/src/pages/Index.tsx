@@ -9,7 +9,7 @@ import Testimonials from "@/components/landing/Testimonials";
 import ScrollToTop from "@/components/ScrollToTop";
 import ScrollToHashElement from "@cascadia-code/scroll-to-hash-element";
 
-export function Index() {
+export default function Index() {
   return (
     <>
       <ScrollToHashElement behavior="smooth" />

@@ -14,7 +14,7 @@ import GoogleSigninButton from "./components/GoogleSignButton";
 
 const fallback = "/app" as const;
 
-export function RegisterPage() {
+export default function RegisterPage() {
   const auth = useAuth();
 
   const [search] = useSearchParams();

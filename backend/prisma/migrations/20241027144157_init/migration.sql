@@ -88,7 +88,7 @@ CREATE TABLE "EmailVerification" (
     "userId" INTEGER NOT NULL,
     "type" "VerificationType" NOT NULL,
     "email" VARCHAR(255) NOT NULL,
-    "code" VARCHAR(10) NOT NULL,
+    "code" VARCHAR(36) NOT NULL,
     "expiresAt" TIMESTAMP(3) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
 

@@ -100,7 +100,7 @@ model EmailVerification {
     User      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
     type      VerificationType
     email     String           @db.VarChar(255)
-    code      String           @db.VarChar(10)
+    code      String           @db.VarChar(36)
     expiresAt DateTime
     createdAt DateTime         @default(now())
 }

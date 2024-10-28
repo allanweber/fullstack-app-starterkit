@@ -222,7 +222,7 @@ function ResetPasswordForm({ token, onSuccess }: { token: string; onSuccess: () 
   );
 }
 
-export function ForgotPassword() {
+export default function ForgotPassword() {
   const [step, setStep] = useState(Steps.REQUEST);
 
   const [search] = useSearchParams();

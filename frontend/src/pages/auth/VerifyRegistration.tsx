@@ -141,7 +141,7 @@ function NewCodeForm({ onSuccess }: { onSuccess: () => void }) {
   );
 }
 
-export function VerifyRegistration() {
+export default function VerifyRegistration() {
   const [step, setStep] = useState(Steps.VERIFICATION);
 
   return (

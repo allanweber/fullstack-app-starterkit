@@ -106,7 +106,7 @@ export const AppLayout = () => {
             <SidebarGroupContent>
               <SidebarMenu>
                 {navLinks.map((item) => (
-                  <SidebarMenuItem>
+                  <SidebarMenuItem key={item.to}>
                     <SidebarMenuButton tooltip={item.label} asChild>
                       <Link
                         key={item.to}
