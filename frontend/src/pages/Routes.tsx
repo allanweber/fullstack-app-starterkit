@@ -3,24 +3,31 @@ import { createBrowserRouter, createRoutesFromElements, Route } from "react-rout
 import { ProtectedRoute } from "../components/ProtectedRoute";
 import { AppLayout } from "../layouts/AppLayout";
 import { RootLayout } from "../layouts/RootLayout";
-import { Dashboard } from "./app";
 import NotFound from "./NotFound";
 
 import { LoadingSpinner } from "@/components/LoadingSpinner ";
 import { lazy, ReactNode, Suspense } from "react";
-const Index = lazy(() => import("./Index"));
-const About = lazy(() => import("./About"));
 
-const ForgotPassword = lazy(() => import("./auth/ForgotPassword"));
-const LoginPage = lazy(() => import("./auth/Login"));
-const RegisterPage = lazy(() => import("./auth/Register"));
-const VerifyRegistration = lazy(() => import("./auth/VerifyRegistration"));
+const rootPages = [
+  { path: "/", Comp: lazy(() => import("./Index")) },
+  { path: "/about", Comp: lazy(() => import("./About")) },
+];
 
-const Categories = lazy(() => import("./app/categories"));
-const Schedules = lazy(() => import("./app/schedules"));
-const Settings = lazy(() => import("./app/Settings"));
-const Support = lazy(() => import("./app/Support"));
-const Transactions = lazy(() => import("./app/transactions"));
+const authPages = [
+  { path: "/login", Comp: lazy(() => import("./auth/Login")) },
+  { path: "/register", Comp: lazy(() => import("./auth/Register")) },
+  { path: "/forgot-password", Comp: lazy(() => import("./auth/ForgotPassword")) },
+  { path: "/verify-email", Comp: lazy(() => import("./auth/VerifyRegistration")) },
+];
+
+const appPages = [
+  { path: "", Comp: lazy(() => import("./app")) },
+  { path: "transactions", Comp: lazy(() => import("./app/transactions")) },
+  { path: "categories", Comp: lazy(() => import("./app/categories")) },
+  { path: "schedules", Comp: lazy(() => import("./app/schedules")) },
+  { path: "settings", Comp: lazy(() => import("./app/settings")) },
+  { path: "support", Comp: lazy(() => import("./app/support")) },
+];
 
 const SuspenseRoute = ({ children }: { children: ReactNode }) => {
   return (
@@ -40,100 +47,44 @@ export const router = createBrowserRouter(
   createRoutesFromElements(
     <>
       <Route element={<RootLayout />}>
-        <Route
-          index
-          element={
-            <SuspenseRoute>
-              <Index />
-            </SuspenseRoute>
-          }
-        />
-        <Route
-          path="about"
-          element={
-            <SuspenseRoute>
-              <About />
-            </SuspenseRoute>
-          }
-        />
+        {rootPages.map(({ path, Comp }, index) => (
+          <Route
+            key={`landing-${index}`}
+            path={path}
+            element={
+              <SuspenseRoute>
+                <Comp />
+              </SuspenseRoute>
+            }
+          />
+        ))}
         <Route path="*" element={<NotFound to="/" />} />
       </Route>
       <Route element={<AuthLayout />}>
-        <Route
-          path="login"
-          element={
-            <SuspenseRoute>
-              <LoginPage />
-            </SuspenseRoute>
-          }
-        />
-        <Route
-          path="register"
-          element={
-            <SuspenseRoute>
-              <RegisterPage />
-            </SuspenseRoute>
-          }
-        />
-        <Route
-          path="verify-email"
-          element={
-            <SuspenseRoute>
-              <VerifyRegistration />
-            </SuspenseRoute>
-          }
-        />
-        <Route
-          path="forgot-password"
-          element={
-            <SuspenseRoute>
-              <ForgotPassword />
-            </SuspenseRoute>
-          }
-        />
+        {authPages.map(({ path, Comp }, index) => (
+          <Route
+            key={`auth-${index}`}
+            path={path}
+            element={
+              <SuspenseRoute>
+                <Comp />
+              </SuspenseRoute>
+            }
+          />
+        ))}
       </Route>
       <Route path="app" element={<ProtectedRoute Component={AppLayout} />}>
-        <Route index element={<Dashboard />} />
-        <Route
-          path="transactions"
-          element={
-            <SuspenseRoute>
-              <Transactions />
-            </SuspenseRoute>
-          }
-        />
-        <Route
-          path="categories"
-          element={
-            <SuspenseRoute>
-              <Categories />
-            </SuspenseRoute>
-          }
-        />
-        <Route
-          path="schedules"
-          element={
-            <SuspenseRoute>
-              <Schedules />
-            </SuspenseRoute>
-          }
-        />
-        <Route
-          path="settings"
-          element={
-            <SuspenseRoute>
-              <Settings />
-            </SuspenseRoute>
-          }
-        />
-        <Route
-          path="support"
-          element={
-            <SuspenseRoute>
-              <Support />
-            </SuspenseRoute>
-          }
-        />
+        {appPages.map(({ path, Comp }, index) => (
+          <Route
+            key={`app-${index}`}
+            path={path}
+            element={
+              <SuspenseRoute>
+                <Comp />
+              </SuspenseRoute>
+            }
+          />
+        ))}
         <Route path="*" element={<NotFound to="/app" />} />
       </Route>
     </>

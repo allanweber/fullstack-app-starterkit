@@ -12,6 +12,7 @@ import { useAuth } from "../hooks/useAuth";
 import { GalleryVerticalEnd, icons, Search } from "lucide-react";
 
 import Breadcrumb from "@/components/Breadcrumb";
+import { ModeToggle } from "@/components/ModeToggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -146,6 +147,7 @@ export const AppLayout = () => {
                 className="w-full rounded-lg bg-background pl-8 md:w-[200px] lg:w-[336px]"
               />
             </div>
+            <ModeToggle />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" size="icon" className="overflow-hidden rounded-full">

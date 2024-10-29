@@ -10,25 +10,27 @@ import { columnFilterSchema, columns } from "./columns";
 import { filterFields } from "./filters";
 
 export default function Transactions() {
-  const pageSearch = usePaginationSearchParams();
-  const search = columnFilterSchema.safeParse(useKeyPairSearchParams());
+  const paginationParams = usePaginationSearchParams();
+  const searchParams = columnFilterSchema.safeParse(useKeyPairSearchParams());
 
   const pageRequest = {
-    page: pageSearch.page,
-    pageSize: pageSearch.pageSize,
-    sortBy: pageSearch.sortBy,
-    sortDirection: pageSearch.sortDirection,
-    filters: search.success && Object.keys(search.data).length > 0 ? search.data : undefined,
+    page: paginationParams.page,
+    pageSize: paginationParams.pageSize,
+    sortBy: paginationParams.sortBy,
+    sortDirection: paginationParams.sortDirection,
+    filters:
+      searchParams.success && Object.keys(searchParams.data).length > 0
+        ? searchParams.data
+        : undefined,
   };
 
-  const { data, error, isLoading } = useTransactions(pageRequest);
   const { data: accounts } = useAccounts();
   const { data: categories } = useCategories();
   const { data: tags } = useTags();
-
+  const { data, error, isLoading } = useTransactions(pageRequest);
   const { data: transactions, pagination } = data || {};
 
-  const defaultColumnFilters = Object.entries(search.data || {}).map(([key, value]) => ({
+  const columnsFiltered = Object.entries(searchParams.data || {}).map(([key, value]) => ({
     id: key,
     value,
   }));
@@ -37,12 +39,11 @@ export default function Transactions() {
 
   return (
     <>
-      <h1 className="text-lg font-semibold md:text-2xl">Last Transactions</h1>
       {error && <MessageDisplay message={error.message} />}
       <DataTable
         columns={columns}
         data={transactions}
-        defaultColumnFilters={defaultColumnFilters}
+        defaultColumnFilters={columnsFiltered}
         filterFields={filters}
         serverSide={{
           isLoading,
