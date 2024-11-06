@@ -1,4 +1,4 @@
-import { ContactData } from "@/types/Landing";
+import { ContactData } from "@/types/landing";
 import { useMutation } from "@tanstack/react-query";
 import { responseOrError } from "./response";
 

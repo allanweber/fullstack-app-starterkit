@@ -1,34 +1,46 @@
-import { Button } from "@/components/ui/button";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { useAuth } from "../../hooks/useAuth";
-import { useSignUp } from "../../services/authentication";
+import { Button } from '@/components/ui/button';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useAuth } from '../../hooks/use-auth';
+import { useSignUp } from '../../services/authentication';
 
-import { MessageDisplay } from "@/components/MessageDisplay";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Register, registerSchema } from "@/types/Auth";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import GoogleSigninButton from "./components/GoogleSignButton";
+import { MessageDisplay } from '@/components/message-display';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Register, registerSchema } from '@/types/auth';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import GoogleSigninButton from './components/google-sign-button';
 
-const fallback = "/app" as const;
+const fallback = '/app' as const;
 
 export default function RegisterPage() {
   const auth = useAuth();
 
   const [search] = useSearchParams();
   const navigate = useNavigate();
-  const redirect = search.get("redirect") || fallback;
+  const redirect = search.get('redirect') || fallback;
   const mutation = useSignUp();
 
   const form = useForm<Register>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
-      email: "",
-      password: "",
+      email: '',
+      password: '',
     },
-    mode: "all",
+    mode: 'all',
   });
 
   function onSubmit(data: Register) {
@@ -38,7 +50,7 @@ export default function RegisterPage() {
           auth.login(data);
           navigate(redirect, { replace: true });
         } else {
-          navigate("/verify-email", { replace: true });
+          navigate('/verify-email', { replace: true });
         }
       },
     });
@@ -47,7 +59,9 @@ export default function RegisterPage() {
     <Card className="max-w-sm">
       <CardHeader>
         <CardTitle className="text-2xl">Sign Up</CardTitle>
-        <CardDescription>Enter your information to create an account</CardDescription>
+        <CardDescription>
+          Enter your information to create an account
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -95,7 +109,7 @@ export default function RegisterPage() {
           <GoogleSigninButton />
         </div>
         <div className="mt-4 text-center text-sm">
-          Already have an account?{" "}
+          Already have an account?{' '}
           <Link to="/login" className="underline">
             Sign in
           </Link>

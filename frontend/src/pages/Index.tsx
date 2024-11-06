@@ -1,13 +1,13 @@
-import Benefits from "@/components/landing/Benefits";
-import Contact from "@/components/landing/Contact";
-import FAQ from "@/components/landing/faq";
-import Features from "@/components/landing/Features";
-import Footer from "@/components/landing/Footer";
-import Hero from "@/components/landing/Hero";
-import Pricing from "@/components/landing/Pricing";
-import Testimonials from "@/components/landing/Testimonials";
-import ScrollToTop from "@/components/ScrollToTop";
-import ScrollToHashElement from "@cascadia-code/scroll-to-hash-element";
+import Benefits from '@/components/landing/benefits';
+import Contact from '@/components/landing/contact';
+import FAQ from '@/components/landing/faq';
+import Features from '@/components/landing/features';
+import Footer from '@/components/landing/footer';
+import Hero from '@/components/landing/hero';
+import Pricing from '@/components/landing/pricing';
+import Testimonials from '@/components/landing/testimonials';
+import ScrollToTop from '@/components/scroll-to-top';
+import ScrollToHashElement from '@cascadia-code/scroll-to-hash-element';
 
 export default function Index() {
   return (

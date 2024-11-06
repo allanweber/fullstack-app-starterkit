@@ -1,14 +1,18 @@
-import { QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { StrictMode } from "react";
-import ReactDOM from "react-dom/client";
-import { RouterProvider } from "react-router-dom";
-import { AuthProvider } from "./components/auth-provider";
-import { ThemeProvider } from "./components/theme-provider";
-import { Toaster } from "./components/ui/toaster";
-import { TooltipProvider } from "./components/ui/tooltip";
-import "./index.css";
-import { router } from "./pages/Routes";
+import {
+  QueryCache,
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { StrictMode } from 'react';
+import ReactDOM from 'react-dom/client';
+import { RouterProvider } from 'react-router-dom';
+import { AuthProvider } from './components/auth-provider';
+import { ThemeProvider } from './components/theme-provider';
+import { Toaster } from './components/ui/toaster';
+import { TooltipProvider } from './components/ui/tooltip';
+import './index.css';
+import { router } from './pages/routes';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -20,9 +24,9 @@ const queryClient = new QueryClient({
   },
   queryCache: new QueryCache({
     onError: (error) => {
-      console.error("THIS IS THE ERROR", error);
-      if (error.message === "401" || error.message === "Unauthorized") {
-        window.location.href = "/login";
+      console.error('THIS IS THE ERROR', error);
+      if (error.message === '401' || error.message === 'Unauthorized') {
+        window.location.href = '/login';
       }
     },
   }),
@@ -46,12 +50,12 @@ function App() {
   );
 }
 
-const rootElement = document.getElementById("root")!;
+const rootElement = document.getElementById('root')!;
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <StrictMode>
       <App />
-    </StrictMode>
+    </StrictMode>,
   );
 }

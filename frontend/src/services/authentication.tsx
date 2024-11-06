@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { AuthResponse, Login, Register, RegisterResponse } from "../types/Auth";
+import { AuthResponse, Login, Register, RegisterResponse } from "../types/auth";
 import { responseOrError } from "./response";
 
 export const useSignIn = () => {

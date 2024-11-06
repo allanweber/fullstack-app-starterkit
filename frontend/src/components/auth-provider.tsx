@@ -1,6 +1,6 @@
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { createContext, useCallback, useEffect, useState } from "react";
-import { AuthResponse, UserResponse } from "../types/Auth";
+import { AuthResponse, UserResponse } from "../types/auth";
 
 const key = "expenses-user";
 

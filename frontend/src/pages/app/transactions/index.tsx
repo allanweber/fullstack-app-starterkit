@@ -1,13 +1,13 @@
-import { DataTable } from "@/components/data-table/data-table";
-import { MessageDisplay } from "@/components/MessageDisplay";
-import useKeyPairSearchParams from "@/hooks/useKeyPairSearchParams";
-import usePaginationSearchParams from "@/hooks/usePaginationSearchParams";
-import { useAccounts } from "@/services/accounts";
-import { useCategories } from "@/services/categories";
-import { useTags } from "@/services/tags";
-import { useTransactions } from "@/services/transactions";
-import { columnFilterSchema, columns } from "./columns";
-import { filterFields } from "./filters";
+import { DataTable } from '@/components/data-table/data-table';
+import { MessageDisplay } from '@/components/message-display';
+import useKeyPairSearchParams from '@/hooks/use-key-pair-search-params';
+import usePaginationSearchParams from '@/hooks/use-pagination-search-params';
+import { useAccounts } from '@/services/accounts';
+import { useCategories } from '@/services/categories';
+import { useTags } from '@/services/tags';
+import { useTransactions } from '@/services/transactions';
+import { columnFilterSchema, columns } from './columns';
+import { filterFields } from './filters';
 
 export default function Transactions() {
   const paginationParams = usePaginationSearchParams();
@@ -30,10 +30,12 @@ export default function Transactions() {
   const { data, error, isLoading } = useTransactions(pageRequest);
   const { data: transactions, pagination } = data || {};
 
-  const columnsFiltered = Object.entries(searchParams.data || {}).map(([key, value]) => ({
-    id: key,
-    value,
-  }));
+  const columnsFiltered = Object.entries(searchParams.data || {}).map(
+    ([key, value]) => ({
+      id: key,
+      value,
+    }),
+  );
 
   const filters = filterFields(categories, accounts, tags);
 

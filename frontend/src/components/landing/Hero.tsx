@@ -1,9 +1,9 @@
-import { ArrowRight } from "lucide-react";
-import { Link } from "react-router-dom";
-import LogoName from "../LogoName";
-import { useTheme } from "../theme-provider";
-import { Badge } from "../ui/badge";
-import { Button } from "../ui/button";
+import { ArrowRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import LogoName from '../logo-name';
+import { useTheme } from '../theme-provider';
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
 
 export default function Hero() {
   const { theme } = useTheme();
@@ -48,7 +48,11 @@ export default function Hero() {
             width={1200}
             height={1200}
             className="w-full md:w-[1200px] mx-auto rounded-lg relative rouded-lg leading-none flex items-center border border-t-2 border-secondary  border-t-primary/30"
-            src={theme === "light" ? "/hero-image-light.jpeg" : "/hero-image-dark.jpeg"}
+            src={
+              theme === 'light'
+                ? '/hero-image-light.jpeg'
+                : '/hero-image-dark.jpeg'
+            }
             alt="dashboard"
           />
 

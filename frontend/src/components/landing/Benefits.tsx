@@ -1,6 +1,6 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Icon } from "@/components/ui/icon";
-import { icons } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Icon } from '@/components/ui/icon';
+import { icons } from 'lucide-react';
 
 interface BenefitsProps {
   icon: string;
@@ -10,28 +10,28 @@ interface BenefitsProps {
 
 const benefitList: BenefitsProps[] = [
   {
-    icon: "Blocks",
-    title: "Build Brand Trust",
+    icon: 'Blocks',
+    title: 'Build Brand Trust',
     description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. A odio velit cum aliquam. Natus consectetur dolores.",
+      'Lorem ipsum dolor sit amet consectetur adipisicing elit. A odio velit cum aliquam. Natus consectetur dolores.',
   },
   {
-    icon: "ChartLine",
-    title: "More Leads",
+    icon: 'ChartLine',
+    title: 'More Leads',
     description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. A odio velit cum aliquam, natus consectetur.",
+      'Lorem ipsum dolor sit amet consectetur adipisicing elit. A odio velit cum aliquam, natus consectetur.',
   },
   {
-    icon: "Wallet",
-    title: "Higher Conversions",
+    icon: 'Wallet',
+    title: 'Higher Conversions',
     description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. Natus consectetur. A odio velit cum aliquam",
+      'Lorem ipsum dolor sit amet consectetur adipisicing elit. Natus consectetur. A odio velit cum aliquam',
   },
   {
-    icon: "Sparkle",
-    title: "Test Marketing Ideas",
+    icon: 'Sparkle',
+    title: 'Test Marketing Ideas',
     description:
-      "Lorem ipsum dolor sit amet consectetur adipisicing elit. A odio velit cum aliquam. Natus consectetur dolores.",
+      'Lorem ipsum dolor sit amet consectetur adipisicing elit. A odio velit cum aliquam. Natus consectetur dolores.',
   },
 ];
 
@@ -42,10 +42,13 @@ export default function Benefits() {
         <div>
           <h2 className="text-lg text-primary mb-2 tracking-wider">Benefits</h2>
 
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">Your Shortcut to Success</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Your Shortcut to Success
+          </h2>
           <p className="text-xl text-muted-foreground mb-8">
-            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Non ducimus reprehenderit
-            architecto rerum similique facere odit deleniti necessitatibus quo quae.
+            Lorem ipsum dolor sit amet consectetur, adipisicing elit. Non
+            ducimus reprehenderit architecto rerum similique facere odit
+            deleniti necessitatibus quo quae.
           </p>
         </div>
 
@@ -71,7 +74,9 @@ export default function Benefits() {
                 <CardTitle>{title}</CardTitle>
               </CardHeader>
 
-              <CardContent className="text-muted-foreground">{description}</CardContent>
+              <CardContent className="text-muted-foreground">
+                {description}
+              </CardContent>
             </Card>
           ))}
         </div>

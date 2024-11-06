@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export const responseOrError = async (response: any) => {
   if (response.ok) return await response.json();
   else {

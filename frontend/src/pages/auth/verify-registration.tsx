@@ -1,22 +1,37 @@
-import { Button } from "@/components/ui/button";
-import { useNewRegistrationCode, useVerifyRegistration } from "../../services/authentication";
+import { Button } from '@/components/ui/button';
+import {
+  useNewRegistrationCode,
+  useVerifyRegistration,
+} from '../../services/authentication';
 
-import { MessageDisplay } from "@/components/MessageDisplay";
-import { Switch } from "@/components/Switch";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
+import { MessageDisplay } from '@/components/message-display';
+import { Switch } from '@/components/switch';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
-} from "@/components/ui/input-otp";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
-import { z } from "zod";
+} from '@/components/ui/input-otp';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { Link } from 'react-router-dom';
+import { z } from 'zod';
 
 const verificationSchema = z.object({
   code: z.string().min(6),
@@ -41,9 +56,9 @@ function VerificationForm({ onSuccess }: { onSuccess: () => void }) {
   const form = useForm<Verification>({
     resolver: zodResolver(verificationSchema),
     defaultValues: {
-      code: "",
+      code: '',
     },
-    mode: "all",
+    mode: 'all',
   });
 
   function onSubmit(data: Verification) {
@@ -101,9 +116,9 @@ function NewCodeForm({ onSuccess }: { onSuccess: () => void }) {
   const form = useForm<NewCode>({
     resolver: zodResolver(newCodeSchema),
     defaultValues: {
-      email: "",
+      email: '',
     },
-    mode: "all",
+    mode: 'all',
   });
 
   function onSubmit(data: NewCode) {
@@ -153,8 +168,12 @@ export default function VerifyRegistration() {
             <Switch.Case when={Steps.NEW_CODE}>
               Enter your email below to receive a new code
             </Switch.Case>
-            <Switch.Case when={Steps.VERIFICATION}>Enter the code sent to your email</Switch.Case>
-            <Switch.Case when={Steps.CODE_ACCEPTED}>Your account has been verified!</Switch.Case>
+            <Switch.Case when={Steps.VERIFICATION}>
+              Enter the code sent to your email
+            </Switch.Case>
+            <Switch.Case when={Steps.CODE_ACCEPTED}>
+              Your account has been verified!
+            </Switch.Case>
           </Switch>
         </CardDescription>
       </CardHeader>
@@ -177,7 +196,9 @@ export default function VerifyRegistration() {
           </Switch.Case>
           <Switch.Case when={Steps.VERIFICATION}>
             <>
-              <VerificationForm onSuccess={() => setStep(Steps.CODE_ACCEPTED)} />
+              <VerificationForm
+                onSuccess={() => setStep(Steps.CODE_ACCEPTED)}
+              />
               <div className="mt-4 text-center text-sm">
                 <Button
                   type="button"

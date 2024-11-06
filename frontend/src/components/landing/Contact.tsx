@@ -1,26 +1,33 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { useSendContact } from "@/services/landing";
-import { ContactData, contactFormSchema } from "@/types/Landing";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Mail } from "lucide-react";
-import { useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { MessageDisplay } from "../MessageDisplay";
-import { Button } from "../ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
-import { Input } from "../ui/input";
-import { Textarea } from "../ui/textarea";
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { useSendContact } from '@/services/landing';
+import { ContactData, contactFormSchema } from '@/types/landing';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Mail } from 'lucide-react';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { MessageDisplay } from '../message-display';
+import { Button } from '../ui/button';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '../ui/form';
+import { Input } from '../ui/input';
+import { Textarea } from '../ui/textarea';
 
 function ContactForm({ setSent }: { setSent: (value: boolean) => void }) {
   const mutation = useSendContact();
   const form = useForm<z.infer<typeof contactFormSchema>>({
     resolver: zodResolver(contactFormSchema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      message: "",
+      firstName: '',
+      lastName: '',
+      email: '',
+      message: '',
     },
   });
 
@@ -34,7 +41,10 @@ function ContactForm({ setSent }: { setSent: (value: boolean) => void }) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="grid w-full gap-4">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="grid w-full gap-4"
+      >
         <div className="flex flex-col md:!flex-row gap-8">
           <FormField
             control={form.control}
@@ -102,7 +112,10 @@ function ContactForm({ setSent }: { setSent: (value: boolean) => void }) {
           />
         </div>
 
-        <Button className="mt-4" disabled={mutation.isPending || !form.formState.isValid}>
+        <Button
+          className="mt-4"
+          disabled={mutation.isPending || !form.formState.isValid}
+        >
           Send Message
         </Button>
         <MessageDisplay message={mutation.error} variant="destructive" />
@@ -116,7 +129,8 @@ function AfterContactForm({ setSent }: { setSent: (value: boolean) => void }) {
     <div className="flex flex-col gap-4">
       <h2 className="text-2xl font-bold">Thank you for reaching out!</h2>
       <p className="text-muted-foreground">
-        We have received your message and will get back to you as soon as possible.
+        We have received your message and will get back to you as soon as
+        possible.
       </p>
       <Button onClick={() => setSent(false)}>Send another message</Button>
     </div>
@@ -131,13 +145,15 @@ export default function Contact() {
       <section className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div>
           <div className="mb-4">
-            <h2 className="text-lg text-primary mb-2 tracking-wider">Contact</h2>
+            <h2 className="text-lg text-primary mb-2 tracking-wider">
+              Contact
+            </h2>
 
             <h2 className="text-3xl md:text-4xl font-bold">Connect With Us</h2>
           </div>
           <p className="mb-8 text-muted-foreground lg:w-5/6">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatum ipsam sint enim
-            exercitationem ex autem corrupti quas tenetur
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatum
+            ipsam sint enim exercitationem ex autem corrupti quas tenetur
           </p>
 
           <div className="flex flex-col gap-4">
@@ -185,7 +201,11 @@ export default function Contact() {
         <Card className="bg-muted/60 dark:bg-card">
           <CardHeader className="text-primary text-2xl"> </CardHeader>
           <CardContent>
-            {sent ? <AfterContactForm setSent={setSent} /> : <ContactForm setSent={setSent} />}
+            {sent ? (
+              <AfterContactForm setSent={setSent} />
+            ) : (
+              <ContactForm setSent={setSent} />
+            )}
           </CardContent>
         </Card>
       </section>

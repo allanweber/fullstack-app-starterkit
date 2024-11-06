@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from '@/lib/utils';
 
 type IconProps = React.HTMLAttributes<SVGElement> & {
   width?: number;
@@ -7,13 +7,29 @@ type IconProps = React.HTMLAttributes<SVGElement> & {
 
 export const Icons = {
   Brazil: () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-      <rect x="1" y="4" width="30" height="24" rx="4" ry="4" fill="#459a45"></rect>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="32"
+      height="32"
+      viewBox="0 0 32 32"
+    >
+      <rect
+        x="1"
+        y="4"
+        width="30"
+        height="24"
+        rx="4"
+        ry="4"
+        fill="#459a45"
+      ></rect>
       <path
         d="M27,4H5c-2.209,0-4,1.791-4,4V24c0,2.209,1.791,4,4,4H27c2.209,0,4-1.791,4-4V8c0-2.209-1.791-4-4-4Zm3,20c0,1.654-1.346,3-3,3H5c-1.654,0-3-1.346-3-3V8c0-1.654,1.346-3,3-3H27c1.654,0,3,1.346,3,3V24Z"
         opacity=".15"
       ></path>
-      <path d="M3.472,16l12.528,8,12.528-8-12.528-8L3.472,16Z" fill="#fedf00"></path>
+      <path
+        d="M3.472,16l12.528,8,12.528-8-12.528-8L3.472,16Z"
+        fill="#fedf00"
+      ></path>
       <circle cx="16" cy="16" r="5" fill="#0a2172"></circle>
       <path
         d="M14,14.5c-.997,0-1.958,.149-2.873,.409-.078,.35-.126,.71-.127,1.083,.944-.315,1.951-.493,2.999-.493,2.524,0,4.816,.996,6.519,2.608,.152-.326,.276-.666,.356-1.026-1.844-1.604-4.245-2.583-6.875-2.583Z"
@@ -27,8 +43,21 @@ export const Icons = {
     </svg>
   ),
   UK: () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
-      <rect x="1" y="4" width="30" height="24" rx="4" ry="4" fill="#071b65"></rect>
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="32"
+      height="32"
+      viewBox="0 0 32 32"
+    >
+      <rect
+        x="1"
+        y="4"
+        width="30"
+        height="24"
+        rx="4"
+        ry="4"
+        fill="#071b65"
+      ></rect>
       <path
         d="M5.101,4h-.101c-1.981,0-3.615,1.444-3.933,3.334L26.899,28h.101c1.981,0,3.615-1.444,3.933-3.334L5.101,4Z"
         fill="#fff"
@@ -102,7 +131,7 @@ export const Icons = {
   ),
   Google: (props: IconProps) => (
     <svg
-      className={cn("w-6 h-6 text-gray-800 dark:text-white", props.className)}
+      className={cn('w-6 h-6 text-gray-800 dark:text-white', props.className)}
       aria-hidden="true"
       xmlns="http://www.w3.org/2000/svg"
       width="24"

@@ -1,23 +1,35 @@
-import { Button } from "@/components/ui/button";
-import { Link, useSearchParams } from "react-router-dom";
+import { Button } from '@/components/ui/button';
+import { Link, useSearchParams } from 'react-router-dom';
 import {
   useRequestResetPassword,
   useResetPassword,
   useValidateResetPassword,
-} from "../../services/authentication";
+} from '../../services/authentication';
 
-import { LoadingSpinner } from "@/components/LoadingSpinner ";
-import { MessageDisplay } from "@/components/MessageDisplay";
-import { Switch } from "@/components/Switch";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Terminal } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { LoadingSpinner } from '@/components/loading-spinner';
+import { MessageDisplay } from '@/components/message-display';
+import { Switch } from '@/components/switch';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Terminal } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 const forgotPasswordSchema = z.object({
   email: z.string().email(),
@@ -33,8 +45,8 @@ const resetPasswordSchema = z
     confirmPassword: z.string().min(8).max(100),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
   });
 
 type ResetPassword = z.infer<typeof resetPasswordSchema>;
@@ -53,9 +65,9 @@ function ForgotPasswordForm({ onSuccess }: { onSuccess: () => void }) {
   const form = useForm<ForgotPassword>({
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
-      email: "",
+      email: '',
     },
-    mode: "all",
+    mode: 'all',
   });
 
   function onSubmit(data: ForgotPassword) {
@@ -136,18 +148,24 @@ function ValidateTokenForm({
   return null;
 }
 
-function ResetPasswordForm({ token, onSuccess }: { token: string; onSuccess: () => void }) {
+function ResetPasswordForm({
+  token,
+  onSuccess,
+}: {
+  token: string;
+  onSuccess: () => void;
+}) {
   const mutation = useResetPassword();
 
   const form = useForm<ResetPassword>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
-      email: "",
+      email: '',
       token: token,
-      password: "",
-      confirmPassword: "",
+      password: '',
+      confirmPassword: '',
     },
-    mode: "all",
+    mode: 'all',
   });
 
   function onSubmit(data: ResetPassword) {
@@ -167,7 +185,12 @@ function ResetPasswordForm({ token, onSuccess }: { token: string; onSuccess: () 
           render={({ field }) => (
             <FormItem className="flex flex-col">
               <FormLabel>Email</FormLabel>
-              <Input placeholder="email@mail.com" type="email" autoComplete="email" {...field} />
+              <Input
+                placeholder="email@mail.com"
+                type="email"
+                autoComplete="email"
+                {...field}
+              />
               <FormMessage />
             </FormItem>
           )}
@@ -226,7 +249,7 @@ export default function ForgotPassword() {
   const [step, setStep] = useState(Steps.REQUEST);
 
   const [search] = useSearchParams();
-  const token = search.get("token");
+  const token = search.get('token');
 
   useEffect(() => {
     if (token) {
@@ -244,10 +267,16 @@ export default function ForgotPassword() {
               Enter your email to receive a password reset link
             </Switch.Case>
             <Switch.Case when={Steps.REQUESTED}></Switch.Case>
-            <Switch.Case when={Steps.TOKEN_PRESENT}>Checking token...</Switch.Case>
-            <Switch.Case when={Steps.VALID_TOKEN}>Enter your new password.</Switch.Case>
+            <Switch.Case when={Steps.TOKEN_PRESENT}>
+              Checking token...
+            </Switch.Case>
+            <Switch.Case when={Steps.VALID_TOKEN}>
+              Enter your new password.
+            </Switch.Case>
             <Switch.Case when={Steps.INVALID_TOKEN}>Invalid token.</Switch.Case>
-            <Switch.Case when={Steps.CHANGED}>Your password has been changed.</Switch.Case>
+            <Switch.Case when={Steps.CHANGED}>
+              Your password has been changed.
+            </Switch.Case>
           </Switch>
         </CardDescription>
       </CardHeader>
@@ -261,22 +290,31 @@ export default function ForgotPassword() {
               <Terminal className="h-4 w-4" />
               <AlertTitle>Heads up!</AlertTitle>
               <AlertDescription>
-                If an account with that email exists, we will send you a password reset link.
+                If an account with that email exists, we will send you a
+                password reset link.
               </AlertDescription>
             </Alert>
           </Switch.Case>
           <Switch.Case when={Steps.TOKEN_PRESENT}>
-            <ValidateTokenForm token={token!} onChange={(step: Steps) => setStep(step)} />
+            <ValidateTokenForm
+              token={token!}
+              onChange={(step: Steps) => setStep(step)}
+            />
           </Switch.Case>
           <Switch.Case when={Steps.VALID_TOKEN}>
-            <ResetPasswordForm token={token!} onSuccess={() => setStep(Steps.CHANGED)} />
+            <ResetPasswordForm
+              token={token!}
+              onSuccess={() => setStep(Steps.CHANGED)}
+            />
           </Switch.Case>
           <Switch.Case when={Steps.CHANGED}>
             <div className="space-y-4">
               <Alert>
                 <Terminal className="h-4 w-4" />
                 <AlertTitle>Success!</AlertTitle>
-                <AlertDescription>Your password has been changed.</AlertDescription>
+                <AlertDescription>
+                  Your password has been changed.
+                </AlertDescription>
               </Alert>
               <Button asChild type="button" className="w-full">
                 <Link to="/login">Sign in</Link>
@@ -285,7 +323,7 @@ export default function ForgotPassword() {
           </Switch.Case>
         </Switch>
         <div className="mt-4 text-center text-sm">
-          Already have an account?{" "}
+          Already have an account?{' '}
           <Link to="/login" className="underline">
             Sign in
           </Link>

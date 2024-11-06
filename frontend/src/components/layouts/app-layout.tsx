@@ -4,17 +4,23 @@ import {
   SidebarInset,
   SidebarProvider,
   SidebarTrigger,
-} from "@/components/ui/sidebar";
-import { useLoginRedirect } from "@/hooks/useLoginRedirect";
-import { Link, Navigate, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
+} from '@/components/ui/sidebar';
+import { useLoginRedirect } from '@/hooks/use-login-redirect';
+import {
+  Link,
+  Navigate,
+  Outlet,
+  useLocation,
+  useNavigate,
+} from 'react-router-dom';
+import { useAuth } from '../../hooks/use-auth';
 
-import { GalleryVerticalEnd, icons, Search } from "lucide-react";
+import { GalleryVerticalEnd, icons, Search } from 'lucide-react';
 
-import Breadcrumb from "@/components/Breadcrumb";
-import { ModeToggle } from "@/components/ModeToggle";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import Breadcrumb from '@/components/breadcrumb';
+import { ModeToggle } from '@/components/mode-toggle';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,10 +28,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Icon } from "@/components/ui/icon";
-import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
+} from '@/components/ui/dropdown-menu';
+import { Icon } from '@/components/ui/icon';
+import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
 import {
   Sidebar,
   SidebarContent,
@@ -34,31 +40,41 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-} from "@/components/ui/sidebar";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/sidebar';
+import { cn } from '@/lib/utils';
 
-declare module "csstype" {
+declare module 'csstype' {
   interface Properties {
     [index: string]: any;
   }
 }
 
 const navLinks = [
-  { pathname: "/app", to: "/app", icon: "Gauge", label: "Dashboard" },
+  { pathname: '/app', to: '/app', icon: 'Gauge', label: 'Dashboard' },
   {
-    pathname: "/app/transactions",
-    to: "/app/transactions?sortBy=date&sortDirection=desc",
-    icon: "Receipt",
-    label: "Transactions",
+    pathname: '/app/transactions',
+    to: '/app/transactions?sortBy=date&sortDirection=desc',
+    icon: 'Receipt',
+    label: 'Transactions',
   },
   {
-    pathname: "/app/categories",
-    to: "/app/categories",
-    icon: "Tag",
-    label: "Categories",
+    pathname: '/app/categories',
+    to: '/app/categories',
+    icon: 'Tag',
+    label: 'Categories',
   },
-  { pathname: "/app/schedules", to: "/app/schedules", icon: "CalendarDays", label: "Schedules" },
-  { pathname: "/app/accounts", to: "/app/accounts", icon: "Wallet", label: "Accounts" },
+  {
+    pathname: '/app/schedules',
+    to: '/app/schedules',
+    icon: 'CalendarDays',
+    label: 'Schedules',
+  },
+  {
+    pathname: '/app/accounts',
+    to: '/app/accounts',
+    icon: 'Wallet',
+    label: 'Accounts',
+  },
 ];
 
 export const AppLayout = () => {
@@ -74,14 +90,14 @@ export const AppLayout = () => {
 
   const logout = () => {
     auth.logout();
-    navigate("/");
+    navigate('/');
   };
 
   return (
     <SidebarProvider
       style={{
-        "--sidebar-width": "12rem",
-        "--sidebar-width-mobile": "20rem",
+        '--sidebar-width': '12rem',
+        '--sidebar-width-mobile': '20rem',
       }}
     >
       <Sidebar collapsible="icon">
@@ -113,10 +129,10 @@ export const AppLayout = () => {
                         key={item.to}
                         to={item.to}
                         className={cn(
-                          "flex items-center font-semibold gap-3",
+                          'flex items-center font-semibold gap-3',
                           location.pathname === item.pathname
-                            ? "text-primary bg-sidebar-accent"
-                            : ""
+                            ? 'text-primary bg-sidebar-accent'
+                            : '',
                         )}
                       >
                         <Icon name={item.icon as keyof typeof icons} />
@@ -150,9 +166,15 @@ export const AppLayout = () => {
             <ModeToggle />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="icon" className="overflow-hidden rounded-full">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="overflow-hidden rounded-full"
+                >
                   <Avatar>
-                    {user.image && <AvatarImage src={user.image} alt={user.name} />}
+                    {user.image && (
+                      <AvatarImage src={user.image} alt={user.name} />
+                    )}
                     <AvatarFallback>UR</AvatarFallback>
                   </Avatar>
                 </Button>
@@ -167,7 +189,9 @@ export const AppLayout = () => {
                   <Link to="/app/support">Support</Link>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => logout()}>Logout</DropdownMenuItem>
+                <DropdownMenuItem onClick={() => logout()}>
+                  Logout
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

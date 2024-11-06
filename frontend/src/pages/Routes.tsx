@@ -1,32 +1,42 @@
-import { AuthLayout } from "@/layouts/AuthLayout";
-import { createBrowserRouter, createRoutesFromElements, Route } from "react-router-dom";
-import { ProtectedRoute } from "../components/ProtectedRoute";
-import { AppLayout } from "../layouts/AppLayout";
-import { RootLayout } from "../layouts/RootLayout";
-import NotFound from "./NotFound";
+import { AuthLayout } from '@/components/layouts/auth-layout';
+import {
+  createBrowserRouter,
+  createRoutesFromElements,
+  Route,
+} from 'react-router-dom';
+import { AppLayout } from '../components/layouts/app-layout';
+import { RootLayout } from '../components/layouts/root-layout';
+import { ProtectedRoute } from '../components/protected-route';
+import NotFound from './not-found';
 
-import { LoadingSpinner } from "@/components/LoadingSpinner ";
-import { lazy, ReactNode, Suspense } from "react";
+import { LoadingSpinner } from '@/components/loading-spinner';
+import { lazy, ReactNode, Suspense } from 'react';
 
 const rootPages = [
-  { path: "/", Comp: lazy(() => import("./Index")) },
-  { path: "/about", Comp: lazy(() => import("./About")) },
+  { path: '/', Comp: lazy(() => import('./')) },
+  { path: '/about', Comp: lazy(() => import('./about')) },
 ];
 
 const authPages = [
-  { path: "/login", Comp: lazy(() => import("./auth/Login")) },
-  { path: "/register", Comp: lazy(() => import("./auth/Register")) },
-  { path: "/forgot-password", Comp: lazy(() => import("./auth/ForgotPassword")) },
-  { path: "/verify-email", Comp: lazy(() => import("./auth/VerifyRegistration")) },
+  { path: '/login', Comp: lazy(() => import('./auth/login')) },
+  { path: '/register', Comp: lazy(() => import('./auth/register')) },
+  {
+    path: '/forgot-password',
+    Comp: lazy(() => import('./auth/forgot-password')),
+  },
+  {
+    path: '/verify-email',
+    Comp: lazy(() => import('./auth/verify-registration')),
+  },
 ];
 
 const appPages = [
-  { path: "", Comp: lazy(() => import("./app")) },
-  { path: "transactions", Comp: lazy(() => import("./app/transactions")) },
-  { path: "categories", Comp: lazy(() => import("./app/categories")) },
-  { path: "schedules", Comp: lazy(() => import("./app/schedules")) },
-  { path: "settings", Comp: lazy(() => import("./app/settings")) },
-  { path: "support", Comp: lazy(() => import("./app/support")) },
+  { path: '', Comp: lazy(() => import('./app')) },
+  { path: 'transactions', Comp: lazy(() => import('./app/transactions')) },
+  { path: 'categories', Comp: lazy(() => import('./app/categories')) },
+  { path: 'schedules', Comp: lazy(() => import('./app/schedules')) },
+  { path: 'settings', Comp: lazy(() => import('./app/settings')) },
+  { path: 'support', Comp: lazy(() => import('./app/support')) },
 ];
 
 const SuspenseRoute = ({ children }: { children: ReactNode }) => {
@@ -87,6 +97,6 @@ export const router = createBrowserRouter(
         ))}
         <Route path="*" element={<NotFound to="/app" />} />
       </Route>
-    </>
-  )
+    </>,
+  ),
 );
