@@ -1,5 +1,5 @@
+import { useSendContact } from '@/app/services/landing';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { useSendContact } from '@/services/landing';
 import { ContactData, contactFormSchema } from '@/types/landing';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Mail } from 'lucide-react';
