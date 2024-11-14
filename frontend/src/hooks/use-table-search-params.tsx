@@ -26,7 +26,7 @@ export default function useTableSearchParams(filterSchema: ZodSchema) {
       page: searchParams.get('page') ? Number(searchParams.get('page')) : 1,
       pageSize: searchParams.get('pageSize')
         ? Number(searchParams.get('pageSize'))
-        : 15,
+        : 25,
       sortBy: searchParams.get('sortBy') || undefined,
       sortDirection: searchParams.get('sortDirection') || undefined,
     };

@@ -4,7 +4,7 @@ import type {
   PaginationState,
   SortingState,
   VisibilityState,
-} from "@tanstack/react-table";
+} from '@tanstack/react-table';
 import {
   flexRender,
   getCoreRowModel,
@@ -13,8 +13,8 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table";
-import * as React from "react";
+} from '@tanstack/react-table';
+import * as React from 'react';
 
 import {
   Table,
@@ -23,19 +23,19 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { useLocalStorage } from "@/hooks/use-local-storage";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/table';
+import { useLocalStorage } from '@/hooks/use-local-storage';
+import { cn } from '@/lib/utils';
 
-import useUpdateSearchParams from "@/hooks/use-update-search-params";
-import { PaginatedState } from "@/types/paginated";
-import { useSearchParams } from "react-router-dom";
-import { DataTableFilterControls } from "./data-table-filter-controls";
-import { DataTableLoading } from "./data-table-loading";
-import { DataTablePagination } from "./data-table-pagination";
-import { DataTableServerPagination } from "./data-table-server-pagination";
-import { DataTableToolbar } from "./data-table-toolbar";
-import { DataTableFilterField } from "./types";
+import useUpdateSearchParams from '@/hooks/use-update-search-params';
+import { PaginatedState } from '@/types/paginated';
+import { useSearchParams } from 'react-router-dom';
+import { DataTableFilterControls } from './data-table-filter-controls';
+import { DataTableLoading } from './data-table-loading';
+import { DataTablePagination } from './data-table-pagination';
+import { DataTableServerPagination } from './data-table-server-pagination';
+import { DataTableToolbar } from './data-table-toolbar';
+import { DataTableFilterField } from './types';
 
 interface ServerSide {
   isLoading: boolean;
@@ -51,7 +51,12 @@ interface DataTableProps<TData, TValue> {
   serverSide?: ServerSide;
 }
 
-const fallbackPaginatedState: PaginatedState = { page: 1, pageSize: 15, total: 0, totalPages: 0 };
+const fallbackPaginatedState: PaginatedState = {
+  page: 1,
+  pageSize: 25,
+  total: 0,
+  totalPages: 0,
+};
 
 export function DataTable<TData, TValue>({
   columns,
@@ -66,12 +71,12 @@ export function DataTable<TData, TValue>({
   const [columnFilters, setColumnFilters] =
     React.useState<ColumnFiltersState>(defaultColumnFilters);
 
-  const sortingStart = searchParams.get("sortBy")
+  const sortingStart = searchParams.get('sortBy')
     ? [
         {
-          id: searchParams.get("sortBy")!,
-          desc: searchParams.get("sortDirection")
-            ? searchParams.get("sortDirection") === "desc"
+          id: searchParams.get('sortBy')!,
+          desc: searchParams.get('sortDirection')
+            ? searchParams.get('sortDirection') === 'desc'
             : false,
         },
       ]
@@ -79,16 +84,22 @@ export function DataTable<TData, TValue>({
   const [sorting, setSorting] = React.useState<SortingState>(sortingStart);
 
   const paginationStart = {
-    pageIndex: searchParams.get("page") ? Number(searchParams.get("page")) - 1 : 0,
-    pageSize: searchParams.get("pageSize") ? Number(searchParams.get("pageSize")) : 15,
+    pageIndex: searchParams.get('page')
+      ? Number(searchParams.get('page')) - 1
+      : 0,
+    pageSize: searchParams.get('pageSize')
+      ? Number(searchParams.get('pageSize'))
+      : 25,
   };
-  const [pagination, setPagination] = React.useState<PaginationState>(paginationStart);
+  const [pagination, setPagination] =
+    React.useState<PaginationState>(paginationStart);
 
-  const [columnVisibility, setColumnVisibility] = useLocalStorage<VisibilityState>(
-    "data-table-visibility",
-    {}
+  const [columnVisibility, setColumnVisibility] =
+    useLocalStorage<VisibilityState>('data-table-visibility', {});
+  const [controlsOpen, setControlsOpen] = useLocalStorage(
+    'data-table-controls',
+    true,
   );
-  const [controlsOpen, setControlsOpen] = useLocalStorage("data-table-controls", true);
 
   React.useEffect(() => {
     updateSearchParams({
@@ -108,7 +119,8 @@ export function DataTable<TData, TValue>({
     onColumnVisibilityChange: setColumnVisibility,
     onColumnFiltersChange: setColumnFilters,
     onSortingChange: (updater) => {
-      const newSortingValue = updater instanceof Function ? updater(sorting) : updater;
+      const newSortingValue =
+        updater instanceof Function ? updater(sorting) : updater;
       if (newSortingValue.length === 0) {
         updateSearchParams({
           sortBy: null,
@@ -117,14 +129,15 @@ export function DataTable<TData, TValue>({
       } else {
         updateSearchParams({
           sortBy: newSortingValue[0].id,
-          sortDirection: newSortingValue[0].desc ? "desc" : "asc",
+          sortDirection: newSortingValue[0].desc ? 'desc' : 'asc',
         });
       }
       setSorting(updater);
     },
     onPaginationChange: (updater) => {
       setPagination((old) => {
-        const newPaginationValue = updater instanceof Function ? updater(old) : updater;
+        const newPaginationValue =
+          updater instanceof Function ? updater(old) : updater;
         return newPaginationValue;
       });
     },
@@ -139,12 +152,16 @@ export function DataTable<TData, TValue>({
     <div className="flex w-full flex-col gap-3 sm:flex-row">
       <div
         className={cn(
-          "w-full p-1 sm:sticky sm:top-0 sm:h-screen sm:min-w-52 sm:max-w-52 sm:self-start md:min-w-64 md:max-w-64 lg:min-w-72 lg:max-w-72",
-          !controlsOpen && "hidden"
+          'w-full p-1 sm:sticky sm:top-0 sm:h-screen sm:min-w-52 sm:max-w-52 sm:self-start md:min-w-64 md:max-w-64 lg:min-w-72 lg:max-w-72',
+          !controlsOpen && 'hidden',
         )}
       >
         <div className="-m-1 h-full p-1 sm:overflow-x-hidden sm:overflow-y-auto">
-          <DataTableFilterControls table={table} columns={columns} filterFields={filterFields} />
+          <DataTableFilterControls
+            table={table}
+            columns={columns}
+            filterFields={filterFields}
+          />
         </div>
       </div>
       <div className="flex max-w-full flex-1 flex-col gap-4 overflow-hidden p-1">
@@ -163,7 +180,10 @@ export function DataTable<TData, TValue>({
                       <TableHead key={header.id}>
                         {header.isPlaceholder
                           ? null
-                          : flexRender(header.column.columnDef.header, header.getContext())}
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext(),
+                            )}
                       </TableHead>
                     );
                   })}
@@ -175,17 +195,26 @@ export function DataTable<TData, TValue>({
                 <DataTableLoading columns={columns} />
               ) : table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                  <TableRow
+                    key={row.id}
+                    data-state={row.getIsSelected() && 'selected'}
+                  >
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id}>
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext(),
+                        )}
                       </TableCell>
                     ))}
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
                     No results.
                   </TableCell>
                 </TableRow>

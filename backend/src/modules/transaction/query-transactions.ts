@@ -20,14 +20,14 @@ export const queryTransactions = async (
       logger.error('Invalid request', error.errors);
       search = {
         page: 1,
-        pageSize: 15,
+        pageSize: 25,
         sortBy: 'date',
         sortDirection: 'desc',
       };
     }
 
     const page = Number(req.query.page) || 1;
-    const pageSize = Number(req.query.pageSize) || 15;
+    const pageSize = Number(req.query.pageSize) || 25;
     const tenancyId = req.user?.tenancyId;
     const sortColumn = search.sortBy || 'date';
     const sortDirection = search.sortDirection || 'desc';
