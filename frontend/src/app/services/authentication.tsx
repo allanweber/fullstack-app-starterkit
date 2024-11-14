@@ -5,7 +5,7 @@ import {
   Register,
   RegisterResponse,
 } from '../../types/auth';
-import { responseOrError } from './response';
+import { responseOrError } from './utils/response-or-error';
 
 export const useSignIn = () => {
   return useMutation({

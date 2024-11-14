@@ -1,7 +1,7 @@
 import { useAuth } from '@/hooks/use-auth';
 import { Tag } from '@/types/transaction';
 import { useQuery } from '@tanstack/react-query';
-import { responseOrError } from './response';
+import { responseOrError } from './utils/response-or-error';
 
 export const useTags = () => {
   const { getToken } = useAuth();
