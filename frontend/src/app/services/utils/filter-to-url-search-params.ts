@@ -1,9 +1,17 @@
 import { ARRAY_DELIMITER } from '@/components/data-table/types';
+import { PageRequest } from '@/types/paginated';
 
-export const filterToUrlSearchParams = (filter: any) => {
+export const pageRequestToUrlSearchParams = <TBody>(
+  pageRequest: PageRequest<TBody>,
+) => {
   const params = new URLSearchParams();
 
-  Object.entries(filter || {}).forEach(([key, value]) => {
+  params.append('page', `${pageRequest.page}`);
+  params.append('pageSize', `${pageRequest.pageSize}`);
+  params.append('sortBy', pageRequest.sortBy || 'date');
+  params.append('sortDirection', pageRequest.sortDirection || 'desc');
+
+  Object.entries(pageRequest.filters || {}).forEach(([key, value]) => {
     if (value instanceof Date) {
       params.append(key, value.getTime().toString());
     } else if (
