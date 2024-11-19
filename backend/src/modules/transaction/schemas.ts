@@ -1,3 +1,4 @@
+import { TransactionType } from '@prisma/client';
 import { z } from 'zod';
 import { paginatedSchema } from '../../components/types/paginated';
 import { ARRAY_DELIMITER } from '../../components/types/search';
@@ -40,6 +41,12 @@ export const columnFilterSchema = paginatedSchema.extend({
   description: z.string().optional(),
   type: z
     .string()
-    .refine((value) => ['Expense', 'Income'].includes(value))
+    .refine((value) =>
+      [
+        TransactionType.EXPENSE.toString(),
+        TransactionType.INCOME.toString(),
+        TransactionType.INVESTMENT.toString(),
+      ].includes(value)
+    )
     .optional(),
 });

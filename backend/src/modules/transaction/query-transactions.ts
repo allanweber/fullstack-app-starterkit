@@ -142,6 +142,7 @@ export const queryTransactions = async (
           date: true,
           description: true,
           amount: true,
+          type: true,
           account: {
             select: {
               id: true,

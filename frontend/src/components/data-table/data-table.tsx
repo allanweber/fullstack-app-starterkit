@@ -48,6 +48,7 @@ interface DataTableProps<TData, TValue> {
   defaultColumnFilters?: ColumnFiltersState;
   filterFields?: DataTableFilterField<TData>[];
   sortingState?: SortingState;
+  isLoading?: boolean;
   serverSide?: ServerSide;
 }
 
@@ -64,6 +65,7 @@ export function DataTable<TData, TValue>({
   defaultColumnFilters = [],
   filterFields = [],
   sortingState = [],
+  isLoading = false,
   serverSide = undefined,
 }: DataTableProps<TData, TValue>) {
   const updateSearchParams = useUpdateSearchParams();
@@ -191,7 +193,7 @@ export function DataTable<TData, TValue>({
               ))}
             </TableHeader>
             <TableBody>
-              {serverSide?.isLoading ? (
+              {isLoading || serverSide?.isLoading ? (
                 <DataTableLoading columns={columns} />
               ) : table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (

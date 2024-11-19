@@ -1,7 +1,8 @@
 import { DataTableFilterField, Option } from '@/components/data-table/types';
 import { Color } from '@/lib/colors';
 import { cn } from '@/lib/utils';
-import { Account, Category, Tag, Transaction } from '@/types/transaction';
+import { Category } from '@/types/category';
+import { Account, Tag, Transaction } from '@/types/transaction';
 
 export const filterFields = (
   categories: Category[] | undefined,

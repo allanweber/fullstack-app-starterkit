@@ -4,6 +4,7 @@ import {
   SLIDER_DELIMITER,
 } from '@/components/data-table/types';
 import { z } from 'zod';
+import { Category, CategoryType } from '../category';
 
 export interface Transaction {
   id: number;
@@ -21,12 +22,6 @@ export interface Transaction {
 export interface Account {
   id: number;
   name: string;
-}
-
-export interface Category {
-  id: number;
-  name: string;
-  type: string;
 }
 
 export interface Tags {
@@ -77,7 +72,9 @@ export const filterSchema = z.object({
   description: z.string().optional(),
   type: z
     .string()
-    .refine((value) => ['Expense', 'Income'].includes(value))
+    .refine((value) =>
+      Object.values(CategoryType).includes(value as CategoryType),
+    )
     .optional(),
 });
 

@@ -4,7 +4,8 @@ import NumberDisplay from '@/components/number-display';
 import { Badge } from '@/components/ui/badge';
 import { Color } from '@/lib/colors';
 import { isArrayOfDates, isArrayOfNumbers } from '@/lib/utils';
-import { Account, Category, Tag, Tags, Transaction } from '@/types/transaction';
+import { Category, CategoryType } from '@/types/category';
+import { Account, Tag, Tags, Transaction } from '@/types/transaction';
 import type { ColumnDef } from '@tanstack/react-table';
 import { format, isSameDay } from 'date-fns';
 import { Minus } from 'lucide-react';
@@ -56,7 +57,7 @@ export const columns: ColumnDef<Transaction>[] = [
 
       const number = value as number;
       const signedValue =
-        row.original.type === 'expense' ? number * -1 : number;
+        row.original.type === CategoryType.Expense ? number * -1 : number;
 
       return (
         <div>
