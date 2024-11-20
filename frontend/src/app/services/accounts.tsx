@@ -1,5 +1,5 @@
 import { useAuth } from '@/hooks/use-auth';
-import { Account } from '@/types/transaction';
+import { Account } from '@/types/account';
 import { useQuery } from '@tanstack/react-query';
 import { responseOrError } from './utils/response-or-error';
 

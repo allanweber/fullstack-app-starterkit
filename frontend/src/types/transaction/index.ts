@@ -4,7 +4,9 @@ import {
   SLIDER_DELIMITER,
 } from '@/components/data-table/types';
 import { z } from 'zod';
+import { Account } from '../account';
 import { Category, CategoryType } from '../category';
+import { Tags } from '../tag';
 
 export interface Transaction {
   id: number;
@@ -17,21 +19,6 @@ export interface Transaction {
   account: Account;
   category: Category;
   tags: Tags[];
-}
-
-export interface Account {
-  id: number;
-  name: string;
-}
-
-export interface Tags {
-  tag: Tag;
-}
-
-export interface Tag {
-  id: number;
-  name: string;
-  color: string;
 }
 
 export const filterSchema = z.object({

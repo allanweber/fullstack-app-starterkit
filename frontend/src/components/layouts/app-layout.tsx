@@ -41,6 +41,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from '@/components/ui/sidebar';
+import { paths } from '@/lib/paths';
 import { cn } from '@/lib/utils';
 
 declare module 'csstype' {
@@ -50,30 +51,41 @@ declare module 'csstype' {
 }
 
 const navLinks = [
-  { pathname: '/app', to: '/app', icon: 'Gauge', label: 'Dashboard' },
   {
-    pathname: '/app/transactions',
-    to: '/app/transactions?sortBy=date&sortDirection=desc',
+    pathname: paths.app.app.href,
+    to: paths.app.app.href,
+    icon: 'Gauge',
+    label: paths.app.app.description,
+  },
+  {
+    pathname: paths.app.transactions.href,
+    to: `${paths.app.transactions.href}?sortBy=date&sortDirection=desc`,
     icon: 'Receipt',
-    label: 'Transactions',
+    label: paths.app.transactions.description,
   },
   {
-    pathname: '/app/categories',
-    to: '/app/categories',
-    icon: 'Tag',
-    label: 'Categories',
-  },
-  {
-    pathname: '/app/schedules',
-    to: '/app/schedules',
+    pathname: paths.app.schedules.href,
+    to: paths.app.schedules.href,
     icon: 'CalendarDays',
-    label: 'Schedules',
+    label: paths.app.schedules.description,
   },
   {
-    pathname: '/app/accounts',
-    to: '/app/accounts',
+    pathname: paths.app.categories.href,
+    to: paths.app.categories.href,
+    icon: 'FolderTree',
+    label: paths.app.categories.description,
+  },
+  {
+    pathname: paths.app.accounts.href,
+    to: paths.app.accounts.href,
     icon: 'Wallet',
-    label: 'Accounts',
+    label: paths.app.accounts.description,
+  },
+  {
+    pathname: paths.app.tags.href,
+    to: paths.app.tags.href,
+    icon: 'Tag',
+    label: paths.app.tags.description,
   },
 ];
 

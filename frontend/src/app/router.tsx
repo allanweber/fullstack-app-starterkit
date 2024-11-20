@@ -63,7 +63,7 @@ const createAppRouter = () =>
       ],
     },
     {
-      path: paths.app.root.path,
+      path: paths.app.app.path,
       element: <ProtectedRoute Component={AppLayout} />,
       children: [
         {
@@ -106,6 +106,20 @@ const createAppRouter = () =>
           lazy: async () => {
             const { Support } = await import('./routes/app/support');
             return { Component: Support };
+          },
+        },
+        {
+          path: paths.app.accounts.path,
+          lazy: async () => {
+            const { Accounts } = await import('./routes/app/accounts');
+            return { Component: Accounts };
+          },
+        },
+        {
+          path: paths.app.tags.path,
+          lazy: async () => {
+            const { Tags } = await import('./routes/app/tags');
+            return { Component: Tags };
           },
         },
       ],

@@ -1,8 +1,11 @@
 import { DataTableFilterField, Option } from '@/components/data-table/types';
+import { Badge } from '@/components/ui/badge';
 import { Color } from '@/lib/colors';
 import { cn } from '@/lib/utils';
+import { Account } from '@/types/account';
 import { Category } from '@/types/category';
-import { Account, Tag, Transaction } from '@/types/transaction';
+import { Tag } from '@/types/tag';
+import { Transaction } from '@/types/transaction';
 
 export const filterFields = (
   categories: Category[] | undefined,
@@ -55,11 +58,10 @@ export const filterFields = (
         const color =
           tags?.find((tag) => tag.id === props.value)?.color || 'gray';
 
-        const colorClass = Color[color]?.dot;
         return (
           <div className="flex w-full items-center justify-between gap-3">
-            <span className="truncate font-normal">{props.label}</span>
-            <span className={cn('h-2 w-2 rounded-full', colorClass)} />
+            <Badge className={Color[color].badge}>{props.label}</Badge>
+            <span className={cn('h-2 w-2 rounded-full', Color[color].dot)} />
           </div>
         );
       },

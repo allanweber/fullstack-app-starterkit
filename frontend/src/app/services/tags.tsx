@@ -1,5 +1,5 @@
 import { useAuth } from '@/hooks/use-auth';
-import { Tag } from '@/types/transaction';
+import { Tag } from '@/types/tag';
 import { useQuery } from '@tanstack/react-query';
 import { responseOrError } from './utils/response-or-error';
 

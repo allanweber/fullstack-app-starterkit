@@ -4,37 +4,15 @@ import {
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { HomeIcon } from "lucide-react";
-import React from "react";
-import { Link, useLocation } from "react-router-dom";
-
-const pathDictionary = [
-  {
-    path: "app",
-    description: "Dashboard",
-  },
-  {
-    path: "transactions",
-    description: "Transactions",
-  },
-  {
-    path: "categories",
-    description: "Categories",
-  },
-  {
-    path: "schedules",
-    description: "Schedules",
-  },
-  {
-    path: "settings",
-    description: "Settings",
-  },
-];
+} from '@/components/ui/breadcrumb';
+import { paths } from '@/lib/paths';
+import { HomeIcon } from 'lucide-react';
+import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
 
 export default function Breadcrumb() {
   const location = useLocation();
-  const segments = location.pathname.split("/").filter(Boolean);
+  const segments = location.pathname.split('/').filter(Boolean);
 
   if (segments.length === 0) {
     return null;
@@ -59,7 +37,7 @@ export default function Breadcrumb() {
       ];
     }, [])
     .map((segment) => {
-      const path = pathDictionary.find((item) => item.path === segment.id);
+      const path = paths.app[segment.id as keyof typeof paths.app];
       return {
         path: segment.path,
         description: path ? path.description : segment.id,
