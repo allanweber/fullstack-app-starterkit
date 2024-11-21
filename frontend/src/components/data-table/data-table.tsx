@@ -30,6 +30,7 @@ import { cn } from '@/lib/utils';
 import useUpdateSearchParams from '@/hooks/use-update-search-params';
 import { PaginatedState } from '@/types/paginated';
 import { useSearchParams } from 'react-router-dom';
+import { NoDataToDisplay } from '../no-data-to-display';
 import { DataTableFilterControls } from './data-table-filter-controls';
 import { DataTableLoading } from './data-table-loading';
 import { DataTablePagination } from './data-table-pagination';
@@ -42,6 +43,10 @@ interface ServerSide {
   pagination?: PaginatedState;
 }
 
+interface ToolbarProps {
+  component?: React.ReactNode;
+}
+
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data?: TData[];
@@ -50,6 +55,8 @@ interface DataTableProps<TData, TValue> {
   sortingState?: SortingState;
   isLoading?: boolean;
   serverSide?: ServerSide;
+  emptyState?: React.ReactNode;
+  toolbarProps?: ToolbarProps;
 }
 
 const fallbackPaginatedState: PaginatedState = {
@@ -67,6 +74,8 @@ export function DataTable<TData, TValue>({
   sortingState = [],
   isLoading = false,
   serverSide = undefined,
+  emptyState = <NoDataToDisplay />,
+  toolbarProps,
 }: DataTableProps<TData, TValue>) {
   const updateSearchParams = useUpdateSearchParams();
   const [searchParams] = useSearchParams();
@@ -154,7 +163,7 @@ export function DataTable<TData, TValue>({
     <div className="flex w-full flex-col gap-3 sm:flex-row">
       <div
         className={cn(
-          'w-full p-1 sm:sticky sm:top-0 sm:h-screen sm:min-w-52 sm:max-w-52 sm:self-start md:min-w-64 md:max-w-64 lg:min-w-72 lg:max-w-72',
+          'w-full p-1 sm:sticky sm:top-0 sm:h-[95vh] sm:min-w-52 sm:max-w-52 md:min-w-64 md:max-w-64 lg:min-w-72 lg:max-w-72',
           !controlsOpen && 'hidden',
         )}
       >
@@ -171,6 +180,7 @@ export function DataTable<TData, TValue>({
           table={table}
           controlsOpen={controlsOpen}
           setControlsOpen={setControlsOpen}
+          {...toolbarProps}
         />
         <div className="rounded-md border">
           <Table>
@@ -213,12 +223,7 @@ export function DataTable<TData, TValue>({
                 ))
               ) : (
                 <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    No results.
-                  </TableCell>
+                  <TableCell colSpan={columns.length}>{emptyState}</TableCell>
                 </TableRow>
               )}
             </TableBody>

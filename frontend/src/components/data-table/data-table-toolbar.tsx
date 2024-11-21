@@ -1,24 +1,31 @@
-import { Button } from "@/components/ui/button";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import type { Table } from "@tanstack/react-table";
-import { PanelLeftClose, PanelLeftOpen, X } from "lucide-react";
+import { Button } from '@/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import type { Table } from '@tanstack/react-table';
+import { PanelLeftClose, PanelLeftOpen, X } from 'lucide-react';
 
-import useUpdateSearchParams from "@/hooks/use-update-search-params";
+import useUpdateSearchParams from '@/hooks/use-update-search-params';
 
-import { Kbd } from "@/components/ui/kbd";
-import { useEffect } from "react";
-import { DataTableViewOptions } from "./data-table-view-options";
+import { Kbd } from '@/components/ui/kbd';
+import { useEffect } from 'react';
+import { DataTableViewOptions } from './data-table-view-options';
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
   controlsOpen: boolean;
   setControlsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  component?: React.ReactNode;
 }
 
 export function DataTableToolbar<TData>({
   table,
   controlsOpen,
   setControlsOpen,
+  component,
 }: DataTableToolbarProps<TData>) {
   const filters = table.getState().columnFilters;
   const sorting = table.getState().sorting;
@@ -26,13 +33,13 @@ export function DataTableToolbar<TData>({
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
-      if (e.key === "b" && (e.metaKey || e.ctrlKey)) {
+      if (e.key === 'b' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
         setControlsOpen((prev) => !prev);
       }
     };
-    document.addEventListener("keydown", down);
-    return () => document.removeEventListener("keydown", down);
+    document.addEventListener('keydown', down);
+    return () => document.removeEventListener('keydown', down);
   }, [setControlsOpen]);
 
   return (
@@ -41,7 +48,11 @@ export function DataTableToolbar<TData>({
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
-              <Button size="sm" variant="ghost" onClick={() => setControlsOpen((prev) => !prev)}>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => setControlsOpen((prev) => !prev)}
+              >
                 {controlsOpen ? (
                   <>
                     <PanelLeftClose className="mr-2 h-4 w-4" /> Hide Controls
@@ -55,7 +66,7 @@ export function DataTableToolbar<TData>({
             </TooltipTrigger>
             <TooltipContent>
               <p>
-                Toggle controls with{" "}
+                Toggle controls with
                 <Kbd className="ml-1 text-muted-foreground group-hover:text-accent-foreground">
                   <span className="mr-0.5">⌘</span>
                   <span>B</span>
@@ -73,10 +84,13 @@ export function DataTableToolbar<TData>({
             onClick={() => {
               table.resetColumnFilters();
               table.resetSorting();
-              const resetValues = filters.reduce<Record<string, null>>((prev, curr) => {
-                prev[curr.id] = null;
-                return prev;
-              }, {});
+              const resetValues = filters.reduce<Record<string, null>>(
+                (prev, curr) => {
+                  prev[curr.id] = null;
+                  return prev;
+                },
+                {},
+              );
               if (sorting.length) {
                 resetValues.sortBy = null;
                 resetValues.sortDirection = null;
@@ -89,6 +103,7 @@ export function DataTableToolbar<TData>({
           </Button>
         ) : null}
         <DataTableViewOptions table={table} />
+        {component}
       </div>
     </div>
   );
