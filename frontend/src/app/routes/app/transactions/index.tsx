@@ -7,9 +7,18 @@ import { MessageDisplay } from '@/components/message-display';
 import { NoDataToDisplay } from '@/components/no-data-to-display';
 import useTableSearchParams from '@/hooks/use-table-search-params';
 import { filterSchema } from '@/types/transaction';
+import { PlusCircleIcon } from 'lucide-react';
+import { DialogCallout } from '../../../../components/dialog-callout';
 import { columns } from './columns';
-import { AddTransactionButton } from './components/add-transaction-button';
+import { TransactionDialog } from './components/transaction-dialog';
 import { filterFields } from './filters';
+
+const AddTransactionButton = () => (
+  <DialogCallout Dialog={TransactionDialog} description="Add a new transaction">
+    <PlusCircleIcon className="h-4 w-4" />
+    Add New Transaction
+  </DialogCallout>
+);
 
 export const Transactions = () => {
   const { pageRequest, columnsFiltered } = useTableSearchParams(filterSchema);

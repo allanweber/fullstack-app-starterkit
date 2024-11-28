@@ -1,16 +1,18 @@
 import ColoredNumber from '@/components/colored-number';
 import { DataTableColumnHeader } from '@/components/data-table/data-table-column-header';
-import NumberDisplay from '@/components/number-display';
 import { Badge } from '@/components/ui/badge';
 import { Color } from '@/lib/colors';
+import { currencyFormatter, shortDate } from '@/lib/intl';
 import { isArrayOfDates, isArrayOfNumbers } from '@/lib/utils';
 import { Account } from '@/types/account';
 import { Category, CategoryType } from '@/types/category';
 import { Tag, Tags } from '@/types/tag';
 import { Transaction } from '@/types/transaction';
 import type { ColumnDef } from '@tanstack/react-table';
-import { format, isSameDay } from 'date-fns';
-import { Minus } from 'lucide-react';
+import { isSameDay } from 'date-fns';
+import { Minus, SquarePen } from 'lucide-react';
+import { DialogCallout } from '../../../../components/dialog-callout';
+import { TransactionDialog } from './components/transaction-dialog';
 
 export const columns: ColumnDef<Transaction>[] = [
   {
@@ -22,7 +24,13 @@ export const columns: ColumnDef<Transaction>[] = [
       const value = new Date(row.getValue('date'));
       return (
         <div className="text-xs text-muted-foreground">
-          {format(new Date(`${value}`), 'LLL dd, y')}
+          <DialogCallout
+            record={row.original}
+            Dialog={TransactionDialog}
+            description={row.original.description}
+          >
+            {shortDate.format(value)}
+          </DialogCallout>
         </div>
       );
     },
@@ -65,7 +73,7 @@ export const columns: ColumnDef<Transaction>[] = [
         <div>
           <span className="font-mono">
             <ColoredNumber value={signedValue} className="font-mono">
-              <NumberDisplay currency="€">{number}</NumberDisplay>
+              {currencyFormatter.format(signedValue)}
             </ColoredNumber>
           </span>
         </div>
@@ -157,6 +165,22 @@ export const columns: ColumnDef<Transaction>[] = [
       if (Array.isArray(value))
         return value.some((i) => tags.some((tag) => tag.tag.id === Number(i)));
       return false;
+    },
+  },
+  {
+    id: 'actions',
+    cell: ({ row }) => {
+      return (
+        <div className="flex items-center space-x-2">
+          <DialogCallout
+            record={row.original}
+            Dialog={TransactionDialog}
+            description={row.original.description}
+          >
+            <SquarePen className="h-4 w-4" />
+          </DialogCallout>
+        </div>
+      );
     },
   },
 ];
